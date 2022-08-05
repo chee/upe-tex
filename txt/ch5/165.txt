@@ -1,0 +1,49 @@
+
+Exercise 5-28. Compare our design and implementation of news to the similar
+command on your system.
+
+5.9 get and put: tracking file changes
+
+In this section, the last of a long chapter, we will show a larger, more
+complicated example that illustrates cooperation of the shell with awk and sed.
+
+A program evolves as bugs are fixed and features are added. It is sometimes
+convenient to keep track of these versions, especially if people take the
+program to other machines --- they will come back and ask "What has changed
+since we got our version?" or "How did you fix the such-and-such bug?" Also,
+always maintaining backup copies makes it safer to try out ideas: if something
+doesn't work out, it's painless to revert to the original program.
+
+One solution is to keep copies of all the versions around, but that is difficult
+to organize and expensive in disc space. Instead, we will capitalize on the
+likelihood that successive versions have large portions in common, which need to
+be stored only once. The diff -e command
+
+        $ diff -e old new
+
+generates a list of ed commands that will convert old into new. it is therefore
+possible to keep all the versions of a file in a single (different) file by
+maintaining one complete version and the set of editing commands to convert it
+into any other version.
+
+There are two obvious organizations: keep the newest version intact and have
+editing commands go backwards in time, or keep the oldest version and have
+editing commands go forwards. Although the latter is slightly easier to program,
+the former is faster if there are many versions, because we are almost always
+interested in recent versions.
+
+We chose the former organization. In a single file, which we'll call the history
+file, there is the current version followed by sets of editing commands that
+convert each version into the previous (i.e., next older) one. Each set of
+editing commands begins with a line that looks like
+
+        @@@ person date summary
+
+The summary is a single line, provided by person, that describes the change.
+
+There are two commands to maintain versions: get extracts a version from the
+history file, and put enters a new version into the history file after asking
+for a one-line summary of the changes.
+
+Before showing the implementation, here is an example to show how get and put
+work and how the history file is maintained:

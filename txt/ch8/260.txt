@@ -1,0 +1,44 @@
+
+        expr:     NUMBER    { code2(constpush, (Inst)$1); }
+                | VAR       { code3(varpush, (Inst)$1, eval); }
+                | asgn
+                | BLTIN '(' expr ')' { code2(bltin, (Inst)$1->u.ptr); }
+                | '(' expr ')'
+                | expr '+' expr { code(add); }
+                | expr '-' expr { code(sub); }
+                | expr '*' expr { code(mul); }
+                | expr '/' expr { code(div); }
+                | expr '^' expr { code(power); }
+                | '-' expr  %prec UNARYMINUS  { code(negate); }
+                ;
+        %%
+                /* end of grammar */
+        ...
+
+Inst is the data type of a machine instruction (a pointer to a function
+returning an int), which we will return to shortly. Notice that the arguments to
+code are function names, that is, pointers to functions, or other values that
+are coerced to function pointers.
+
+We have changed main somewhat. The parser now returns after each statement or
+expression; the code that is generated is executed. yyparse returns zero at end
+of file.
+
+        main(argc, argv)    /* hoc4 */
+                char *argv[];
+        {
+                int fpecatch();
+
+                progname = argv[0];
+                init();
+                setjmp(begin);
+                signal(SIGFPE, fpecatch);
+                for (initcode(); yyparse(); initcode())
+                        execute(prog);
+                return 0;
+        }
+
+The lexical analyzer is only a little different. The main change is that numbers
+have to be preserved, not used immediately. The easiest way to do this is to
+install them in the symbol table along with the variables. Here is the changed
+part of yylex:

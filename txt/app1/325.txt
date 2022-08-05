@@ -1,0 +1,60 @@
+
+        /thing[^0-9]/           thing followed by a non-digit
+        /thing[0-9][^0-9]/      thing followed by digit, non-digit
+        /thing1.*thing2/        thing1 then any string then thing2
+        /^thing1.*thing2$/      thing1 at beginning and thing2 at end
+
+Regular expressions involving * choose the leftmost match and make it as long as
+possible. Note that x* can match zero characters; xx* matches one or more.
+
+
+Global commands
+
+The global commands g and v apply one or more other commands to a set of lines
+selected by a regular expression. The g command is most often used for printing,
+substituting or deleting a set of lines:
+
+        m,ng/re/cmd             For all lines between m and n
+                                  that match re, do cmd
+        m,nv/re/cmd             For all lines between m and n
+                                  that don't match re, do cmd
+
+The g or v commands can be preceded by line numbers to limit the range; the
+default range is 1,$.
+
+        g/.../p                 Print all lines matching regular expression ...
+        g/.../d                 Delete all lines matching ...
+        g/.../s//repl/p         Replace 1st ... on each line by 'repl',
+                                  print changed lines
+        g/.../s//repl/gp        Replace each ... by 'repl', print changed lines
+        g/.../s/pat/repl/       On lines matching ...,
+                                  replace 1st 'pat' by 'repl'
+        g/.../s/pat/repl/p      On lines matching ...,
+                                  replace 1st 'pat' by 'repl' and print
+        g/.../s/pat/repl/gp     On lines matching ...,
+                                  replace all 'pat' by 'repl' and print
+        v/.../s/pat/repl/gp     On lines not matching ...,
+                                  replace all 'pat' by 'repl', print
+        v/^$/p                  Print all non-blank lines
+        g/.../cmd1\             To do multiple commands with a single g,
+        cmd2\                     append \ to each cmd
+        cmd3                      but the last
+
+The commands controlled by a g or v command can also use line numbers. Dot is
+set in turn to each line selected.
+
+        g/thing/.,.+1p          Print each line with thing and next
+        g/^\.EQ/.1,/^\.EN/-s/alpha/beta/gp      Change alpha to beta only
+                                between .EQ and .EN, and print changed lines
+
+
+Moving and copying lines
+
+The command m moves a contiguous group of lines; the t command makes a copy of a
+group of lines somewhere else.
+
+        m,nmd                   Move lines m through n to after line d
+        m,ntd                   Copy lines m through n to after line d
+
+If no source lines are specified, dot is used. The destination line d cannot be
+in the range m,n-1. here are some common idioms using m and t:

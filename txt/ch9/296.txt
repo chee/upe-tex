@@ -1,0 +1,55 @@
+
+
+Miscellaneous commands
+
+Footnotes are introduced with .FS and terminated with .FE. You are reponsible
+for any identifying mark like an asterisk or a dagger.+ This footnote was
+created with
+
+        identifying mark like an asterisk or a dagger.\(dg
+        .FS
+        \(dg Like this one.
+        .FE
+        This footnote was created with ...
+
+Indented paragraphs, perhaps with a number or other mark in the margin, are
+created with the .IP command. To make this:
+
+(1)First little paragraph.
+(2)Second paragraph, which we make longer to show that it will be indented on
+   the second line as well as the first.
+
+requires the input
+
+        .IP (1)
+        First little paragraph.
+        .IP(2)
+        (2)Second paragraph, ...
+
+A .PP or .LP (left-justified paragraph) terminates an .IP. The .IP argument can
+be any string; use quotes to protect blanks if necessary. A second argument can
+be used to specify the amount of indent.
+
+The command pair .KS and .KE causes text to be kept together; text enclosed
+between these commands will be forced onto a new page if it won't all fit on the
+current page. If .KF is used instead of .KS, the text will float past subsequent
+text to the top of the next page if necessary to keep it on one page. We used
+.KF for all the tables in this book.
+
+You can change most of ms's default values by setting number registers, which
+are troff variables used by ms. Perhaps the most common are the registers that
+control the size of text and the spacing between lines. Normal text size (what
+you are reading now) is "10 points," where a point is about 1/72 of an inch, a
+unit inherited from the printing industry. Lines are normally printed at
+12-point separation. To change these, for example to 9 and 11 (as in our
+displays), set the number registers PS and VS with
+
+        .nr PS 9
+        .nr VS 11
+
+Other number registers include LL for line length, PI for paragraph indent, and
+PD for the separation between paragraphs. These take effect at the next .PP or
+.LP.
+
+----------------
++ Like this one

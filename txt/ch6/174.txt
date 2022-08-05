@@ -1,0 +1,54 @@
+
+The call to exit at the end of vis is not necessary to make the program work
+properly, but ensures that any caller of the program will see a normal exit
+status (conventionally zero) from the program when it completes. An alternate
+way to return status is to leave main with return 0; the return value from main
+is the program's exit status. If there is no explicit return or exit, the exit
+status is unpredictable.
+
+To compile a C program, put the source in a file whose name ends in .c, such as
+vis.c, compile it with cc, the run the result, which the compiler leaves in a
+file called a.out ('a' is for assembler):
+
+        $ cc vis.c
+        $ a.out
+        hello worldctl-g
+        hello world\007
+        ctl-d
+        $
+
+Normally you would rename a.out once it's working, or use the cc option -o to do
+it directly:
+
+        $ cc -o vis vis.c               Output in vis, not a.out
+
+Exercise 6-1. We decided that tabs should be left alone, rather than made
+visible as \011 or -> or \t, since our main use of vis is looking for truly
+anomalous characters. An alternate design is to identify every character of
+output unambiguously --- tabs, non-graphics, blanks at line ends, etc. Modify
+vis so that characters like tab, backslash, backspace, formfeed, etc., are
+printed in their conventional C representations \t, \\, \b, \f, etc., and so
+that blanks at the ends of lines are marked. Can you do this unambiguously?
+Compare your design with
+
+        $ sed -n l
+
+Exercise 6-2. Modify vis so that it folds long lines at some reasonable
+length. How does this interact with the unambiguous output required in the
+previous exercise?
+
+
+6.2 Program arguments: vis version 2
+
+When a C program is executed, the command-line arguments are made available to
+the function main as a count argc and an array argv of pointers to character
+strings that contain the arguments. By convention, argv[0] is the command name
+itself, so argc is always greater than 0; the "useful" arguments are argv[1]
+.. argv[argc-1]. Recall that redirection with < and > is done by the shell, not
+by individual programs, so redirection has no effect on the number of arguments
+seen by the program.
+
+To illustrate argument handling, let's modify vis by adding an optional
+argument: vis -s strips out any non-printing characters rather than displaying
+them prominently. This option is handy for cleaning up files from other systems,
+for example those that use CRLF(carriage return and line feed) instead

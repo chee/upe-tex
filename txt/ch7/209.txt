@@ -1,0 +1,48 @@
+
+        $ p /urs/srx/ccmd/p/spnam.c          Horribly botched name
+        "/usr/src/cmd/p/spname.c"? y         Suggested correction accepted
+        /* spname: return correctly spelled filename */
+        ...
+
+As we will write it, spname will try to correct, in each component of the
+filename, mismatches in which a single letter has been dropped or added, or a
+single letter is wrong, or a pair of letters exchanged; all of these are
+illustrated above. This is a boon for sloppy typists.
+
+Before writing the code, a short review of file system structure is in order. A
+directory is a file containing a list of file names and an indication of where
+they are located. The "location" is actually an index into another table called
+the inode table. The inode for a file is where all information about the file
+except its name is kept. A directory entry thus consists of only two items, an
+inode number and the file name. The precise specification can be found in the
+file <sys/dir.h>:
+
+        $ cat /usr/include/sys/dir.h
+        #define DIRSIZ 14 /* max length of file name */
+
+        struct direct /* structure of directory entry */
+        {
+            ino_t d_ino; /* indoe number */
+            char d_name [DIRSIZ]; /* file name */
+        };
+        $
+
+The "type" ino_t is a typedef describing the index into the inode table. It
+happens to be unsigned short on PDP-11 and VAX version of the system, but this
+is definitely not the sort of information to embed in a program: it might be
+different on a different machine. Hence the typedef. A complete set of "system"
+types is found in <sys/types.h>, which must be included before <sys/dir.h>.
+
+The operation of spname is straightforward enough, although there are a lot of
+boundary conditions to get right. Suppose the file name is /d1/d2/f. The basic
+idea is to peel off the first component (/) then search that directory for a
+name close to the next component (d1), then search that directory for something
+near d2, and so on, until a match has been found for each component. If at any
+stage there isn't a plausible candidate in the directory, the search is
+abandoned.
+
+We have divided the job into three functions. spname itself isolates the
+components of the path and builds them into a "best match so far" filename.  It
+calls mindist, which searches a given directory for the file that is closest to
+the current guess, using a third function, spdist, to compute the distance
+between two names.

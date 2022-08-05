@@ -1,0 +1,54 @@
+
+
+9.5 Other document preparation tools
+
+There are several other programs to help with document preparation. The refer(1)
+command looks up references by keywords and installs in your document the
+in-line citations and a reference section at the end. By defining suitable
+macros, you can arrange that refer print references in the particular style you
+want. There are existing definitions for a variety of computer science
+journals. refer is part of the 7th Edition, but has not been picked up in some
+other versions.
+
+pic(1) and ideal(1) do for pictures what eqn does for equations. Pictures are
+significantly more intricate than equations (at least to typeset), and there is
+not oral tradition of how to talk about pictures, so both languages take some
+work to learn and to use. To give the flavor of pic, here is a simple picture
+and its expression in pic.
+
+        .PS
+        .ps -1
+        box invis "document"; arrow
+        box dashed "pie"; arrow
+        box dashed "tbl"; arrow
+        box dashed "eqn"; arrow
+        box "troff"; arrow
+        box invis "typesetter"
+        [ box invis "macro" "package"
+        spline right then up -> ] with .ne at 2nd last box.s
+        .ps +1
+        .PE
+
+                    +-----+   +-----+   +-----+   +-------+
+                    |     |   |     |   |     |   |       |
+        document -->| pic |-->| tbl |-->| eqn |-->| troff |--> typesetter
+                    |     |   |     |   |     |   |       |
+                    +-----+   +-----+   +-----+   +-------+
+                                                      ^
+                                                      |
+                                macro package --------+
+
+
+The pictures in this book were all done with pic. pic and ideal are not part of
+the 7th Edition but are now available.
+
+refer, pic and ideal are all troff preprocessors. There are also programs to
+examine and comment on the prose in your documents. The best known of these is
+spell(1), which reports on possible spelling errors in files; we used it
+extensively. style(1) and diction(1) analyze punctuation, grammar and language
+usage. These in turn developed into the Writer's Workbench, a set of programs to
+help improve writing style. The Writer's Workbench program are good at
+identifying cliches, unnecessary words and sexist phrases.
+
+spell is standard. The others may be on your system; you can easily find out by
+using man:

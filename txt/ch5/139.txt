@@ -1,0 +1,51 @@
+
+something else, depending on the components of your PATH and where the files
+are. It can very confusing if there happens to be an executable file with the
+right name but the wrong behavior earlier in your search path than you
+expect. Perhaps the most common is the test command, which we will discuss
+later: its name is such an obvious one for a temporary version of program that
+the wrong test program gets called annoyingly often.+ A command that reports
+which version of a program will be executed would provide a useful service.
+
+One implementation is to loop over the directories named in PATH, searching each
+for an executable file of the given name. In chapter 3, we used the for to loop
+over filenames and arguments. Here, we want a loop that says
+
+        for i in each component of path
+        do
+                if given name is in directory i
+                        print its full pathname
+        done
+
+Because we can run any command inside backquotes `...`, the obvious solution is
+to run sed over $PATH, converting colons into spaces. We can test it out with
+our old friend echo:
+
+        $ echo $PATH
+        :/usr/you/bin:/bin:/usr/bin                    4 components
+        $ echo $PATH | sed 's/:/ /g'
+        /usr/you/bin /bin /usr/bin                     Only 3 printed
+        $ echo `echo $PATH | sed 's/:/ /g'`
+        /usr/you/bin /bin /usr/bin                     Still only 3
+        $
+
+There is clearly a problem. A null string in PATH is a synonym for
+'.'. Converting the colons in PATH to blanks is therefore not good enough ---
+the information about null components will be lost. To generate the correct list
+of directories, we must convert a null component of PATH into a dot. The null
+component could be in the middle or at either end of the string, so it takes a
+little work to catch all the cases:
+
+        $ echo $PATH | sed 's/^:/./
+        >                   s/::/:.:/g
+        >                   s/:$/:./
+        >                   s/:/ /g'
+        . /usr/you/bin /bin /usr/bin
+        $
+
+We could have written this as for separate sed commands, but since sed does the
+substitutions in order, one invocation can do it all.
+
+----------------
++Later we will see how to avoid this problem in shell files, where test is
+usually used.

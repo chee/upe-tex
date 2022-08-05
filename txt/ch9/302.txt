@@ -1,0 +1,44 @@
+
+eqn came first. It was the first use of yacc for a non-programming language.+
+tbl came next, in the same spirit as eqn, though with an unrelated syntax. tbl
+doesn't use yacc, since its grammar is simple enough that it's not worthwhile.
+
+The UNIX pipe facility strongly suggests the division into separate
+programs. Besides factoring the job into pieces (which was necessary anyway ---
+troff by itself was already nearly as large as a program could be on a PDP-11),
+pipes also reduce the communication between the pieces and between the
+programmers involved. This latter point is significant --- one doesn't need
+acesss to source code to make a preprocessor. Furthermore, with pipes there are
+no giant intermediate files to worry about, unless the components are
+intentionally run separately for debugging.
+
+There are probelms when separate programs communicate by pipes. Speed suffers
+somewhat, since there is a lot of input and output: both eqn and tbl typically
+cause an eight-to-one expansion from input to output. More importantly,
+information flows only one direction. There is no way, for example, that eqn can
+determine the current font size, which leads to some awkwardness in the
+language. Finally, error reporting is hard; it is sometimes difficult to relate
+a diagnostic from troff back to the eqn or tbl problem that caused it.
+
+Nevertheless, the benefits of separation far outweigh the drawbacks, so several
+other preprocessors have been written, based on the same model.
+
+
+Tables
+
+Let us begin a brief discussion of tbl, since the first thing we want to show is
+a table of operators from the hoc document. tbl reads its input files or the
+standard input and converts text between the commands. .TS (table start) and
+.TE(table end) into the troff commands to print the table, aligning columns and
+taking care of all the typographical details. The .TS and .TE lines are also
+copied through, so a macro package can provide suitable definitions for them,
+for example to keep the table on one page and set off from surrounding text.
+
+Although you will need to look at the tbl manual to produce complicated tables,
+one example is enough to show most of the common features. Here is one from the
+hoc document:
+
+
+----------------
++ It is improbable that eqn would exist if yacc had not been available at the
+right time.

@@ -1,0 +1,56 @@
+
+//. To search backwards, use ?pattern? and ??.
+
+Searches with /.../ and ?...? "wrap around" at either end of the text:
+
+        $p                          Print last line. ('p' is optional)
+          and greater still, and so on.
+        /flea/                      Next flea is near beginning
+        Great fleas have little fleas
+        ??                          Wrap around beginning going backwards
+          have greater fleas to go on;
+
+A pattern search like /flea/ is a line number just as 1 or $ is, and can be used
+in the same contexts:
+
+        1,/flea/p                   Print from 1 to next flea
+        ?flea?+1,$p                 Print from previous flea +1 to end
+
+
+Where are we anyway?
+
+ed keeps track of the last line where you did something: printing or adding text
+or reading a file. The name of this line is '.'; it is pronounced "dot" and is
+called the current line. Each command has a defined effect on dot, usually
+setting it to the last line affected by the command. You can use dot in the same
+way that you use $ or a number like 1:
+
+        $ ed poem
+        263
+        .                           Print current line; same as $ after reading
+          and greater still, and so on.
+        .-1,.p                      Print previous line and this one
+        While these again have greater still,
+          and greater still, and so on.
+
+Line number expressions can be abbreviated:
+
+        Shorthand:  Same as:                Shorthand:  Same as:
+        -           .-1                     +           .+1
+        -- or -2    .-2                     ++ or +2    .+2
+        -n          .-n                     +n          .+n
+        $-          $-1                     .3          .+3
+
+
+Append, change, delete, insert
+
+The append command a adds lines after the specified line; the delete command d
+deletes lines; the insert command i inserts lines before the specified line; the
+change command c changes lines, a combination of delete and insert.
+
+        na                        Add text after line n
+        ni                        Insert text before line n
+        m,nd                      Delete lines m through n
+        m,nc                      change lines m through n
+
+If no line numbers are given, dot is used. The new text for a, c and i

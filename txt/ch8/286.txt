@@ -1,0 +1,51 @@
+pushing and popping the stack. The overhead is larger if we include the times
+for the C subroutine linkage functions csv and cret. (mcount is a piece of
+the profiling code compiled in by cc -p.) Replacing the functions calls by mac-
+ros should make a noticeable difference.
+
+   To test this  expectation, we modified code.c, replacing calls to push and
+pop with macros for stack manipulation:
+
+
+(The function pop is still needed as an opcode in the machine, so we can't just
+replace all pop's.) The new version runs about 35 percent faster; the times in
+Table 8.1 shrink from 5.5 to 3.7 seconds, and from 5.0 to 3.1.
+
+
+Exercise 8-22. The push and popm macros do no error checking. Comment on the
+wisdom of this design. How can you combine the error-checking provided by the func-
+tion versions with the speed of macros?
+
+
+8.8 A look back
+
+   There are some important lessons to learn from this chapter. First, the
+language development tools are a boon. They make it possible to concentrate
+on the interesting part of the job --- language design --- because it is so easy to
+experiment. The use of a grammar also provides an organizing structure for
+the implementation --- routines are linked together by the grammar, and called
+at the right times as parsing proceeds.
+
+   A second, more philosophical point, is the value of thinking of the job at
+hand more as language development than as "writing a program." Organizing
+a program as a language processor encourages regularity of syntax (which is
+the user interface), and structures the implementation. It also helps to ensure
+that new features will mesh smoothly with existing ones. "Languages" are cer-
+tainly not limited to conventional programming languages --- examples from
+our own experience include eqn and pic, and yacc, lex and make them-
+selves.
+
+   There are also some lessons about how tools are used. For instance, make
+is invaluable. It essentially eliminates the class of error that arises from forget-
+ting to recompile some routine. It helps to ensure that no excess work is done.
+And it provides a convenient way to package a group of related and perhaps
+dependent operations in a single file.
+
+   Header files are a good way to manage data declarations that must be visi-
+ble in more than one file. By centralizing the information, they eliminate
+errors caused by inconsistent versions, especially when coupled with make. It
+is also important to organize the data and the routines into files in such a way
+that they are not made visible when they don't have to be.
+
+   There are a couple of topics that, for lack of space, we did not stress. One
+is simply the degree to which we used all the other UNIX tools during

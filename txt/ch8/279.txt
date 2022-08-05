@@ -1,0 +1,17 @@
+generated code if the compilation is successful.
+
+
+   When a function or procedure is called during execution, any arguments
+have already been computed and pushed onto the stack (the first argument is
+the deepest). The opcode for call is followed by the symbol table pointer
+and the number of arguments. A Frame is stacked that contains all the
+interesting information about the routine --- its entry in the symbol table,
+where to return after the call, where the arguments are on the expression
+stack, and the number of arguments that it was called with. The frame is
+created by call, which then executes the code of the routine.
+
+
+This structure is illustrated in Figure 8.2.
+
+   Eventually the called routine will return by executing either a procret or
+a funcret:

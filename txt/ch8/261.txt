@@ -1,0 +1,16 @@
+Each element on the interpreter stack is either a floating point value
+or a pointer to a symbol table entry; the stack data type is a union
+of these. The machine itself is an array of pointers that point either
+to routines like mul that perform an operation, or to data in the
+symbol table. The header file hoc.h has to be augmented to include
+these data structures and function declarations for the interpreter,
+so they will be known where necessray throughout the program. (By the
+way, we chose to put all this information in one file instead of
+two. In a large program, it might be better to divide the header
+information into several files so that each is included only where
+really needed.)
+
+
+The routines that execute the machine instructions and manipulate the
+stack are kept in a new file called code.c. Since it is about 150 lines
+long, we will

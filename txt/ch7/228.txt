@@ -1,0 +1,45 @@
+
+might well be confusing, since the user might not know that the program is
+reading, and presumably would prefer to have the signal take effect
+instantly. To resolve this difficulty, the system terminates the read, but with
+an error status that indicates what happened: errno is set to EINTR, defined in
+<errno.h>, to indicate an interrupted system call.
+
+Thus programs that catch and resume execution after signals should be prepared
+for "errors" caused by interrupted system calls. (The system calls to watch out
+for are reads from a terminal, wait, and pause.) Such a program could use code
+like the following when it reads the standard input:
+
+#include <errno.h>
+extern int errno;
+
+...
+
+if (read(0, &c, 1) <= 0)   /* EOF or interrupted */
+    if (errno == EINTR) {  /* EOF caused by interrupt */
+        errno = 0;         /* reset for next time */
+        ...
+    } else {               /* true end of file */
+        ...
+    }
+
+There is a final subtlety to keep in mind when signal-catching is combined with
+execution of other programs. Suppose a program catches interrupts, and also
+includes a method (like "!" in ed) whereby other programs can be executed. Then
+the code would look something like this:
+
+        if (fork() == 0)
+            execlp(...);
+        signal(SIGINT, SIG_IGN);        /* parent ignores interrupts */
+        wait(&status);                  /* until child is done */
+        signal(SIGINT, onintr);         /* restore interrupts */
+
+Why is this? signals are sent to all your processes. Suppose the program you
+call catches its own interrupts, as an editor does. If you interrupt the
+subprogram, it will get the signal and return to its main loop, and probably
+read you terminal. But the calling program will also pop out of its wait for the
+subprogram and read you terminal. Having two processes reading your terminal is
+very confusing, since in effect the system flips a coin to decide who should get
+each line of input. The solution is to have the parent program ignore interrupts
+until the child is done. This reasoning is reflected in the signal handling in
+system:

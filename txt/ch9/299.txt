@@ -1,0 +1,50 @@
++------------------------------------------------------------------------------+
+|              Table 9.3: Some troff special character sequences               |
+|                                                                              |
+| -       -       hyphen                                                       |
+| \(hy    -       hyphen, same as above                                        |
+| \-      -       minus sign in current font                                   |
+| \(mi    -       minus sign in the mathematics font                           |
+| \(em    ---     em dash                                                      |
+| \&              nothing at all; protects leading period                      |
+| \blank          unpaddable blank                                             |
+| \|              unpaddable half blank                                        |
+| \e              literal escape character, usually \                          |
+| \(bu            bullet *                                                     |
+| \(dg            dagger +                                                     |
+| \(*a            alpha. \(*b=beta, \(*c=ksi, \(*p=pi, etc.                    |
+| \fX             change to font X; X=p is previous                            |
+| \f(XX           change to font XX                                            |
+| \sn             change to font XX                                            |
+| \s+-n           relative point size change                                   |
++------------------------------------------------------------------------------+
+
+        \e&.TL
+        \&.I "Title of document"
+        \e&.AU
+        ...
+
+and you can imagine how that in turn was typed.
+
+Another special character that turns up occasionally is the unpaddable blank, a
+\ followed by a blank. Normally, troff will stretch an ordinary blank to align
+the margins, but an unpaddable blank is never adjusted: it is like any other
+character and has a fixed width. It can also be used to pass multiple words as a
+single argument:
+
+        .I Title\ of\ document
+
+
+Font and size changes
+
+Most font and format changes can be done with the beginning-of-line macros like
+.I, but sometimes changes must be made in-line. In particular, the newline
+character is a word separator, so if a font change must be made in the middle of
+the word, the macros are unusable. This subsection discusses how troff overcomes
+this problem --- note that it is troff that provides the facility, not the ms
+macro package.
+
+troff uses the backslash character to introduce in-line commands. The two most
+common commands are \f to change font and \s to change point size.
+
+The font is specified with \f by a character immediately after the f:

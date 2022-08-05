@@ -1,0 +1,40 @@
+
+        #include <signal.h>
+        char *tempfile = "temp.xxxxxx";
+
+        main() {
+            extern onintr();
+
+            if(signal(SIGINT, SIG_IGN) != SIG_IGN)
+                signal(SIGINT, onintr);
+            mktemp(tempfile);
+
+            /* Process ... */
+
+            exit(0);
+        }
+
+        onintr() {      /* clean up if interrupted */
+            unlink(tempfile);
+            exit(1);
+        }
+
+Why the test and the double call to signal in main? Recall that signals are sent
+to all processes started from a particular terminal. Accordingly, when a program
+is to be run non-interactively (started by &), the shell arranges that the
+program will ignore interrupts, so it won't be stopped by interrupts intended
+for foreground processes. If this program began by announcing that all
+interrupts were to be sent to the onintr routine regardless, that would undo the
+shell's effort to protect it when run in the background.
+
+The solution, shown above, is to test the state of interrupt handling, and to
+continue to ignore interrupts if they are already being ignored. The code as
+written depends on the fact that signal returns the previous state a particular
+signal. If signals were already being ignored, the process should continue to
+ignore then; otherwise, they should be caught.
+
+A more sophisticated program may wish to intercept an interrupt and interpret it
+as a request to stop what it is doing and return to its own command-processing
+loop. Think of a text editor: interrupting a long printout should not cause it
+to exit and lose the work already done. The code for this case can be written
+like this:

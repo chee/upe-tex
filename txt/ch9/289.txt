@@ -1,0 +1,40 @@
+                        CHAPTER 9: DOCUMENT PREPARATION
+
+
+
+One of the first applications of the UNIX system was editing and formatting
+documents; indeed, Bell Labs management was persuaded to buy the first PDP-11
+hardware by promises of a document preparation system, not an operating
+system. (Fortunately, they got more than they bargained for.)
+
+The first formatting program was called roff. It was small, fast, and easy to
+work with, so long as one was producing simple documents on a line printer. The
+next formatter, nroff, by Joe Ossanna, was much more ambiguous. Rather than
+trying to provide every style of document that users might ever want, Ossana
+made nroff programmable, so that many formatting tasks were handled by
+programming in the nroff language.
+
+When a small typesetter was acquired in 1973, nroff was extended to handle the
+multiple sizes and fonts and the richer character set that the typesetter
+provided. The new program was called troff (which by analogy to "en-roff" is
+pronounced "tee-roff.") nroff and troff are basically the same program, and
+accept the same input language; nroff ignores commands like size changes that it
+can't honor. We will talk mainly about troff but most of our comments apply
+nroff as well, subject to the limitations of output devices.
+
+The great strength of troff is the flexibility of the basic language and its
+programmability --- it can be made to do almost any formatting task. But the
+flexibility comes at a high price --- troff is often astonishingly hard to
+use. It is fair to say that almost all of the UNIX document preparation software
+is designed to cover up some part of naked troff.
+
+One example is page layout --- the general style of a document, what the titles,
+headings and paragraphs look like, where the page numbers appear, how big the
+pages are, and so on. These are not built in; they have to be programmed. Rather
+than forcing each user to specify all of these details in every document,
+however, a package of standard formatting commands is provided. A user of the
+package does not say "the next line is to be centered, in bigger letters, and in
+a bold font." Instead, the user says "the next line is a title," and the
+packaged definition of the style of a title is used. Users talk about the
+logical components of a document --- titles, headings, paragraphs, footnotes,
+etc. --- instead of sizes, fonts, and positions.

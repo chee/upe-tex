@@ -1,0 +1,44 @@
+
++------------------------------------------------------------------------------+
+|                        Table 2: Summary of ed commands                       |
+|                                                                              |
+| .a            add text until a line containing just . is typed               |
+| .,.c          change lines; new text terminated as with a                    |
+| .,.d          delete lines                                                   |
+| e file        reinitialize with file. E resets even if changes not written   |
+| f file        set remembered file to file                                    |
+| 1,$g/re/cmds  do ed cmds on each line matching regular expression re;        |
+|                 mutiple cmds separated by \newline                           |
+| .i            insert text before line, terminated as with a                  |
+| .,.+1j        join lines into one                                            |
+| .kc           mark line with letter c                                        |
+| .,.l          list lines, making invisible characters visible                |
+| .,.mline      move lines to after line                                       |
+| .,.p          print lines                                                    |
+| q             quit. Q quits even if changes not written                      |
+| $r file       read file                                                      |
+| .,.s/re/new/  substitute new for whatever matched re                         |
+| .,.tline      copy lines after line                                          |
+| .u            undo last substitution on line (only one)                      |
+| 1,$v/re/cmds  do ed cmds on each not matching re                             |
+| 1,$w file     write lines to file; W appends instead of overwriting          |
+| x             enter encryption mode (or ed -x filename)                      |
+| $=            print line number                                              |
+| !cmdline      execute UNIX command cmdline                                   |
+| (.+1)newline  print line                                                     |
++------------------------------------------------------------------------------+
+
++------------------------------------------------------------------------------+
+|                     Table 3: Summary of ed Line Numbers                      |
+|                                                                              |
+| n       absolute line number n, n=0,1,2,...                                  |
+| .       current line                                                         |
+| $       last line of text                                                    |
+| /re/    next line matching re; wraps around from $ to 1                      |
+| ?re?    previous line matching re; wraps around from 1 to $                  |
+| 'c      line with mark c                                                     |
+| N1+/-n  lines  N1+/-n (additive combination)                                 |
+| N1,N2   lines N1 through N2                                                  |
+| N1;N2   set dot to N1, then evaluate N2                                      |
+|           N1 and N2 may be specified with any of the above                   |
++------------------------------------------------------------------------------+

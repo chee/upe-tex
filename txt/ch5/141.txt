@@ -1,0 +1,46 @@
+
+case statement does pattern matching directly in the shell. In some UNIX
+versions, including System V, test is a shell built-in function so an if and a
+test will run as fast as a case. If test isn't built in, case statements are
+more efficient than if statements, and should be used for any pattern matching:
+
+        case "$1" in
+        hello) command
+        esac
+
+will be faster than
+
+        if test "$1" = hello            Slower unless test is a shell built-in
+        then
+                command
+        fi
+
+That is one reason why we sometimes use case statements in the shell for testing
+things that would be done with an if statement in most programming languages. A
+case statement, on the other hand, can't easily determine whether a file has
+read permissions; that is better done with a test and an if.
+
+So now the pieces are in place for the first version of the command which, to
+report which file corresponds to a command:
+
+        # cat which
+        # which cmd:  which cmd in PATH is executed, version 1
+
+        case $# in
+        0)      echo 'Usage: which command' 1>&2; exit 2
+        esac
+        for i in `echo $PATH | sed 's/^:/.:/
+                                    s/::/:.:/g
+                                    s/:$/:./
+                                    s/:/ /g'`
+        do
+                if test -f $i/$1    # use test -x if you can
+                then
+                        echo $i/$1
+                        exit 0      # found it
+                fi
+        done
+        exit 1      # not found
+        $
+
+Let's test it:

@@ -1,0 +1,50 @@
+
+are evaluated, not rejected as syntax errors.
+
+Exactly two lines have to be added to hoc.y. A new token UNARYMINUS is added to
+the end of the precedence section, to make unary minus have highest precedence:
+
+        %left   '+' '-'
+        %left   '*' '/'
+        %left   UNARYMINUS     /* new */
+
+The grammar is augmented with one more production for expr:
+
+        expr:      NUMBER       { $$ = $1; }
+                 | '-' expr %prec UNARYMINUS {$$ = -$2} /* new */
+
+The %prec says that a unary minus sign (that is, a minus sign before an
+expression) has the precedence of UNARYMINUS (high); the action is to change the
+sign. A minus sign between two expressions takes the default precedence.
+
+Exercise 8-2. Add the operators % (modulus or remainder) and unary + to hoc1.
+Suggestion: look at frexp(3).
+
+
+A digression on make
+
+It's a nuisance to have to type two commands to compile a new version of
+hoc1. Although it's certainly easy to make a shell file that does the job,
+there's a better way, one that will generalize nicely later on when there is
+more than one source file in the program. The program make reads a specification
+of how the components of a program depend on each other, and how to process them
+to create an up-to-date version of the program. It checks the times at which the
+various components were last modified, figures out the minimum amount of
+recompilation that has to be done to make a consistent new version, then runs
+the processes. make also understands the intricacies of multi-step processes
+like yacc, so these tasks can be put into a make specification without spelling
+out the individual steps.
+
+make is most useful when the program being created is large enough to be spread
+over several source files, but it's handy even for something as small as
+hoc1. Here is the make specification for hoc1, which make expects in a file
+called makefile.
+
+        $ cat makefile
+        hoc1:   hoc.î
+                cc hoc.o -o hoc1
+        $
+
+This says that hoc1 depends on hoc.o, and that hoc.o is converted into hoc1 by
+running the C compiler cc and putting the output in hoc1. make already knows how
+to convert the yacc source file in hoc.y to an object file hoc.o:

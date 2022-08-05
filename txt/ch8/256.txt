@@ -1,0 +1,48 @@
+
+preferable to a shell file as a way to keep all the related computations in a
+single file. And make is not restricted to program development --- it is
+valuable for packaging any set of operations that have time dependencies.
+
+
+A digression on lex
+
+The program lex creates lexical analyzers in a manner analogous to the way that
+yacc creates parsers: you write a specification of the lexical rules of your
+language, using regular expressions and fragments of C to be executed when a
+matching string is found. lex translates that into a recognizer. lex and yacc
+cooperate by the same mechanism as the lexical analyzers we have already
+written. We are not going into any great detail on lex here; the following
+discussion is mainly to interest you in learning more. See the reference manual
+for lex in Volume 2B of the UNIX Programmer's Manual.
+
+First, here is the lex program, from the file lex.l; it replaces the function
+yylex that we have used so far.
+
+        $ cat lex.l
+        %{
+        #include "hoc.h"
+        #include "y.tab.h"
+        extern int lineno;
+        %}
+        %%
+        [ \t]   { ; }   /* skip blanks and tabs */
+        [0-9]+\.?|[0-9]*\.[0-9]+ {
+                sscanf(yytext, "%lf", &yylval.val); return NUMBER; }
+        [a-zA-Z][a-zA-Z0-9]* {
+                Symbol *s;
+                if ((s=lookup(yytext)) == 0)
+                        s = install(yytext, UNDEF, 0.0);
+                yylval.sym = s;
+                return s->type == UNDEF ? VAR : s->type; }
+        \n      { lineno++; return '\n'; }   /* everything else */
+        .       { return yytext[0]; }
+        $
+
+Each "rule" is a regular expression like those in egrep or awk, except that lex
+recognizes C-style escapes like \t and \n. The action is enclosed in braces. The
+rules are attempted in order, and constructs like * and + match as long a string
+as possible. If the rule matches the next part of the input, the action is
+performed. The input string that matched is accessible in a lex string called
+yytext.
+
+The makefile has to be changed to use lex:

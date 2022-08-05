@@ -1,0 +1,54 @@
+
+--------------------------------------------------------------------------------
+|           Table 9.1: Common ms Formatting Commands; see also ms(7)           |
+|                                                                              |
+| .AB     start abstract: terminated by .AE                                    |
+| .AU     author's name follows on next line; multiple .AU's permitted         |
+| .B      begin bold text, or embolden argument if supplied                    |
+| .DS t   start display (unfilled) text; terminated by .DE                     |
+|           t = L (left-adjusted), C (centered), B (block-centered)            |
+| .EQ s   begin equation s (eqn input); terminated by .EN                      |
+| .FS     start footnote; terminated by .FE                                    |
+| .I      begin italic text, or italicize argument if supplied                 |
+| .IP s   indented paragraph, with s in margin                                 |
+| .KF     keep text together, float to next page if necessary; end with .KE    |
+| .KS     keep text together on page; end with .KE                             |
+| .LP     new left-justified paragraph                                         |
+| .NH n   n-th level numbered heading; heading follows, up to .PP or .LP       |
+| .PP     new paragraph                                                        |
+| .R      return to raman font                                                 |
+| .SH     sub-heading; heading follows, up to .PP                              |
+| .TL     title follows, up to next ms command                                 |
+| .TS     begin table (tbl input); terminated by .TE                           |
+--------------------------------------------------------------------------------
+
+
+The mm macro package
+
+We won't go into any detail on the mm macro package here, since it is in spirit
+and often in detial very similar to ms. It provides more control of parameters
+than ms does, more capabilities (e.g., automatically numbered lists), and better
+error messages. Table 9.2 shows the mm commands equivalent to the ms commands in
+Table 9.1.
+
+Exercise 9-1. Omitting a terminating command like .AE or .DE is usually a
+disaster. Write a program mscheck to detect errors in ms input (or your favorite
+package). Suggestion: awk.
+
+
+
+9.2 The troff level
+
+In real life, one sometimes has to go beyond the facilities of ms, mm or other
+packages to get at some capability of bare troff. Doing so is like programming
+in assembly language, however, so it should be done cautiously and reluctantly.
+
+Three situations arise: access to special characters, in-line size and font
+changes, and a few basic formatting functions.
+
+
+Character names
+
+Access to strange characters --- Greek letters like PI, graphics like bullet and
+dagger, and a variety of lines and spaces --- is easy, though not very
+systematic. Each

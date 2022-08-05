@@ -1,0 +1,51 @@
+
+may be a file or a pipe or the terminal (the default) --- the program doesn't
+know which. Similarly, putchar(c) puts the character c on the standard output,
+which is also by default the terminal.
+
+The function printf(3) does output format conversion. Calls to printf and
+putchar may be interleaved in any order; the output will appear in the order of
+the calls. There is a corresponding function scanf(3) for input format
+conversion; it will read the standard input and break it up into strings,
+numbers, etc., as desired. Calls to scanf and getchar may also be inermixed.
+
+Here is the first version of vis:
+
+        /* vis:  make funny characters visible (version 1) */
+
+        #include <stdio.h>
+        #include <ctype.h>
+
+        main()
+        {
+            int c;
+
+            while ((c = getchar()) != EOF)
+                if (isascii(c) &&
+                    (isprint(c) || c=='\n' || c=='\t' || c==' '))
+                    putchar(c);
+                else
+                    printf("\\%03o", c);
+            exit(0);
+        }
+
+getchar returns the next byte form the input, or the value EOF when it
+encounters the end of file (or an error). By the way, EOF is not a byte from the
+file; recall the discussion of end of file in Chapter 2. The value of EOF is
+guaranteed to be different from any value that occurs in a single byte so it can
+be distinguished from real data; c is declared int, not char, so that it is big
+enough to hold the EOF value. The line
+
+        $include <stdio.h>
+
+should appear at the beginning of each source file. It causes the C compiler to
+read a header file (/usr/include/stdio.h) of standard routines and symbols that
+includes the definition of EOF. We will use <stdio.h> as a shorthand for the
+full filename in the text.
+
+The file <ctype.h> is another header file in /usr/include that defines
+machine-independent tests for determining the properties of characters. We used
+isascii and isprint here, to determine whether the input character is ASCII
+(i.e., value less than 0200) and printable; other tests are listed in Table
+6.1. Notice that newline, tab and blank are not "printable" by the definition in
+<ctype.h>.

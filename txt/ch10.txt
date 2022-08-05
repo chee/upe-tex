@@ -1,0 +1,103 @@
+                               CHAPTER 10: EPILOG
+
+
+
+The UNIX operating system is well over ten years old, but the number of
+computers running it is growing faster than ever. For a system designed with no
+marketing goals or even intentions, it has been singularly successful.
+
+The main reason for its commercial success is probably its portability --- the
+feature that everything but small parts of the compilers and kernel runs
+unchanged on any computer. Manufacturers that run UNIX software on their
+machines therefore have comparatively little work to do to get the system
+running on new hardware, and can benefit from the expanding commercial market
+for UNIX programs.
+
+But the UNIX system was popular long before it was of commercial significance,
+and even before it ran on anything but the PDP-11. The 1974 CACM paper by
+Ritchie and Thompson generated interest in the academic community, and by 1975,
+6th Edition systems were becoming common in universities. Through the mid-1970's
+UNIX knowledge spread by word of mouth: although the system came unsupported and
+without guarantee, the people who used it were enthusiastic enough to convince
+others to try it too. Once people tried it, they tended to stick with it;
+another reason for its current success is that the generation of programmers who
+used academic UNIX systems now expect to find the UNIX environment where they
+work.
+
+Why did it become popular in the first place? The central factor is that it was
+designed and built by a small number (two) of exceptionally talented people,
+whose sole purpose was to create an environment that would be convenient for
+program development, and who had the freedom to pursue that ideal. Free of
+market pressure, the early systems were small enough to be understood by a
+single person. John Lions taught the 6th Edition kernel in an undergraduate
+operating system course at the University of New South Wales in Australia. In
+notes prepared for the class, he wrote, "... the whole documentation is not
+unreasonably transportable in a student's briefcase." (This has been fixed in
+recent versions.)
+
+In that early system were packed a number of inventive applications of computer
+science, including stream processing (pipes), regular expressions, language
+theory (yacc, lex, etc.) and more specific instances like the algorithm in
+diff. Binding it all together was a kernel with "features seldom found even in
+larger operating systems." As an example, consider the I/O structure: a
+hierarchical file system, rare at the time; devices installed as names in the
+file system, so they require no special utilities; and perhaps a dozen critical
+system calls, such as an open primitive with exactly two arguments. The software
+was all written in a high-level language and distributed with the system so it
+could be studied and modified.
+
+The UNIX system has since become one of the computer market's standard operating
+systems, and with market dominance has come responsibility and the need for
+"features" provided by competing systems. As a result, the kernel has grown in
+size by a factor of 10 in the past decade, although it has certainly not
+improved by the same amount. This growth has been accompanied by a surfeit of
+ill-conceived programs that don't build on the existing environment. Creeping
+featurism encrusts commands with options that obscure the original intention of
+the programs. Because source code is often not distributed with the system,
+models of good style are harder come by.
+
+Fortunately, however, even the large versions are still suffused with the ideas
+that made the early versions so popular. The principles on which UNIX is based
+--- simplicity of structure, the lack of disproportionate means, building on
+existing programs rather than recreating, programmability of the command
+interpreter, a tree-structured file system, and so on --- are therefore
+spreading and displacing the ideas in the monolithic systems that preceded
+it. The UNIX system can't last forever, but systems that hope to supersede it
+will have to incorporate many of its fundamental ideas.
+
+We said in the preface that there is a UNIX approach or philosophy, a style of
+how to approach a programming task. Looking back over the book, you should be
+able to see the elements of that style illustrated in our examples.
+
+First, let the machine do the work. Use programs like grep and wc and awk to
+mechanize tasks that you might do by hand on other systems.
+
+Second, let other people do the work. Use programs that already exist as
+building blocks in your programs, with the shell and the programmable filters to
+glue them together. Write a small program to interface to an existing one that
+does the real work, as we did with idiff. The UNIX environment is rich in tools
+that can be combined in myriad ways; your job is often just to think of the
+right combination.
+
+Third, do the job in stages. Build the simplest thing that will be useful, and
+let your experience with that determine what (if anything) is worth doing
+next. Don't add features and options until usage patterns tell you which ones
+are needed.
+
+Forth, build tools. Write programs that mesh with the existing environment,
+enhancing it rather than merely adding to it. Built well, such programs
+themselves become a part of everyone's toolkit.
+
+We also said in the preface that the system was not perfect. After nine chapters
+describing programs with strange conventions, pointless differences, and
+arbitrary limitations, you will surely agree. In spite of such blemishes,
+however, the positive benefits far outweigh the occasional irritating rough
+edges. The UNIX system is really good at what it was designed to do: providing a
+comfortable programming environment.
+
+So although UNIX has begun to show some signs of middle age, it's still viable
+and still gaining in popularity. And that popularity can be traced to the clear
+thinking of a few people in 1969, who sketched on the blackboard a design for a
+programming environment they would find comfortable. Although they didn't expect
+their system to spread to tens of thousands of computers, a generation of
+programmers is glad that it did.

@@ -1,0 +1,50 @@
+
+6.9 Accessing the environment
+
+It is easy to access shell environment variables from a C program, and this can
+sometimes be used to make programs adapt to their environment without requiring
+much of their users. For example, suppose that you are using a terminal in which
+the screen size is bigger than the normal 24 lines. If you want to use p and
+take full advantage of your terminal's capabilities, what choices are open to
+you? It's a bother to have to specify the screen size each time you use p:
+
+        $ p -36 ...
+
+You could always put a shell file in your bin:
+
+        $ cat /usr/you/bin/p
+        exec /usr/bin/p -36 $*
+        $
+
+A third solution is to modify p to use an environment variable that defines the
+properties of your terminal. Suppose that you define the variable PAGESIZE in
+your .profile:
+
+        PAGESIZE=36
+        export PAGESIZE
+
+The routine getenv("var") searches the environment for the shell variable var
+and return its value as a string of characters, or NULL if the variable is not
+defined. Given getenv, it's easy to modify p. All that is needed is to add a
+couple of declarations and a call to getenv to the beginning of the main
+routine.
+
+        /* p:  print input in chunks (version 3) */
+        ...
+            char *p, *getenv();
+
+            progname = argv[0];
+            if ((p=getenv("PAGESIZE")) != NULL)
+                pagesize = atoi(p);
+            if (argc > 1 && argv[1][0] == '-') {
+                pagesize = atoi(&argv[1][1]);
+                argc--;
+                argv++;
+            }
+        ...
+
+Optional arguments are processed after the environment variable, so any explicit
+page size will still override an implicit one.
+
+Exercise 6-17. Modify idiff to search the environment for the name of the editor
+to be used. Modify 2, 3, etc., to use PAGESIZE.

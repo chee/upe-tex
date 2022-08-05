@@ -1,0 +1,49 @@
+
+        main(argc, argv)    /* hoc3 */
+                char *argv[];
+        {
+                int fpecatch();
+
+                progname = argv[0];
+                init();
+                setjmp(begin);
+                signal(SIGFPE, fpecatch);
+                yyparse();
+        }
+
+The only remaining file is math.c. Some of the standard mathematical functions
+need an error-checking interface for messages and recovery --- for example the
+standard function sqrt silently returns zero if its argument is negative. The
+code in math.c uses the error tests found in Section 2 of the UNIX Programmer's
+Manual; see Chapter 7. This is more reliable and portable than writing our own
+tests, since presumably the specific limitations of the routines are best
+reflected in the "official" code. The header file <math.h> contains type
+declarations for the standard mathematical functions. <errno.h> contains names
+for the errors that can be incurred.
+
+        $ cat math.c
+        #include <math.h>
+        #include <errno.h>
+        extern  int     errno;
+        double  errcheck();
+
+        double Log(x)
+                double x;
+        {
+                return errcheck(log(x), "log");
+        }
+        double Log10(x)
+                double x;
+        {
+                return errcheck(log10(x), "log10");
+        }
+        double Exp(x)
+                double x;
+        {
+                return errcheck(exp(x), "exp");
+        }
+        double Sqrt(x)
+                double x;
+        {
+                return errcheck(sqrt(x), "sqrt");
+        }

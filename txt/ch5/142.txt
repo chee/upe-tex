@@ -1,0 +1,36 @@
+
+        $ cx which                                 Make it executable
+        $ which which
+        ./which
+        $ which ed
+        /bin/ed
+        $ mv which /usr/you/bin
+        $ which which
+        /usr/you/bin/which
+        $
+
+The initial case statement is just error-checking. Notice the redirection 1>&2
+on the echo so the error message doesn't vanish down a pipe. The shell built-in
+command exit can be used to return an exit status. We wrote exit 2 to return an
+error status if the command didn't work, exit 1 if it couldn't find the file,
+and exit 0 if it found one. If there is no explicit exit statement, the exit
+status from a shell file is the status of the last command executed.
+
+What happens if you have a program called test in the current directory? (We're
+assuming that test is not a shell built-in.)
+
+        $ echo 'echo hello' >test               Make a fake test
+        $ cx test                               Make it executable
+        $ which which                           Try which now
+        hello                                   Fails
+        ./which
+        $
+
+More error-checking is called for. You could run which (if there weren't a test
+in the current directory!) to find out the full pathname for test, and specify
+it explicitly. But that is unsatisfactory: test may be in different directories
+on different systems, and which also depends on sed and echo, so we should
+specify their pathnames too. There is a simpler solution: fix PATH in the shell
+file, so it only looks in /bin and /usr/bin for commands. Of course, for the
+which command only, you have to save the old PATH for determining the sequence
+of directories to be searched.

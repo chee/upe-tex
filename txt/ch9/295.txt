@@ -1,0 +1,52 @@
+
+        This text is roman, but
+        .I
+        this text is italic,
+        .R
+        this is roman again, and
+        .B
+        this is boldface.
+
+appears like this:
+
+        This text is roman, but this text is italic, this is roman again, and
+        this is boldface.
+
+.I and .B take optional argument, in which case the font change applies only to
+the argument. In troff, arguments containing blanks must be quoted, although the
+only quoting character is the double quote "
+
+        This is roman, but
+        .I this
+        is italic, and
+        .B "these words"
+        are bold.
+
+is printed as
+
+        This is roman, but this is italic, and these words are bold.
+
+Finally, a second argument to .I or .B is printed in roman, appended without
+spaces to the first argument. This feature is most commonly used to produce
+punctuation in the right font. Compare the last parenthesis of
+
+        (parenthetical
+        .I "italic words)"
+
+which print incorrectly as
+
+        (parenthetical italic words)
+
+with
+
+        (parenthetical
+        .I "italic words" )
+
+which prints correctly as
+
+        (parenthetical italic words)
+
+Font distinctions are recognized by nroff, but the results aren't as
+pretty. Italic characters are underlined, and there are no bold characters,
+although some versions of nroff simulate bold by overstriking.
+

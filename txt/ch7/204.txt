@@ -1,0 +1,55 @@
+
+handy for watching the process of a program:
+
+        $ slowprog >temp &
+        5213                                       Process-id
+        $ readslow <temp | grep something
+
+In other words, a slow program produces output in a file; readslow, perhaps in
+collaboration with some other program, watches the data accumulate.
+
+Structurally, readslow is identical to cat except that it loops instead of
+quitting when it encounters the current end of the input. It has to use
+low-level I/O because the standard library routines continue to report EOF after
+the first end of file.
+
+        /* readslow:  keep reading, waiting for more */
+        #define SIZE    512 /* arbitrary */
+
+        main()
+        {
+            char buf[SIZE];
+            int n;
+
+            for (;;) {
+                while ((n = read(0, buf, sizeof buf)) > 0)
+                    write(1, buf, n);
+                sleep(10);
+            }
+        }
+
+The function sleep causes the program to be suspended for the specified number
+of seconds; it is described in sleep(3). We don't want readslow to bang away at
+the file continuously looking for more data; that would be too costly in CPU
+time. Thus this version of readslow copies its input up to the end of file,
+sleeps a while, then tries again. If more data arrives while it is asleep, it
+will be read by the next read.
+
+Exercise 7-1. Add a -n argument to readslow so the default sleep time can be
+changed to n seconds. Some systems provide an option -f ("forever") for tail
+that combines the functions of tail with those of readslow. Comment on this
+design.
+
+Exercise 7-2. What happens to readslow if the file being read is truncated? How
+would you fix it? Hint: read about fstat in Section 7.3.
+
+
+File creation --- open, creat, close, unlink
+
+Other than the default standard input, output and error files, you must
+explicitly open files in order to read or write them. There are two system calls
+for this, open and creat.+
+
+----------------
++ Ken Thompson was once asked what he would do differently if he were
+redesigning the UNIX system. His reply: "I'd spell creat with an e."

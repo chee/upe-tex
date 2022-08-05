@@ -1,0 +1,50 @@
+
+        /* p:  print input in chunks (version 1) */
+
+        #include <stdio.h>
+        #define PAGESIZE    22
+        char    *progname;  /* program name for error message */
+
+        main(argc, argv)
+            int argc;
+            char *argv[];
+        {
+            int i;
+            FILE *fp, *efopen();
+
+            progname = argv[0];
+            if (argc == 1)
+                print(stdin, PAGESIZE);
+            else
+                for (i = 1; i < argc; i++) {
+                    fp = efopen(argv[i], "r");
+                    print(fp, PAGESIZE);
+                    fclose(fp);
+                }
+            exit(0);
+        }
+
+The routine efopen encapsulates a very common operation: try to open a file; if
+it's not possible, print an error message and exit. To encourage error messages
+that identify the offending (or offended) program, efopen refers to an external
+string progname containing the name of the program, which is set in main.
+
+        FILE *efopen(file, mode)    /* fopen file, die if can't */
+            char *file, *mode;
+        {
+            FILE *fp, *fopen();
+            extern char *progname;
+
+            if ((fp = fopen(file, mode)) != NULL)
+                return fp;
+            fprintf(stderr, "%s: can't open file %s mode %s\n",
+                progname, file, mode);
+            exit(1);
+        }
+
+We tried a couple of other designs for efopen before settling on this. One was
+to have it return after printing the message, with a null pointer indicating
+failure. This gives the caller the option of continuing or exiting. Another
+design provided efopen with a third argument specifying whether it should return
+after failing to open the file. In almost all of our examples, however,
+

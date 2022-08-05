@@ -1,0 +1,41 @@
+
+        .TL
+        Hoc - An Interactive Language For Floating Point Ar arithmetic
+        .AU
+        Brian Kernighan
+        Rob Pike
+        .AB
+        .I Hoc
+        is a simple programmable interpreter
+        for floating point expressions.
+        It has C-style control flow,
+        function definition and the usual
+        numerical built-in functions
+        such as cosine and logarithm.
+        .AE
+        .NH
+        Expressions
+        .PP
+        .I Hoc
+        is an expression language,
+        much like C:
+        although there are several control-flow statements,
+        most statements such as assignments
+        are expressions whose value is disregarded.
+        ...
+
+This .I command italicizes its argument, or switches to italic if no argument is
+given.
+
+If you use a macro package, it's specified as an argument to troff:
+
+        $ troff -ms hoc.ms
+
+The characters after the -m determine the macro package.+ When formatted with
+ms, the hoc paper looks like this:
+
+
+----------------
++ The ms macros are in the file /usr/lib/tmac/tmac.s, and the man macros are in
+/usr/lib/tmac/tmac.an.
+

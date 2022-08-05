@@ -1,0 +1,14 @@
+
+Execution of the machine is simple; in fact, it's rather neat how small the
+routine is that "runs" the machine once it's set up:
+
+
+Each cycle executes the function pointed to by the instruction pointed to by the
+program counter pc, and increments pc so it's ready for the next instruction.
+An instruction with opcode STOP terminates the loop. Some instructions, such
+as constpush and varpush, also increment pc to step over any arguments
+that follow the instruction.
+
+
+The rest of the machine is easy. For instance, the arithmetic operations are all
+basically the same, and were created by editing a single prototype. Here is add:

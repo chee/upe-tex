@@ -1,0 +1,49 @@
+
+conditional operator meaning OR. The command to the left of || is executed. If
+its exit status is zero (success), the command to the right of || is ignored. If
+the left side returns non-zero (failure), the right side is executed and the
+value of the entire expression is the exit status of the right side. In other
+words, || is a conditional OR operator that does not execute its right-hand
+command if the left one succeeds. The corresponding && conditional is AND; it
+executes its right hand command only if the left one succeeds.
+
+Exercise 5-4. Why doesn't which reset PATH to opath before exiting?
+
+Exercise 5-5. Since the shell esac to terminate a case, and fi to terminate and
+if, why does it use done to terminate a do?
+
+Exercise 5-6. Add an option -a to which so it prints all files in PATH, rather
+than quitting after the first. Hint: match='exit 0'.
+
+Exercise 5-7. Modify which so it knows about shell built-ins like exit.
+
+Exercise 5-8. Modify which to check for execute permissions on the files. Change
+it to print an error message when a file cannot be found.
+
+
+5.3 which and until loops: watching for things
+
+In Chapter 3, the for loop was used for a number of simple iterative
+programs. Usually, a for loops over a set of filenames, as in 'for i in *.c', or
+all the arguments to a shell program, as in 'for i in $*'. But shell loops are
+more general than these idioms would suggest: consider the for loop in which.
+
+There are three loops: for, while and until. The for is by far the most commonly
+used. It executes a set of commands --- the loop body --- once for each element
+of a set of words. Most often these are just filenames. The which and until use
+the exit status from a command to control the execution of the commands in the
+body of the loop. The loop body is executed until the condition command returns
+a non-zero status (for the while) or zero (for the until). while and until are
+identical except for the interpretation of the exit status of the command.
+
+Here are the basic forms of each loop:
+
+        for i in list of words
+        do
+                loop body. $i set to successive elements of list
+        done
+
+        for i   (list is implicitly all arguments to shell file, i.e., $*)
+        do
+                loop body. $i set to successive arguments
+        done

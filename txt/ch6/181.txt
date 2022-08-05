@@ -1,0 +1,46 @@
+
+        $ p vis.c
+        ...
+        $ grep '#define' *.[ch] | p
+        ...
+        $
+
+This program is best written in C because it's easy in C, and hard otherwise;
+the standard tools are not good at mixing the input from a file or pipe with
+terminal input.
+
+The basic, no-frills design is to print the input in small chunks. A suitable
+chunk size is 22 lines: that's slightly less than the 24-line screen of most
+video terminals, and one third of a standard 66-line page. A simple way for p to
+prompt the user is to not print last newline of each 22-line chunk. The cursor
+will thus pause at the right end of the line rather than at the left
+margin. When the user presses RETURN, that will supply the missing newlines and
+thus cause the next line to appear in the proper place. If the user types ctl-d
+or q at the end of a screen, p will exit.
+
+We will take no special action for long lines. We will also not worry about
+multiple files: we'll merely skip from one to the next without comment. That way
+the behavior of
+
+        $ p filenames...
+
+will be the same as
+
+        $ cat filenames... | p
+
+If filenames are needed, they can be added with a for loop like
+
+        $ for i in file names...
+        > do
+        >       echo $i
+        >       cat $i
+        > done | p
+
+Indeed, there are too many features that we can add to this program. It's better
+to make a stripped-down version, then let it evolve as experience dictates. That
+way, the features are the ones that people really want, not the ones we thought
+they would want.
+
+The basic structure of p is the same as vis: the main routine cycles through the
+files, calling a routine print that does the work on each.
+

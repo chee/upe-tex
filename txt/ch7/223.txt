@@ -1,0 +1,45 @@
+
+zero to indicate various kinds of problem. The next higher eight bits are taken
+from the argument of the call to exit or return form main that caused
+termination of the child process.
+
+When a program is called by the shell, the three file descriptors 0, 1, and 2
+are set up pointing at the right files, and all other file descriptors are
+available for use. When this program calls another one, correct etiquette
+suggests making sure that the same conditions hold. Neither fork nor exec calls
+effect open files in any way; both parent and child have the same open files. If
+the parent is buffering output that must come out before output from the child,
+the parent must flush its buffers before the execlp. Conversely, if the parent
+buffers an input stream, the child will lose any information that has been read
+by the parent. Output can be flushed, but input cannot be put back. Both of
+these considerations arise if the input or output is being done with the
+standard I/O library discussed in Chapter 6, since it normally buffers both
+input and output.
+
+It is the inheritance of the file descriptors across an execlp that breaks
+system: if the calling program does not have its standard input and output
+connected to the terminal, neither will the command called by system. This may
+be what is wanted; in an ed script, for example, the input for a command started
+with an exclamation mark ! should probably come from the script. Even then ed
+must read its input one character at a time to avoid input buffering problems.
+
+For interactive programs like p, however, system should reconnect standard input
+and output to the terminal. One way is to connect them to /dev/tty.
+
+The system call dup(fd) duplicates the file descriptor fd on the lowest-numbered
+unallocated file descriptor, returning a new descriptor that refers to the same
+open file. This code connects the standard input of a program to a file:
+
+        int fd;
+
+        fd = open("file", 0);
+        close(0);
+        dup(fd);
+        close(fd);
+
+The close(0) deallocates file descriptor 0, the standard input, but as usual
+doesn't affect the parent.
+
+Here is our version of system for interactive programs; it uses progname for
+error messages. You should ignore the parts of the function that deal with
+signals; we will return to them in the next section.

@@ -1,0 +1,52 @@
+
+Unfortunately, what started out as a "standard" package of formatting commands
+it no longer standard: there are several packages in wide use, plus many local
+variants. We'll talk about two general-purpose packages here: ms, the original
+"standard," and mm, a newer version that is standard input System V. We'll also
+describe the man package for printing manual pages.
+
+We will concentrate on ms because it is standard in the 7th Edition, it
+exemplifies all such packages, and it is powerful enough to do the job: we use
+it to typeset this book. But we did have to extend it a bit, for example, by
+adding a command to handle words in this font in the text.
+
+This experience is typical --- the macro packages are adequate for many
+formatting tasks, but it is sometimes necessary to revert to the underlying
+troff commands. We will describe only a small part of troff here.
+
+Although troff provides the ability to control output format completely, it's
+far too hard to use for complicated material like mathematics, tables, and
+figures. Each of these areas is just as difficult as page layout. The solution
+to these problems takes a different form, however. Instead of packages of
+formatting commands, there are special-purpose languages for mathematics, tables
+and figures that make it easy to describe what is wanted. Each is handled by a
+separate program that translates its language into troff commands. The programs
+communicate through pipes.
+
+These preprocessors are good examples of the UNIX approach at work --- rather
+than making troff even bigger and more complicated than it is, separate programs
+cooperate with it. (Of course, the language development tools described in
+Chapter 8 have been used to help with the implementations.) We will describe two
+programs: tbl, which formats tables, and eqn, which formats mathematical
+expressions.
+
+We will also try to give hints about document preparation and the supporting
+tools. Our examples throughout the chapter will be a document describing the hoc
+language of Chapter 8 and a hoc manual page. The document is printed in Appendix
+2.
+
+
+9.1 The ms macro package
+
+The crucial notion in the macro packages is that a document is described in
+terms of its logical parts --- title, section headings, paragraphs --- not by
+details of spacing, fonts and sizes of letters. This saves you from some very
+hard work, and insulates your document from irrelevant details; in fact, by
+using a different set of macro definitions with the same logical names, you can
+make your document appear quite different. For example, a document might go
+through the stages of technical report, conference paper, journal article and
+book chapter with the same formatting commands, but formatted with four
+different macro packages.
+
+Input to troff, whether or not a macro package is involved, is ordinary text
+interspersed with formatting commands. There are two kinds of

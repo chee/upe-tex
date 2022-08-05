@@ -1,0 +1,9 @@
+
+The remaining routines are equally simple.
+
+
+The hardest part is the cast in bltin, which says that *pc should be cast to
+"pointer to function returning a double," and that function executed with d.val
+as argument.
+
+The diagnostics in eval and assign should never occur if anything is

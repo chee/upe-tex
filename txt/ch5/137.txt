@@ -1,0 +1,52 @@
+
++------------------------------------------------------------------------------+
+|                   Table 5.2: Shell Pattern Matching Rules                    |
+|                                                                              |
+| *        match any string, including the null string                         |
+| ?        match any single character                                          |
+| [ccc]    match any of the characters in ccc                                  |
+|            [a-d0-3] is equivalent to [abcd0123]                              |
+| "..."    match ... exactly; quotes protect special characters. Also '...'    |
+| \c       match c literally                                                   |
+| a|b      in case expressions only, matches either a or b                     |
+| /        in filenames, matched only by an explicit / in the expression;      |
+|            in case, matched like any other character                         |
+| .        as the first character of a filename, is matched only by an         |
+|            explicit . in the expression                                      |
++------------------------------------------------------------------------------+
+
+The last two cases in the second case statement deal with a single argument that
+could be a year; recall that the first case statement assumed it was a month. If
+it is a number that could be a month, it is left alone. Otherwise, it is assumed
+to be a year.
+
+Finally, the last line calls /usr/bin/cal (the real cal) with the converted
+arguments. Our version of cal works as a newcomer might expect:
+
+        $ date
+        Sat Oct  1 06:09:55 EST 1983
+        $ cal
+           October 1983
+         S  M Tu  W Th  F  S
+                           1
+         2  3  4  5  6  7  8
+         9 10 11 12 13 14 15
+        16 17 18 19 20 21 22
+        23 24 25 26 27 28 29
+        30 31
+        $ cal dec
+           December 1983
+         S  M Tu  W Th  F  S
+                     1  2  3
+         4  5  6  7  8  9 10
+        11 12 13 14 15 16 17
+        18 19 20 21 22 23 24
+        25 26 27 28 29 30 31
+
+        $
+
+And cal 1984 prints out the calendar for all of 1984.
+
+Our enhanced cal program does the same job as the original, but in a simpler,
+easier-to-remember way. We therefore chose to call it cal, rather
+

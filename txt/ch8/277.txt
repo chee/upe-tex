@@ -1,0 +1,8 @@
+
+A lexical analyzer is an example of a finite state machine, whether written in C
+or with a program generator like lex. Our ad hoc C version has grown fairly
+complicated; for anything beyond this, lex is probably better, both in size
+of source code and ease of change.
+
+   Most of the other changes are in code.c, with some additions of function
+names to hoc.h. The machine is the same as before, except that it has been

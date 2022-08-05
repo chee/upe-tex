@@ -1,0 +1,53 @@
+
+Once we have the directory components of PATH, the test(1) command we've
+mentioned can tell us whether a file exists in each directory. The test command
+is actually one of the clumsier UNIX programs. For example, test -r file tests
+if file exists and can be read, and test -w file tests if file exists and can be
+written, but the 7th Edition provides no test -x (although the System V and
+other versions do) which would otherwise be the one for us. We'll settle for
+test -f, which tests that file exists and is not a directory, in other words, is
+a regular file. You should look over the manual page for test on your system,
+however, since there are several versions in circulation.
+
+Every command returns an exit status --- a value returned to the shell to
+indicate what happened. The exit status is a small integer; by convention, 0
+means "true" (the command ran successfully) and non-zero means "false" (the
+command ran unsuccessfully). Note that this is opposite to the values of true
+and false in C.
+
+Since many different values can all represent "false," the reason for failure is
+often encoded in the "false" exit status. For example, grep returns 0 if there
+was a match, 1 if there was no match, and 2 if there was an error in the pattern
+or filenames. Every program returns a status, although we usually aren't
+interested in its value. test is unusual because its sole purpose is to return
+an exit status. It produces no output and changes no files.
+
+The shell stores the exit status of the last program in the variable $?:
+
+        $ cmp /usr/you/.profile /usr/you/.profile
+        $                               No output: they're the same
+        $ echo $?
+        0                               Zero implies ran O.K.: files identical
+        $ cmp /usr/you/.profile /usr/mary/.profile
+        /usr/you/.profile /usr/mary/.profile differ: char 6, line 3
+        $ echo $?
+        1                               Non-zero means files were different
+        $
+
+A few commands, such as cmp and grep, have an option -s that causes them to exit
+with an appropriate status but suppress all output.
+
+The shell's if statement runs commands based on the exist status of a command,
+as in
+
+        if command
+        then
+                commands if condition true
+        else 
+                commands if condition false
+        fi
+
+The location of the newlines is important: fi, then and else are recognized only
+after a newline or a semicolon. The else part is optional.
+
+The if statement always runs a command --- the condition --- whereas the

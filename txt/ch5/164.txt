@@ -1,0 +1,52 @@
+
+        $ ls -l news
+        -rwxrwxrwx 1 you         208 Oct  1 12:05 news
+        $ set `ls -l news`
+        -rwxrwxrwx: bad option(s)               Something is wrong!
+
+Here is one example where the interchangeability of program and data in the
+shell gets in the way. set complains because its argument ("-rwxrwxrwx") begins
+with a minus sign and thus looks like an option. An easy (if inelegant) fix is
+to prefix the argument by an ordinary character:
+
+        $ set X`ls -l news`
+        $ echo "news: ($3) $5 $6 $7"
+        news: (you) Oct 1 12:05
+        $
+
+This is a reasonable format, showing the author and date the message along with
+the filename.
+
+Here is the final version of the news command:
+
+        # news:  print news files, final version
+
+        PATH=/bin:/usr/bin
+        IFS='
+        '                       # just a newline
+        cd /usr/news
+
+        for i in `ls -t * $HOME/.news_time 2>&1`
+        do
+                IFS=' '
+                case $i in
+                *' not found')  ;;
+                */.news_time)   break ;;
+                *)      set X`ls -l $i`
+                        echo "
+        $i: ($3) $5 $6 $7
+        "
+                        cat $i
+                esac
+        done
+        touch $HOME/.news_time
+
+The extra newlines in the header separate the news items as they are
+printed. The first value of IFS is just a newline, so the not found message (if
+any) from the first ls treated as a single argument. The second assignment to
+IFS resets it to a blank, so the output of the second ls is split into multiple
+arguments.
+
+Exercise 5-27. Add an option -n (Notify) to news to report but not print the
+news items, and not touch .news_time. This might be placed in your .profile.
+

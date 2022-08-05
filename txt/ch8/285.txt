@@ -1,0 +1,22 @@
+
+measured by time. It is also possible to instrument a C program to determine
+how much of that time each function uses. The program must be recompiled
+with profiling turned on, by adding the option -p to each C compilation and
+load. If we modify the makefile to read
+
+
+so that the cc command uses the variable CFLAGS, and then say
+
+
+the resulting program will contain the profiling code. When the program runs,
+it will leave a file called mon.out of data that is interpreted by the program
+prof.
+
+   To illustrate these notions briefly, we made a test on hoc6 with the
+Fibonacci program above.
+
+
+   The measurements obtained from profiling are just as subject to chance
+fluctuations as are those from time, so they should be treated as indicators,
+not absolute truth. The numbers here do suggest how to make hoc faster,
+however, if it needs to be. About one third of the run time is going into

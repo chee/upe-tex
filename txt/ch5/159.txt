@@ -1,0 +1,41 @@
+
+overhead of all the extra programs is appreciable, although ps (which must be
+run anyway) is the most expensive. In the next chapter we will provide a more
+efficient implementation.
+
+Exercise 5-23. Modify zap to print out the ps header from the pipeline so that
+it is insensitive to changes in the format of ps output. How much does this
+complicates the program?
+
+5.7 The pick command: blanks vs. arguments
+
+We've encountered most of what we need to write a pick command in the shell. The
+only new thing needed is a mechanism to read the user's input. The shell
+built-in read reads one line of text from the standard input and assigns the
+text (without the newline) as the value of the named variable:
+
+        $ read greeting
+        hello, world                         Type new value for greeting
+        $ echo $greeting
+        hello, world
+        $
+
+The most common use of read is in .profile to set up the environment when
+logging in, primarily to set shell variable like TERM.
+
+read can only read from the standard input; it can't even be redirected. None of
+the shell built-in commands (as opposed to the control flow primitives like for)
+can be redirected with > or <:
+
+        $ read greeting </etc/passwd
+        goodbye                 Must type a value anyway
+        illegal io              Now shell reports error
+        $ echo $greeting                  
+        goodbye                 greeting has typed value, not one from file
+        $
+
+This might be described as a bug in the shell, but it is a fact of
+life. Fortunately, it can usually be circumvented by redirecting the loop
+surrounding the read. This is the key to out implementation of the pick command:
+
+

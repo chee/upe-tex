@@ -1,0 +1,46 @@
+
+single character, it isn't much extra effort to permit variable names to be
+arbitrarily long as well. We will need a more sophisticated symbol table to keep
+track of these variables, but once we have it, we can pre-load it with names and
+values for some useful constants:
+
+	PI      3.14159265358979323846  PI
+	Å       2.71828182845904523536  Base of natural logarithms
+	GAMMA   0.57721566490153286060  Euler-Mascheroni constant
+	DEG     57.2957795130823208768  Degrees per radian
+	PHI     1.61803398874989484820  Golden ratio
+
+The result is a useful calculator:
+
+	$ hoc3
+	1.5^2.3
+		2.5410306
+	exp(2.3*log(1.5))
+		2.5410306
+	sin(PI/2)
+		1
+	atan(1)*DEG
+		45
+	...
+
+We have also cleaned up the behavior a little. In hoc2, the assignment
+x=expr not only causes the assignment but also prints the value, because all
+expressions are printed:
+
+	$ hoc2
+	x = 2 * 3.14159
+		6.28318           Value printed for assignment to variable
+	...
+
+In hoc3, a distinction is made between assignments and expressions; values are
+printed only for expressions:
+
+        $ hoc3
+	x = 2 * 3.14159		  Assignment: no value is printed
+        x                         Expression:
+                6.28318              value is printed
+        ...
+
+The program that results from all these changes is big enough (about 250 lines)
+that it is best split into separate files for easier editing and faster
+compilation. There are now five files instead of one:

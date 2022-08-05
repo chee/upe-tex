@@ -1,0 +1,45 @@
+The grammar now has asgn, for assignment, as well as expr, an input line
+that contains just
+
+        VAR = expr
+
+is an assignment, and so no value is printed. Notice, by the way, how easy it
+was to add exponentiation to the grammar, including its right associativity.
+
+The yacc stack has a different %union: instead of referring to a variable by its
+index in a 26-element table, there is a pointer to an object of type Symbol. The
+header file hoc.h contains the definition of this type.
+
+The lexical analyzer recognizes variable names, looks them up in the symbol
+table, and decides whether they are variables (VAR) or built-ins (BLTIN). The
+type returned by yylex is one of these; both user-defined variables and
+pre-defined variables like PI are VAR's.
+
+One of the properties of a variable is whether or not it has been assigned a
+value, so the use of an undefined variable can be reported as an error by
+yyparse. The test for whether a variable is defined has to be in the grammar,
+not in the lexical analyzer. When a VAR is recognized lexically, its context
+isn't yet known; we don't want a complaint that x is undefined when the context
+is perfectly legal one such as the left side of an assignment like x=1.
+
+Here is the revised part of yylex:
+
+        yylex()         /* hoc3 */
+        ...
+                if (isalpha(c)) {
+                        Symbol *s;
+                        char sbuf[100], *p = sbuf;
+                        do {
+                                *p++ = c;
+                        } while ((c=getchar()) != EOF && isalnum(c));
+                        ungetc(c, stdin);
+                        *p = '\0';
+                        if ((s=lookup(sbuf)) == 0)
+                                s = install(sbuf, UNDEF, 0.0);
+                        yylval.sym = s;
+                        return s->type == UNDEF ? VAR : s->type;
+                }
+        ...
+
+main has one extra line, which calls the initialization routine init to install
+built-ins and pre-defined names like PI in the symbol table.

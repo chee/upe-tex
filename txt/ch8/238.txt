@@ -1,0 +1,48 @@
+
+In this implementation, the act of recognizing or parsing the input also causes
+immediate evaluation of the expression. In more complicated situations
+(including hoc4 and its successors), the parsing process generates code for
+later execution.
+
+You may find it helpful to visualize parsing as drawing a parse tree like the
+one in Figure 8.1, and to imagine values being computed and propagated up the
+tree from the leaves towards the root.
+
+                                      list
+                                    /  |   \
+                                  /   expr   \
+                                /   /  |  \    \
+                              /    /   |   \     \
+                            /     /    |    \      \
+                          /      /     |     \       \
+                        /       /      |      \        \
+                      /        /       |        expr     \
+                    /         /        |      /  |  \      \
+                 list      NUMBER      |  NUMBER |  NUMBER   \
+                /            /         |    /    |    \        \
+            (empty)         2          +   3     *     4        \n
+
+                Figure 8.1: Parse Tree for 2 + 3 * 4
+
+
+The values of incompletely-recognized rules are actually kept on a stack; this
+is how the values are passed from one rule to the next. The data type of this
+stack is normally an int, but since we are processing floating point numbers, we
+have to override the default. The definition
+
+        #define YYSTYPE double
+
+sets the stack type to double.
+
+Syntactic classes that will be recognized by the lexical analyzer have to be
+declared unless they are single character literals like '+' and '-'. The
+declaration %token declares one or more such objects. Left or right
+associativity can be specified if appropriate by using %left or %right instead
+of %token. (Left associativity means that a-b-c will be parsed as (a-b)-c
+instead of a-(b-c).) Precedence is determined by order of appearance: tokens in
+the same declaration are at the same level of precedence; tokens declared later
+are of higher precedence. In this way the grammar proper is ambiguous (that is,
+there are multiple ways to parse some inputs), but the extra information in the
+declarations resolves the ambiguity.
+
+The rest of the code is the routines in the second half of the file hoc.y:

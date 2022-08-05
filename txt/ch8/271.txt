@@ -1,0 +1,21 @@
+
+   The two routines that are not obvious are whilecode and ifcode. The
+critical point for understanding them is to realize that execute marches along
+a sequence of instructions until it finds a STOP, whereupon it returns. Code
+generation during parsing has carefully arranged that a STOP terminates each
+sequence of instructions that should be handled by a single call of execute.
+The body of a while, and the condition, then and else parts of an if are
+all handled by recursive calls to execute that return to the parent level when
+they have finished their task. The control of these recursive tasks is done by
+code in whilecode and ifcode that corresponds directly to while and if
+statements.
+
+
+Recall from our discussion earlier that the whilecode operation is followed
+by a pointer to the body of the loop, a pointer to the next statement, and then
+the beginning of the condition part. When whilecode is called, pc has
+already been incremented, so it points to the loop body pointer. Thus pc+1
+points to the following statement, and pc+2 points to the condition.
+
+   ifcode is very similar; in this case, upon entry pc points to the then part,
+pc+1 to the else, pc+2 to the next statement, and pc+3 is the condition.

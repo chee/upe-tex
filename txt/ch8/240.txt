@@ -1,0 +1,53 @@
+
+point number has the type NUMBER and a value like 12.34. For some tokens,
+especially single characters like '+' and '\n', the grammar does not use the
+value, only the type. In that case, yylval need not be set.
+
+The yacc declaration %token NUMBER is converted into a #define statement in the
+yacc output file y.tab.c, so NUMBER can be used as a constant anywhere in the C
+program. yacc chooses values that won't collide with ASCII characters.
+
+If there is a syntax error, yyparse calls yyerror with a string containing the
+cryptic message "syntax error." The yacc user is expected to provide a yyerror;
+ours just passes the string on to another function, warning, which prints
+somewhat more information. Later versions of hoc will make direct use of
+warning.
+
+        yyerror(s)      /* called for yacc syntax error */
+                char *s;
+        {
+                warning(s, (char *) 0);
+        }
+
+        warning(s, t)   /* print warning message */
+                char *s, *t;
+        {
+                fprintf(stderr, "%s: %s", progname, s);
+                if (t)
+                        fprintf(stderr, " %s", t);
+                fprintf(stderr, " near line %d\n", lineno);
+        }
+
+This marks the end of the routines in hoc.y.  
+
+Compilation of a yacc program is a two-step process: 
+
+        $ yacc hoc.y                  Leaves output in y.tab.c
+        $ cc y.tab.c -o hoc1          Leaves executable program in hoc1
+        $ hoc1
+        2/3
+                0.66666667
+        -3-4
+        hoc1: syntax error near line 1
+        $
+
+Exercise 8-1. Examine the structure of the y.tab.c file. (It's about 300 lines
+long for hoc1.)
+
+
+Making changes --- unary minus
+
+We claimed earlier that using yacc makes it easy to change a language. As an
+illustration, let's add unary minus to hoc1, so that expressions like
+
+        -3-4

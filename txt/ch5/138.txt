@@ -1,0 +1,56 @@
+
+than calendar (which is already a command) or something less mnemonic like
+ncal. Leaving the name alone also has the advantage that users don't have to
+develop a new set of reflexes for printing a calendar.
+
+Before we leave the case statement, it's worth a brief comment on why the
+shell's pattern matching rules are different from those in ed and its
+derivatives. After all, two kinds of patterns means two sets of rules to learn
+and two pieces of code to process them. Some of the differences are simply bad
+choices that were never fixed --- for example, there is no reason except
+compatibility with a past new lost that ed uses '.' and the shell uses '?' for
+"match any character." but sometimes the patterns do different jobs. Regular
+expressions in the editor search for a string that can occur anywhere in a line;
+the special character ^ and $ are needed to anchor the search to the beginning
+and end of the line. For filenames, however, we want the search anchored by
+default, since that is the most common case; having to write something like
+
+        $ ls ^?*.c$                    Doesn't work this way
+
+instead of
+
+        $ ls *.c
+
+would be a great nuisance.
+
+Exercise 5-1. If users prefer your version of cal, how do you make it globally
+accessible? What has to be done to put it in /user/bin?
+
+Exercise 5-2. Is it worth fixing cal so cal 83 prints the calendar for 1983? If
+so, how would you print the calendar for year 83?
+
+Exercise 5-3. Modify cal to accept more than one month, as in
+
+        $ cal oct nov
+
+or perhaps a range of months:
+
+        $ cal oct - dec
+
+If it's now December, and you ask for cal jan, should you get this year's
+January or next year's? When should you have stopped adding features to cal?
+
+
+5.2 Which command is which?
+
+There are problems with making private versions of commands such as cal. The
+most obvious is that if you are working with Mary and type cal while logged in
+as Mary, you will get the standard cal instead of the new one, unless of course
+Mary has linked the new cal into her bin directory. This can be confusing ---
+recall that the error messages from the original cal are not very helpful ---
+but is just an example of a general problem. Since the shell searches for
+commands in a set of directories specified by PATH, it is always possible to get
+a version of a command other than the one you expect. For instance, if you type
+a command, say echo, the pathname of the file that is actually run could be
+./echo or /bin/echo or /usr/bin//echo or
+

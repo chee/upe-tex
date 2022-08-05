@@ -1,0 +1,52 @@
+
+        $ cat makefile
+        YFLAGS = -d
+        OBJS = hoc.o lex.o init.o math.o symbol.o
+
+        hoc3:   $(OBJS)
+                cc $(OBJS) -lm -ll -o hoc3
+
+        hoc.o:  hoc.h
+
+        lex.o init.o symbol.o:  hoc.h y.tab.h
+        ...
+        $
+
+Again, make knows how to get from a .l file to the proper .o; all it needs from
+us is the dependency information. (We also have to add the lex library -ll to
+the list searched by cc since the lex-generated recognizer is not
+self-contained.) The output is spectacular and completely automatic:
+
+        $ make
+        yacc -d hoc.y
+
+        conflicts: 1 shift/reduce
+        cc  -c y.tab.c
+        rm y.tab.c
+        mv y.tab.o hoc.o
+        lex  lex.l
+        cc  -c lex.yy.c
+        rm lex.yy.c
+        mv lex.yy.o lex.o
+        cc  -c init.c
+        cc  -c math.c
+        cc  -c symbol.c
+        cc hoc.o lex.o init.o math.o symbol.o -lm -ll -o hoc3
+        $
+
+If a single file is changed, the single command make is enough to make an
+up-to-date version:
+
+        $ touch lex.l             Change modified-time of lex.l
+        $ make
+        lex  lex.l
+        cc  -c lex.yy.c
+        rm lex.yy.c
+        mv lex.yy.o lex.o
+        cc hoc.o lex.o init.o math.o symbol.o -ll -lm -o hoc3
+        $
+
+We debated for quite a while whether to treat lex as a digression, to be
+illustrated briefly and then dropped, or as the primary tool for lexical
+analysis once the language got complicated. There are arguments on both
+sides. The

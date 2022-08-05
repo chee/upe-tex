@@ -1,0 +1,50 @@
+
+        .TH COMMAND section-number
+
+names the command the specifies the section number. The various .SH lines
+identify sections of the manual page. The NAME and synopsis sections are
+special; the others contain ordinary prose. The NAME section names the command
+(this time in lower case) and provides a one-line description of it. The
+SYNOPSIS section names the options, but doesn't describe them. As in any
+section, the input is free form, so font changes can be specified with the .B,
+.I and .R macros. In the SYNOPSIS section, the name and options are bold, and
+the rest of the information is roman. The ed(1) NAME and SYNOPSIS sections, for
+example, are:
+
+        .SH NAME
+        ed \- text editor
+        .SH SYNOPSIS
+        .B ed
+        [
+        .B \-
+        ][
+        .B \-x
+        ][ name ]
+
+These come out as:
+
+        NAME
+            ed - text editor
+        SYNOPSIS
+            ed [ - ][ -x ][ name ]
+
+Note the use of \- rather than a plain -.
+
+The DESCRIPTION section describes the command and its options. In most cases, it
+is a description of the command, not the language the command defines. The cc(1)
+manual page doesn't define the C language; it says how to run the cc command to
+compile C programs, how to invoke the optimizer, where the output is left, and
+so on. The language is specified in the C reference manual, cited in the SEE
+ALSO section of cc(1). On the other hand, the categories are not absolute:
+man(7) is a description of the language of manual macros.
+
+By convention, in the DESCRIPTION section, command names and the tags for
+options (such as "name" in the ed page) are printed in italics. The macros .I
+(print first argument in italics) and .IR (print first argument in italics,
+second in roman) make this easy. The .IR macro is there because the .I macro is
+the man package doesn't share with that in ms the undocumented but convenient
+treatment of the second argument.
+
+The FILES section mentions any files implicitly used by the command. DIAGNOSTICS
+need only be included if there is unusual output produced by the command. This
+may be diagnostic messages, exit status or surprising

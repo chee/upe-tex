@@ -1,0 +1,49 @@
+
+        sv(file, dir)   /* save file in dir */
+            char *file, *dir;
+        {
+            struct stat sti, sto;
+            int fin, fout, n;
+            char target[BUFSIZ], buf[BUFSIZ], *index();
+
+            sprintf(target, "%s/%s", dir, file);
+            if (index(file, '/') != NULL)  /* strchr() in some systems */
+                error("won't handle /'s in %s", file);
+            if (stat(file, &sti) == -1)
+                error("can't stat %s", file);
+            if (stat(target, &sto) == -1)   /* target not present */
+                sto.st_mtime = 0;   /* so make it look old */
+            if (sti.st_mtime < sto.st_mtime)    /* target is newer */
+                fprintf(stderr, "%s: %s not copied\n",
+                    progname, file);
+            else if ((fin = open(file, 0)) == -1)
+                error("can't open file %s", file);
+            else if ((fout = creat(target, sti.st_mode)) == -1)
+                error("can't create %s", target);
+            else
+                while ((n = read(fin, buf, sizeof buf)) > 0)
+                    if (write(fout, buf, n) != n)
+                        error("error writing %s", target);
+            close(fin);
+            close(fout);
+        }
+
+We used creat instead of the standard I/O functions so that sv can preserve the
+mode of the input file. (Note that index and strchr are different names for the
+same routine; check your manual under string(3) to see which name your system
+uses.)
+
+Although the sv program is rather specialized, it does indicate some important
+ideas. Many programs are not "system programs" but may still use information
+maintained by the operating system and accessed through system calls. For such
+programs, it is crucial that the representation of the information appear only
+in the standard header files like <stat.h> and <dir.h>, and that programs
+include those files instead of embedding the actual declarations in
+themselves. Such node is much more likely to be portable from one system to
+another.
+
+It is also worth noting that at least two thirds of the code in sv is error
+checking. In the early stages of writing a program, it's tempting to skimp on
+error handling, since it is a diversion from the main task. And once the program
+"works," it's hard to be enthusiastic about going back to put in the checks that
+convert a private program into one that works regardless of what happens.

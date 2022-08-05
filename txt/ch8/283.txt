@@ -1,0 +1,24 @@
+
+If end of file occurs on the current input file, varread calls moreinput,
+which opens the next argument file is there is one. moreinput reveals more
+about input processing than is appropriate here; full details are given in Appen-
+dix 3.
+
+   The brings us to the end of our development of hoc. For comparison pur-
+poses, here is the number of non-blank lines in each version:
+
+
+Of course the counts were computed by programs:
+
+
+The language is by no means finished, at least in the sense that it's still easy to
+think of useful extensions, but we will go no further here. The following exer-
+cise suggest some of the enhancements that are likely to be of value.
+
+
+Exercise 8-18. Modify hoc6 to permit named formal parameters in subroutine, as an
+alternative to $1, etc.
+
+Exercise 8-19. As it stands, all variables are global except for parameters. Most of the
+mechanism for adding local variables maintained on the stack is already present. One
+approach is to have an auto declaration that makes space on the stack for variables

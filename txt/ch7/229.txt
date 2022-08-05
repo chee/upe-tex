@@ -1,0 +1,51 @@
+
+        #include <signal.h>
+
+        system(s)   /* run command line s */
+            char *s;
+        {
+            int status, pid, w, tty;
+            int (*istat)(), (*qstat)();
+
+            ...
+            if ((pid = fork()) == 0) {
+                ...
+                execlp("sh", "sh", "-c", s, (char *) 0);
+                exit(127);
+            }
+            ...
+            istat = signal(SIGINT, SIG_IGN);
+            qstat = signal(SIGQUIT, SIG_IGN);
+            while ((w = wait(&status)) != pid && w != -1)
+                ;
+            if (w == -1)
+                status = -1;
+            signal(SIGINT, istat);
+            signal(SIGQUIT, qstat);
+            return status;
+        }
+
+As an aside on declarations, the function signal obviously has a rather strange
+second argument. It is in fact a pointer to a function delivering an integer,
+and this is also the type of the signal routine itself. The two values SIG_IGN
+and SIG_DEL have the right type, but are chosen so they coincide with no
+possible actual functions. For the enthusiast, here is how they are defined for
+the PDP-11 and VAX; the definitions should be sufficiently ugly to encourange
+use of <signal.h>.
+
+        #define SIG_DFL (int (*)())0
+        #define SIG_IGN (int (*)())1
+
+
+Alarms
+
+The system all alarm(n) causes a signal SIGALRM to be sent to your process n
+seconds later. The alarm signal can be used for making sure that something
+happens within the proper amount of time; if the something happens, the alarm
+signal can be turned off, but if it does not, the process can regain control by
+catching the alarm signal.
+
+To illustrate, here is a program called timeout that runs another command; if
+that command has not finished by the specified time, it will be aborted when the
+alarm goes off. For example, recall the watchfor command from Chapter 5. Rather
+than having it run indefinitely, you might set a

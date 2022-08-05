@@ -1,0 +1,52 @@
+
+        $ cat which
+        # which cmd:  which cmd in PATH is executed, final version
+
+        opath=$PATH
+        PATH=/bin:/usr/bin
+
+        case $# in
+        0)      echo 'Usage: which command' 1>&2; exit 2
+        esac
+        for i in `echo $opath | sed 's/^:/.:/
+                                     s/::/:.:/g
+                                     s/:$/:./
+                                     s/:/ /g'`
+        do
+                if test -f $i/$1        # this is /bin/test
+                then                    # or /usr/bin/test only
+                        echo $i/$1
+                        exit 0          # found it
+                fi
+        done
+        exit 1          # not found
+        $
+
+which now works even if there is a spurious test (or sed or echo) along the
+search path.
+
+        $ ls -l test
+        -rwxrwxrwx 1 you        11 Oct  1 06:55 test        Still there
+        $ which which
+        /usr/you/bin/which
+        $ which test
+        ./test
+        $ rm test
+        $ which test
+        /bin/test
+        $
+
+The shell provides two other operations for combining commands, || and &&, that
+are often more compact and convenient than the if statement. For example, || can
+replace some if statements:
+
+        test -f filename || echo file filename does not exist
+
+is equivalent to
+
+        if test ! -f filename                   The ! negates the condition
+        then
+                echo file filename does not exist
+        fi
+
+The operator ||, despite appearance, has nothing to do with pipes --- it is a

@@ -1,0 +1,38 @@
+
+language. It is certainly high-level; its operators are whole programs. Since it
+is interactive, programs can be developed interactively, and refined in small
+steps until they "work." After that, if they are intended for more than personal
+use, they can be polished and hardened for a wider user population. In those
+infrequent cases where a shell program turns out to be too inefficient, some or
+all of it can be rewritten in C, but with the design already proven and a
+working implementation in hand. (We'll follow this path a couple of times in the
+next chapter.)
+
+This general approach is characteristic of the UNIX programming environment ---
+build on what others have done instead of starting over from nothing; start with
+something small and let it evolve; use the tools to experiment with new ideas.
+
+In this chapter, we've presented many examples that are easy to do with existing
+programs and the shell. Sometimes it's enough merely to rearrange arguments;
+that was the case with cal. Sometimes the shell provides a loop over a set of
+filenames or through a sequence of command executions, as in watchfor and
+checkmail. More complicated examples are still less work than they would be in
+C; for instance, our 20-line shell version of news replaces a 350-line [sic]
+version written in C.
+
+But it's not enough to have a programmable command language. Nor is it enough to
+have a lot of programs. What matters is that all of the components work
+together. They share conventions about how information is represented and
+communicated. Each is designed to focus on one job and do it well. The shell
+then serves to bind them together, easily and efficiently, whenever you have a
+new idea. This cooperation is why the UNIX programming environment is so
+productive.
+
+
+History and bibliographic notes
+
+The idea for get and put comes from the Source Code Control System (SCCS)
+originated by Marc Rochkind ("The source code control system," IEEE Trans. On
+Software Engineering, 1975). SCCS is far more powerful and flexible than our
+simple programs; it is meant for maintenance of large programs in a production
+environment. The basis of SCCS is the same diff program, however.

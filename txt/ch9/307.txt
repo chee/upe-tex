@@ -1,0 +1,49 @@
+
+        $ cat doctype
+        # doctype:  synthesize proper command line for troff
+        echo -n "cat $* | "
+        egrep -h '^\.(EQ|TS|\[|PS|IS|PP)' $* |
+        sort -u |
+        awk '
+        /^\.PP/ { ms++ }
+        /^\.EQ/ { eqn++ }
+        /^\.TS/ { tbl++ }
+        /^\.PS/ { pic++ }
+        /^\.IS/ { ideal++ }
+        /^\.\[/ { refer++ }
+        END {
+                if (refer > 0) printf "refer | "
+                if (pic > 0)   printf "pic | "
+                if (ideal > 0) printf "ideal | "
+                if (tbl > 0)   printf "tbl | "
+                if (eqn > 0)   printf "eqn | "
+                printf "troff "
+                if (ms > 0) printf "-ms"
+                printf "\n"
+        }
+        $
+
+(The -h option to egrep causes it to suppress the filename headers on each line;
+unfortunately this option is not in all versions of the system.) The input is
+scanned, collecting information about what kinds of components are used. After
+all the input has been examined, it's processed in the right order to print the
+output. The details are specific to formatting troff documents with the standard
+preprocessors, but the idea is general: let the machine take care of the
+details.
+
+doctype is an example, like bundle, of a program that creates a program. As it
+is written, however, it requires the user to retype the line to the shell; one
+of the exercises is to fix that.
+
+When it comes to running the actual troff command, you should bear in mind that
+the behavior of troff is system-dependent: at some installations it drives the
+typesetter directly, while on other systems it produces information on its
+standard output that must be sent to the typesetter by a separate program.
+
+By the way, the first version of this program didn't egrep or sort; awk itself
+scanned all the input. It turned out to be too slow for large documents, so we
+added egrep to do a fast search, and then sort -u to toss out duplicates. For
+typical documents, the overhead of creating two extra processes to winnow the
+data is less than that of running awk on a lot of input. To illustrate, here is
+a comparison between doctype and a version that just runs awk, applied to the
+contents of this chapter (about 52000 characters):

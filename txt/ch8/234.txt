@@ -1,0 +1,51 @@
+    relational operators like >, <=, etc.
+
+(6) Recursive functions and procedures, with arguments. We also added statements
+    for input and for output of strings as well as numbers.
+
+The resulting language is described in Chapter 9, where it serves as the main
+example in our presentation of the UNIX document preparation software. Appendix
+2 is the reference manual.
+
+This is a very long chapter, because there's a lot of detail involved in getting
+a non-trivial program written correctly, let alone presented. We are assuming
+that you understand C, and that you have a copy of the UNIX Programmer's Manual,
+Volume 2, close at hand, since we simply don't have space to explain every
+nuance. Hang in, and be prepared to read the chapter a couple of times. We have
+also included all of the code for the final version in Appendix 3, so you can
+see more easily how the pieces fit together.
+
+By the way, we wasted a lot of time debating names for this language but never
+came up with anything satisfactory. We settled on hoc, wich stands for
+"high-order calculator." The versions are thus hoc1, hoc2, etc.
+
+
+8.1 Stage 1: A four-function calculator
+
+This section describes the implementation of hoc 1, a program that provides
+about the same capabilities as a minimal pocket calculator, and is substantially
+less portable. It has only four functions: +, -, *, and /, but it does have
+parentheses that can be nested arbitrarily deeply, which few pocket calculators
+provide. If you type an expression followed by RETURN, the answer will be
+printed on the next line:
+
+        $ hoc1
+        4*3*2
+                24
+        (1+2) * (3+4)
+              21
+        1/2
+                0.5
+        355/113
+                3.1415929
+        -3-4
+        hoc1 : syntax error near line 4         It doesn't have unary minus yet
+        $
+
+
+Grammars
+
+Ever since Backus-Nair Form was developed for Algol, languages have been
+described by formal grammars. The grammar for hoc1 is small and simple in its
+abstract representation:
+

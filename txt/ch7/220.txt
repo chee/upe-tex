@@ -1,0 +1,54 @@
+
+7.4 Processes
+
+This section describes how to execute one program from within another. The
+easiest way is with the standard library routine system, mentioned but censured
+in Chapter 6. system takes one argument, a command line exactly as type at the
+terminal (except for the newline at the end) and executes it in a sub-shell. If
+the command line has to be built from pieces, the in-memory formatting
+capabilities of sprintf may be useful. At the end of this section we will show a
+safer version of system for use by interactive programs, but first we must
+examine the pieces form which it is built.
+
+
+Low-level process creation --- execlp and execvp
+
+The most basic operation is to execute another program without returning, by
+using the system call execlp. For example, to print the date as the last action
+of a running program, use
+
+        execlp ("date", "date", (char *) 0);
+
+The first argument to execlp is the filename of the command; execlp extracts the
+search path (i.e., $PATH) from your environment and does the same search as the
+shell does. The second and subsequent arguments are the command name and the
+arguments for the command; these become the argv array for the new program. The
+end of the list is marked by a 0 argument. (Read exec(2) for insight on the
+design of execlp.)
+
+The execlp call overlays the existing program with the new one, runs that, then
+exits. The original program gets control back only when there is an error, for
+example if the file can't be found or is not executable:
+
+        execlp ("date", "date", (char *) 0);
+        fprintf(stderr, "Couldn't execute 'date'\n");
+        exit(1);
+
+A variant of execlp called execvp is useful when you don't know in advance how
+many arguments there are going to be. The call is
+
+        execvp (filename, argp);
+
+where argp is an array of pointers to the arguments (such as argv); the last
+pointer in the array must be NULL so execvp can tell where the list ends. As
+with execlp, filename is the file in which the program is found, and argp is the
+argv array for the new program; argp[0] is the program name.
+
+Neither of these routines provides expansion of metacharacters like <, >, *,
+quots, etc., in the argument list. If you want these, use execlp to invoke the
+shell /bin/sh, which then does all the work. Construct a string commandline that
+contains the complete command as it would have been typed at the terminal, then
+say
+
+        execlp ("/bin/sh/", "sh", "-c", commandline, (char *) 0);
+

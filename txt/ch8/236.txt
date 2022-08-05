@@ -1,0 +1,51 @@
+
+compiled, perhaps linked with other C routines, and executed. The operation of
+this program is to call repeatedly upon the lexical analyzer for tokens,
+recognize the grammatical (syntactic) structure in the input, and perform the
+semantic actions as each grammatical rule is recognized. The entry to the
+lexical analyzer must be named yylex, since that is the function that yyparse
+calls each time it wants another token. (All names used by yacc start with y.)
+
+To be somewhat more precise, the input to yacc takes this form:
+
+        %{
+        C statements like #include, declarations, etc. This section is optional.
+        %}
+        yacc declarations: lexical tokens, grammar variables,
+          precedence and associativity information
+        %%
+        grammar rules and actions
+        %%
+        more C statements (optional):
+        main() { ...; yyparse(); ... }
+        yylex() { ... }
+        ...
+
+This is processed by yacc and the result written into a file called y.tab.c,
+whose layout is like this:
+
+        C statements from between %{ and %}, if any
+        C statements from after second %%, if any:
+        main() { ...; yyparse(); ... }
+        yylex() { ... }
+        ...
+        yyparse () { parse, which calls yylex() }
+
+It is typical of the UNIX approach that yacc produces C instead of a compiled
+object (.o) file. This is the most flexible arrangement --- the generated code
+is portable and amenable to other processing whenever someone has a good idea.
+
+yacc itself is a powerful tool. It takes some effort to learn, but the effort is
+repaid many times over. yacc-generated parsers are small, efficient, and correct
+(though the semantic actions are your own responsibility); many nasty parsing
+problems are taken care of automatically. Language-recognizing programs are easy
+to build, and (probably more important) can be modified repeatedly as the
+language definition evolves.
+
+
+Stage 1 program
+
+The source code for hoc1 consists of a grammar with actions, a lexical routine
+yylex, and a main, all in one file hoc.y. (yacc filenames traditionally end in
+.y, but this convention is not enforced by yacc itself, unlike cc and .c.) The
+grammar part is the first half of hoc.y:

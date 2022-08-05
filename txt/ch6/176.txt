@@ -1,0 +1,53 @@
+
+faster than what you can write yourself because they have been optimized for
+particular machines (sometimes by being written in assembly language).
+
+Exercise 6-3. Change the -s argument so that vis -sn will print only strings of
+n or more consecutive printable characters, discarding non-printing characters
+and short sequences of printable ones. This is valuable for isolating the text
+parts of non-text files such as executable programs. Some versions of the system
+provide a strings program.
+
+Exercise 6-4. The availability of the C source code is one of the strengths of
+the UNIX system --- the code illustrates elegant solutions to many programming
+problems. Comment on the tradeoff between readability of the C source and the
+occasional optimizations obtained from rewriting in assembly language.
+
++------------------------------------------------------------------------------+
+|                     Table 6.2: Standard String Functions                     |
+|                                                                              |
+| strcat(s,t)            append string t to string s; return s                 |
+| strncat(s,t,n)         append at most n characters of t to s                 |
+| strcpy(s,t)            copy t to s; return s                                 |
+| strncpy(s,t,n)         copy exactly n characters; null pad if necessary      |
+| strcmp(s,t)            compare s and t, return <0, 0, >0 for <, ==, >        |
+| strncmp(s,t,n)         compare at most n characters                          |
+| strlen(s)              return length of s                                    |
+| strchr(s,c)            return pointer to first c in s, NULL if none          |
+| strrchr(s,c)           return pointer to last c in s, NULL if none.          |
+|                          These are index and rindex on older systems         |
+| atoi(s)                return integer value of s                             |
+| stof(s)                return floating point value of s;                     |
+|                          needs declaration double atof()                     |
+| malloc(n)              return pointer to n byte of memory, NULL if can't     |
+| calloc(n,m)            return pointer to nxm bytes, set to 0, NULL if can't  |
+|                          malloc and calloc return char *                     |
+| free(p)                free memory allocated by malloc or calloc             |
++------------------------------------------------------------------------------+
+
+
+6.3 File access: vis version 3
+
+The first two versions of vis read the standard input and write the standard
+output, which are both inherited from the shell. The next step is to modify vis
+to access files by their names, so that
+
+        $ vis file1 file2 ...
+
+will scan the named files instead of the standard input. If there are no
+filename arguments, though, we still want vis to read its standard input.
+
+The question is how to arrange for the files to be read --- that is, how to
+connect the filenames to the I/O statements that actually read the data.
+
+The rules are simple. Before it can be read or written a file must be opened

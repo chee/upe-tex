@@ -1,0 +1,57 @@
+
+if test ! -r $INPUT
+then
+        echo "get: no file $INPUT" 1>&2
+        exit 1
+fi
+
+(which is the form we used in put) but is shorter to write and clearer to
+programmers who are familiar with the || operator. Commands between ( and ) are
+executed in the current shell, not a sub-shell; this is necessary here so the
+exit will exit from get and not just a sub-shell. The character ( and ) are like
+do and done --- they have special meaning only if they follow a semi-colon,
+newline or other command terminator.
+
+Finally, we come to the code in get that does the work. First, sed breaks the
+history file into two pieces: the most recent version and the set of edits. The
+awk program then processes the editing commands. @@@ lines are counted (but not
+printed), and as long as the count is not greater than the desired version, the
+editing commands are passed through (recall that the default awk action is to
+print the input line). Two ed commands are added after those from the history
+file: $d deletes the single @@@ line that sed left on current version, and a w
+command writes the file to its final location. overwrite is unnecessary here
+because get changes only the version of the file, not the previous history file.
+
+
+Exercise 5-29. Write a command version that does two things:
+
+        $ version -5 file
+
+reports the summary, modification date and person making the modification of the
+selected version in the history file.
+
+        $ version sep 20 file
+
+reports which version number was current on September 20. This would typically
+be used in:
+
+        $ get `version sep 20 file`
+
+(version can echo the history filename for convenience.)
+
+Exercise 5-30. Modify get and put so they manipulate the history file in a
+separate directory, rather than cluttering up the working directory with .H
+files
+
+Exercise 5-30. Not all versions of a file are worth remembering once things
+settle down. How can you arrange to delete versions from the middle of the
+history file?
+
+
+5.10 A look back
+
+When you're faced with writing a new program, there's a natural tendency to
+start thinking immediately about how to write it in your favorite programming
+language. In our case, that language is most often the shell.
+
+Although it has some unusual syntax, the shell is an excellent programming

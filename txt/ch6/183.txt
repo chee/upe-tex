@@ -1,0 +1,44 @@
+
+there's no point to continuing if a file can't be accessed, so the current
+version of efopen is best for our use.
+
+The real work of the p command is done in print:
+
+        print(fp, pagesize) /* print fp in pagesize chunks */
+            FILE *fp;
+            int pagesize;
+        {
+            static int lines = 0;   /* number of lines so far */
+            char buf[BUFSIZ];
+
+            while (fgets(buf, sizeof buf, fp) != NULL)
+                if (++lines < pagesize)
+                    fputs(buf, stdout);
+                else {
+                    buf[strlen(buf)-1] = '\0';
+                    fputs(buf, stdout);
+                    fflush(stdout);
+                    ttyin();
+                    lines = 0;
+                }
+        }
+
+We used BUFSIZ, which is defined in <stdio.h>, as the size of the input
+buffer. fgets(buf,size,fp) fetches the next line of input from fp, up to and
+including a newline, into buf, and adds a terminating \0; at most size-1
+characters are copied. It returns NULL at end of file. (fgets could be better
+designed: it returns buf instead of a character count; furthermore it provides
+no warning if the input line was too long. No characters are lost, but you have
+to look at buf to see what really happened.)
+
+The function strlen returns the length of a string; we use that to knock the
+trailing newline off the last input line. fputs(buf,fp) writes the string buf on
+file fp. The call to fflush at the end of the page forces out any buffered
+output.
+
+The task of reading the response from the user after each page has been printed
+is delegated to a routine called ttyin. ttyin can't read the standard input,
+since p must work even when its input comes from a file or pipe. To handle this,
+the program opens the file /dev/tty, which is the user's terminal regardless of
+any redirection of standard input. We wrote ttyin to return the first character
+of the response, but don't use that feature here.

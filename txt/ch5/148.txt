@@ -1,0 +1,54 @@
+
+        $ cat checkmail
+        # checkmail:  watch mailbox for growth
+
+        PATH=/bin:/usr/bin
+        MAIL=/usr/spool/mail/`getname`  # system dependent
+
+        t=${1-60}
+
+        x="`ls -l $MAIL`"
+        while :
+        do
+                y="`ls -l $MAIL`"
+                echo $x $y
+                x="$y"
+                sleep $t
+        done | awk '$4 < $12 { print "You have mail" }'
+        $
+
+We have used awk again, this time to ensure that the message is printed only
+when the mailbox grows, not merely when it changes. Otherwise, you'll get a
+message right after you delete mail. (The shell's built-in version, suffers from
+this drawback.)
+
+The time interval is normally set to 60 seconds, but if there is a parameter on
+the command line, as in
+
+        $ checkmail 30
+
+that is used instead. The shell variable t is set to the time if one is
+supplied, and to 60 if no value was given, by the line
+
+        t=${1-60}
+
+This introduces another feature of the shell
+
+${var} is equivalent to $var, and can be used to avoid problems with variables
+inside strings containing letters or numbers:
+
+        $ var=hello
+        $ varx=goodbye
+        $ echo $var
+        hello
+        $ echo $varx
+        goodbye
+        $ echo ${var}x
+        hellox
+        $
+
+Certain characters inside the braces specify special processing of the
+variable. If the variable is undefined, and the name is followed by a question
+mark, then the string after the ? is printed and the shell exits (unless it's
+interactive). If the message is not provided, a standard one is printed:
+

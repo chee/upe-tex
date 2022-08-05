@@ -1,0 +1,52 @@
+
+        #include <signal.h>
+        #include <setjmp.h>
+
+        jmp_buf sjbuf;
+
+        main()
+        {
+            int onintr();
+
+            if(signal(SIGINT, SIG_IGN) != SIG_IGN)
+                signal(SIGINT, onintr);
+            setjmp(sjbuf);  /* save current stack position */
+
+            for(;;) {
+                /* main processing loop */
+            }
+            ...
+        }
+
+        onintr()    /* reset if interrupted */
+        {                  
+            signal(SIGINT, onintr);  /* reset for next interrupt */
+            printf("\nInterrupt\n");
+            longjmp(sjbuf, 0);       /* return to saved state */
+        }
+
+The file <setjmp.h> declares the type jmp_buf as an object in which the stack
+position can be saved; sjbuf is declared to be such an object. The function
+setjmp(3) saves a record of where the program was executing. The values of
+variables are not saved. When an interrupt occurs, a call is forced to the
+onintr routine, which can print a message, set flags, or whatever. longjmp takes
+as argument an object stored into by setjmp, and restores control to the
+location after the call to setjmp. So control (and the stack level) will pop
+back to the place in the main routine where the main loop is entered.
+
+Notice that the signal is set again in onintr after an interrupt occurs. This is
+necessary: signals are automatically reset to their default action when they
+occur.
+
+Some programs that want to detect signals simply can't be stopped at an
+arbitrary point, for example in the middle of updating a complicated data
+structure. The solution is to have the interrupt routine set a flag and return
+instead of calling exit or longjmp. Execution will continue at the exact point
+it was interrupted, and the interrupt flag can be tested later.
+
+There is one difficulty associated with this approach. Suppose the program is
+reading the terminal when the interrupt is sent. The specified routine is duly
+called; it sets its flag and returns. If it were really true, as we said above,
+that execution resumes "at the exact point it was interrupted," the program
+would continue reading the terminal until the user typed another line. This
+behavior

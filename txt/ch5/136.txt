@@ -1,0 +1,50 @@
+
++------------------------------------------------------------------------------+
+|                     Table 5.1: Shell Built-in Variables                      |
+|                                                                              |
+| $#      the number of arguments                                              |
+| $*      all arguments to shell                                               |
+| $@      similar to $*; see Section 5.7                                       |
+| $-      options supplied to the shell                                        |
+| $?      return value of the last command executed                            |
+| $$      process-id of the shell                                              |
+| $!      process-id of the last command started with &                        |
+| $HOME   default argument for cd command                                      |
+| $IFS    list of characters that separate words in arguments                  |
+| $MAIL   file that, when changed, triggers "you have mail" message            |
+| $PATH   list of directories to search for commands                           |
+| $PS1    prompt string, default '$ '                                          |
+| $PS2    prompt string for continued command line, default '> '               |
++------------------------------------------------------------------------------+
+
+        $ date
+	Sat Oct  1 06:05:18 EDT 1983
+	$ set `date`
+	$ echo $1
+	Sat
+	$ echo $4
+	06:05:20
+	$
+
+set is a shell built-in command that does too many things. With no arguments, it
+shows the values of variables in the environment, as we saw in Chapter
+3. Ordinary arguments reset the values of $1, $2, and so on. So set `date` sets
+$1 to the day of the week, $2 to the name of the month, and so on. The first
+case in cal, therefore, sets the month and year from the current date if there
+are no arguments; if there's one argument, it's used as the month and the year
+is taken from the current date.
+
+set also recognize several options, of which the most often used are -v and -x;
+they turn on echoing of commands as they are being processed by the shell. These
+are indispensable for debugging complicated shell programs.
+
+The remaining problem is to convert the month, if it is in textual form, into a
+number. This is done by the second case statement, which should be largely
+self-explanatory. The only twist is that the | character in case statement
+patterns, as in egrep, indicates an alternative: big|small matches either big or
+small. Of course, these cases could also be written as [jJ]an* and so on. The
+program accepts month names either in all lower case, because most commands
+accept lower case input, or with first letter capitalized, because that is the
+format printed by date. The rules for shell pattern matching are given in Table
+5.2.
+

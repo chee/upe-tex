@@ -1,0 +1,54 @@
+
+        $ adb pick core                              Invoke adb
+        $C                                           Stack trace request
+        ~_strout(0175722,011,0,011200)
+            adjust:     0
+            fillch:     060542
+        __doprnt(0177345,0176176,011200)
+        ~fprintf(011200,0177345)
+            iop:     01120
+            fmt:     0177345
+            args:    0
+        ~pick(0177345)
+            s:       0177345
+        ~main(035,0177234)
+            argc:    035
+            argv:    0177234
+            i:       01
+            buf:     0
+        ctl-d                                        Quit
+        $
+
+This says that main called pick, which called fprintf, which called _doprnt,
+which called _strout. Since _doprnt isn't mentioned anywhere in pick.c, our
+troubles must be somewhat in fprintf or above. (The lines after each subroutine
+in the traceback show the values of local variables. $c suppresses this
+information, as does $C itself on some versions of adb.)
+
+Before revealing all, let's try the same thing with sdb:
+
+        $ sdb pick core
+        Warning: 'a.out' not compiled with -g
+        lseek: address Oxa64        Routine where program died
+        *t                          Stack trace request
+        lseek()
+        fprintf(6154,2147479154)
+        pick(2147479154)
+        main(30,2147478988,2147479112)
+        *q                          Quit    
+        $
+
+The information is formatted differently, but there's a common theme:
+fprintf. (The traceback is different because this was run on a different machine
+--- a VAX-11/75 --- which has a different implementation of the standard I/O
+library). And sure enough, if we look at the fprintf invocation in the defective
+version of pick, it is wrong:
+
+        fprintf("%s? ", s);
+
+There's no stderr, so the format string "%s? " is being used as a FILE pointer,
+and of course chaos ensues.
+
+We picked this error because it's common, a result of oversight rather than
+
+

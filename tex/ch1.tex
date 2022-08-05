@@ -1,0 +1,449 @@
+\chapter{UNIX for Beginners}
+
+
+What is ``UNIX''? In the narrowest sense, it is a time-sharing operating system
+kernel: a program that controls the resources of a computer and allocates them
+among its users. It lets users run their programs; it controls the peripheral
+devices (discs, terminals, printers, and the like) connected to the machine; and
+it provides a file system that manages the long-term storage of information such
+as programs, data, and documents.
+
+In a broader sense, ``UNIX'' is often taken to include not only the kernel, but
+also essential programs like compilers, editors, command languages, programs for
+copying and printing files, and so on.
+
+Still more broadly, ``UNIX'' may even include programs developed by you or other
+users to be run on your system, such as tools for document preparation, routines
+for statistical analysis, and graphics packages.
+
+Which of these uses of the name ``UNIX'' is correct depends on which level of
+the system you are considering. When we use ``UNIX'' in the rest of this book,
+context should indicate which meaning is implied.
+
+The UNIX system sometimes looks more difficult than it is --- it's hard for a
+newcomer to know how to make the best use of the facilities available. But
+fortunately it's not hard to get started --- knowledge of only a few programs
+should get you off the ground. This chapter is meant to help you to start using
+the system as quickly as possible. It's an overview, not a manual; we'll cover
+most of the material again in more detail in later chapters. We'll talk about
+these major areas:
+
+\begin{itemize}
+\item basics --- logging in and out, simple commands, correcting typing
+  mistakes, mail, inter-terminal communication.
+\item day-to-day use --- files and file system, printing files, directories,
+  commonly-used commands.
+\item the command interpreter or shell --- filename shorthands, redirecting
+  intput and output, pipes, setting erase and kill characters, and defining your
+  own search path for commands.
+\end{itemize}
+
+If you've used a UNIX system before, most of this chapter should be familiar;
+you might want to skip straight to Chapter 2.
+
+You will need a copy of the \textit{UNIX Programmer's Manual}, even as you read
+this chapter; it's often easier for us to tell you to read about something in
+the manual than to repeat its contents here. This book is not supposed to
+replace it, but to show you how to make best use of the commands described in
+it. Furthermore, there may be differences between what we say here and what is
+true on your system. The manual has a permuted index at the beginning that's
+indispensable for finding the right programs to apply to a problem; learn to use
+it.
+
+Finally, a word of advice: don't be afraid to experiment. If you are a beginner,
+there are very few accidental things you can do to hurt yourself or other
+users. So learn how things work by trying them. This is a long chapter, and the
+best way to read it is a few pages at a time, trying things out as you go.
+
+
+\section{Getting Started}
+\subsection{Some prerequisites about terminals and typing}
+
+To avoid explaining everything about using computers, we must assume you have
+some familiarity with computer terminals and how to use them. If any of the
+following statements are mystifying, you should ask a local expert for help.
+
+The UNIX system is \textit{full duplex}: the characters you type on the keyboard
+are sent to the system, which sends them back to the terminal to be printed on
+the screen. Normally, this \textit{echo} process copies the characters directly
+to the screen, so you can see what you are typing, but sometimes, such as when
+you are typing a secret password, the echo is turned off so the characters do
+not appear on the screen.
+
+Most of the keyboard characters are ordinary printing characters with no special
+significance, but a few tell the computer how to interpret your typing. By far
+the most important of these is the RETURN key. The RETURN key signifies the end
+of a line of input; the system echoes it by moving the terminal's cursor to the
+beginning of the next line on the screen. RETURN must be pressed before the
+system will interpret the characters you have types.
+
+RETURN is an example of a \textit{control character} --- an invisible character
+that controls some aspect of input and output on the terminal. On any reasonable
+terminal, RETURN has a key of its own, but most control characters do
+not. Instead, they must be typed by holding down the CONTROL key, sometimes
+called CTL or CNTL or CTRL, then pressing another key, usually a letter. For
+example, RETURN may be typed by pressing the RETURN key or, equivalently,
+holding down the CONTROL key and typing an `m'. RETURN might therefore be called
+a control-m, which we will write as \textit{ctl}-m. Other control characters
+include \textit{ctl}-d, which tells a program that there is no more input;
+\textit{ctl}-g, which rings the bell on the terminal; \textit{ctl}-h, often
+called backspace, which can be used to correct typing mistakes; and
+\textit{ctl}-i, often called tab, which advances the cursor to the next tab
+stop, much as on a regular typewriter. Tab stops on UNIX systems are eight
+spaces apart. Both the backspaces and tab characters have their keys on the
+terminals.
+
+Two other keys have special meaning: DELETE, sometimes called RUBOUT or some
+abbreviation, and BREAK, sometimes called INTERRUPT. On most UNIX systems, the
+DELETE key stops a program immediately, without waiting for it to finish. On
+some systems, \textit{ctl}-c provides this device. And on some systems,
+depending on how the terminals are connected, BREAK is synonym for DELETE or
+\textit{ctl}-c.
+
+
+\subsection{A Session with UNIX}
+
+Let's begin with an annotated dialog between you and your UNIX system.
+Throughout the examples in this book, what you type is printed in slanted
+letters, computer responses are in typewriter-style characters, and explanations
+are in \textit{italics}.
+
+\begin{verbatim}
+        Establish a connection: dial a phone or turn on a switch as necessary.
+        Your system should say
+        login: you                 Type your name, then press RETURN
+        Password:                  Your password won't be echoed as you type it
+        You have mail.             There's mail to be read after you log in
+        $                          The system is now ready for your commands
+        $                          Press RETURN a couple of times
+        $ date                     What is the date and time?
+        Sun Sep 25 23:02:57 EDT 1983
+        $ who                      Who's using the computer?
+        jlb      ttyO    Sep 25 13:59
+        you      tty2    Sep 25 23:01
+        mary     tty4    Sep 25 19:03
+        doug     tty5    Sep 25 19:22
+        egb      tty7    Sep 25 17:17
+        bob      tty8    Sep 25 20:48
+        $ mail                     Read your mail
+        From doug Sun Sep 25 20:53 EDT 1983
+        give me a call sometime monday
+
+        ?                          RETURN moves on to the next message
+        From mary Sun Sep 25 19:07 EDT 1983     Next message
+
+        ? d                        Delete this message
+        $                          No more mail
+        $ mail mary                Send mail to mary
+        lunch at 12 is fine
+        ctl-d                      End of mail
+        $                          Hang up phone or turn off terminal
+                                   and that's the end
+\end{verbatim}
+Sometimes that's all there is to a session, though occasionally people do some
+work too. The rest of this section will discuss the session above, plus other
+programs that make it possible to do useful things.
+
+
+\subsection{Logging in}
+
+You must have a login name and password, which you can get from your system
+administrator. The UNIX system is capable of dealing wit a wide variety of
+terminals, but it is strongly oriented towards devices with lower case; case
+distinctions matter! If your terminal produces only upper case (like some video
+and portable terminals), life will be so difficult that you should look for
+another terminal.
+
+Be sure the switches are set appropriately on your device: upper and lower case,
+full duplex, and any other settings that local experts advise, such as the
+speed, or \textit{baud rate}. Establish a connection using whatever magic is
+needed for your terminal; this may involve dialing a telephone or merely
+flipping a switch. In either case, the system should type
+\begin{verbatim}
+        login:
+\end{verbatim}
+If it types garbage, you may be at the wrong speed; check the speed setting and
+other switches. If that fails, press the BREAK or INTERRUPT key a few times,
+slowly. If nothing produces a login message, you will have to get help.
+
+When you get the \verb=login:= message, type your login name \textit{in lower
+  case}. Follow it by pressing RETURN. If a password is required, you will be
+asked for it, and printing will be turned off while you type it.
+
+The culmination of your login efforts is a \textit{prompt}, usually a single
+character, indicating that the system is ready to accept commands from you. The
+prompt is mostly likely to be a dollar sign \verb=$= or a percent sign \verb=%=,
+but you can change it to anything you like; we'll show you how a little
+later. The prompt is actually printed by a program called the \textit{command
+  interpreter} or \textit{shell}, which is your main interface to the system.
+
+There may be a message of the day just before the prompt, or a notification that
+you have mail. You may also be asked what kind of terminal you are using; your
+answer helps the system to use any special properties the terminal might have.
+
+
+\subsection{Typing commands}
+
+Once you receive the prompt, you can type commands, which are requests that the
+system do something. We will use \textit{program} as a synonym for
+\textit{command}. When you see the prompt (let's assume it's \verb=$=), type
+date and press RETURN. the system should replay with the date and time, then
+print another prompt, so the whole transaction will look like this on your
+terminal:
+\begin{verbatim}
+        $ date
+        Mon Sep 26 12:20:57 EDT 1983
+        $
+\end{verbatim}
+Don't forget RETURN, and don't type the \verb=$=. If you think you're being
+ignored, press RETURN; something should happen. RETURN won't be mentioned again,
+but you need it at the end of every line.
+
+The next command to try is who, which tells you everyone who is currently logged
+in:
+\begin{verbatim}
+        $ who
+        rim     tty0     Sep 26 11:37
+        pjw     tty4     Sep 26 11:30
+        gerard  tty7     Sep 26 10:27
+        mark    tty9     Sep 26 07:59
+        you     ttya     Sep 26 12:20
+        $
+\end{verbatim}
+The first column is the user name. The second is the system's name for the
+connection being used (``tty'' stands for ``teletype,'' an archaic synonym for
+``terminal''). The rest tells when the user logged on. You might also try
+\begin{verbatim}
+        $ who am i
+        you     ttya     Sep 26 12:20
+        $
+\end{verbatim}
+
+If you make a mistake typing the name of a command, and refer to a non-existent
+command, you will be told that no command of that name can be found:
+\begin{verbatim}
+        $ whom                     Misspelled command name ...
+        whom: not found            ... so system didn't know how to run it
+        $
+\end{verbatim}
+Of course, if you inadvertently type the name of an actual command, it will run,
+perhaps with mysterious results.
+
+
+\subsection{Strange terminal behavior}
+
+Sometimes your terminal will act strangely, for example, each letter may be
+typed twice, or RETURN may not put the cursor at the first column of the next
+line. You can usually fix this by turning the terminal off and on, or by logging
+out and logging back in. Or you can read the description of the command
+\texttt{stty} (``set terminal options'') in Section 1 of the manual. To get
+intelligent treatment of tab characters if your terminal doesn't have tabs, type
+the command
+\begin{verbatim}
+        $ stty -tabs
+\end{verbatim}
+and the system will convert tabs into the right number of spaces. If your
+terminal does have computer-settable tab stops, the command tabs will set them
+correctly for you. (You may actually have to say
+\begin{verbatim}
+        $ tabs terminal-type
+\end{verbatim}
+to make it work --- see the \texttt{tabs} command description in the manual.)
+
+
+\subsection{Mistakes in typing}
+If you make a typing mistake, and see it before you have pressed RETURN, there
+are two ways to recover, \textit{erase} characters one at a time or
+\textit{kill} the whole line and re-type it.
+
+If you type the line \textit{kill} character, by default an at-sign \verb=@=, it
+causes the whole line to be discarded, just as if you'd never typed it, and
+starts you over on a new line:
+\begin{verbatim}
+        $ ddtae@                    Completely botched; start over
+        date                          on a new line
+        Mon Sep 26 12:23:39 EDT 1983
+        $
+\end{verbatim}
+The sharp character \verb=#= erases the last character typed; each \verb=#=
+erases one more character, back to the beginning of the line (but not
+beyond). So if you type badly, you can correct as you go:
+\begin{verbatim}
+        $ dd#atte##e                Fix it as you go
+        Mon Sep 26 12:23:39 EDT 1983
+        $
+\end{verbatim}
+The particular erase and line kill characters are very system dependent. On many
+systems (including the one we use), the erase character has been changed to
+backspace, which works nicely on video terminals. You can quickly check which is
+the case on your system:
+\begin{verbatim}
+        $ datee<-                              Try <-
+        datee<-: not found                     It's not <-
+        $ datee#                               Try #
+        Mon Sep 26 12:23:39 EDT 1983           It is #
+        $
+\end{verbatim}
+(We printed the backspace character \verb=<-= as you can see it.) Another common
+choice is \textit{ctl}-u for line kill.
+
+We will use the sharp as the erase character for the rest of this section
+because it's visible, but make the mental adjustment if your system is
+different. Later on, in ``tailoring the environment,'' we will tell you how to
+set the erase and line kill characters to whatever you like, once and for all.
+
+What if you must enter an erase or line kill character as part of the text? If
+you precede either \verb=#= or \verb=@= by a backslash \verb=\=, it loses its
+special meaning. So to enter a \verb=#= or \verb=@=, type \verb=\#= or
+\verb=\@=. The system may advance the terminal's cursor to the next line after
+your \verb=@=, even if it was preceded by a backslash. Don't worry --- the
+at-sign has been recorded.
+
+The backslash, sometimes called the \textit{escape character}, is used
+extensively to indicate that the following character is in some way special. To
+erase a backslash, you have to type two erase characters \verb=\##=. Do you see
+why?
+
+The characters you type are examined and interpreted by a sequence of programs
+before they reach their destination, and exactly how they interpreted depends
+not only on where they end up but how got there.
+
+Every character you type is immediately echoed to the terminal, unless echoing
+is turned off, which is rare. Until you press RETURN, the characters are held
+temporarily by the kernel, so typing mistakes can be corrected with the erase
+and line kill characters. When an erase or line kill character is preceded by a
+backslash, the kernel discards the backslash and holds the following character
+without interpretation.
+
+When you press RETURN, the characters being held are sent to the program that is
+reading from the terminal. That program may in turn interpret the characters in
+special ways; for example, the shell turns off any special interpretation of a
+character if it is preceded by a backslash. We'll come back to this in Chapter
+3. For now, you should remember that the kernel processes erase and line kill,
+and backslash only if it precedes erase or line kill; whatever characters are
+left after that may be interpreted by other programs as well.
+
+Exercise 1-1. Explain what happens with
+\begin{verbatim}
+        $ date\@
+\end{verbatim}
+
+Exercise 1-2. Most shells (although not the 7th Edition shell) interpret
+\verb=#= as introducing a comment, and ignore all text from the \verb=#= to the
+end of the line. Given this, explain the following transcript, assuming your
+erase character is also \verb=#=
+\begin{verbatim}
+        $ date
+        Mon Sep 26 12:39:56 EDT 1983
+        $ #date
+        Mon Sep 26 12:40:21 EDT 1983
+        $ \#date
+        $ \\#date
+        #date : not found
+        $
+\end{verbatim}
+
+
+\subsection{Type-ahead}
+The kernel reads what you type as you type it, even if it's busy with something
+else, so you can type as fast as you want, whenever you want, even when some
+command is printing at you. If you type while the system is printing, your input
+characters will appear intermixed with the output characters, but they will be
+stored away and interpreted in the correct order. You can type commands one
+after another without waiting for them to finish or even to begin.
+
+
+\subsection{Stopping a program}
+You can stop most commands by typing the character DELETE. The BREAK key found
+on most terminals may also work, although this is system dependent. In a few
+programs, like text editors, DELETE stops whatever the program is doing but
+leaves you in that program. Turning off the terminal or hanging up the phone
+will stop most programs.
+
+If you just want output to pause, for example to keep something critical from
+disappearing off the screen, type \textit{ctl}-s. The output will stop almost
+immediately; you program is suspended until you start it again. When you want to
+resume, type \textit{ctl}-q.
+
+
+\subsection{Logging out}
+The proper way to log out is to type \textit{ctl}-d instead of a command; this
+tells the shell that there is no more input. (How this actually works will be
+explained in the next chapter.) You can usually just turn off the terminal or
+hang up the phone, but whether this really logs you out depends on your system.
+
+
+\subsection{Mail}
+The system provides a postal system for communicating with other users, so some
+day when you log in, you will see the message
+\begin{verbatim}
+        You have mail
+\end{verbatim}
+before the first prompt. To read your mail, type
+\begin{verbatim}
+        $ mail
+\end{verbatim}
+your mail will be printed, one message at a time, most recent first. After each
+item, \texttt{mail} waits for you to say what to do with it. The two basic
+responses are \texttt{d}, which deletes the message, and RETURN, which does not
+(so it will still be there the next time you read your mail). Other responses
+include \texttt{p} to reprint a message, \texttt{s} filename to save it in the
+file you named, and \texttt{q} to quit from mail. (If you don't know what a file
+is, think of it as a place where you can store information under a name of your
+choice, and retrieve it later. Files are the topics of Section 1.2 and indeed of
+much of this book.)
+
+\texttt{mail} is one of those programs that is likely to differ from what we
+describe here; there are some variants. Look in your manual for details.
+
+Sending mail to someone is straightforward. Suppose it is to go to the person
+with the login name \texttt{nico}. The easiest way is this:
+\begin{verbatim}
+        $ mail nico
+        how type in the text of the letter
+        on as many lines as you like ...
+        After the last line of the letter
+        type a control-d
+        ctl-d
+        $
+\end{verbatim}
+The \textit{ctl}-d signals the end of the letter by telling the \texttt{mail}
+command that there is no more input. If you change your mind half-way through
+composing the letter, press DELETE instead of \textit{ctl}-d. The half-formed
+letter will be stored in a file called \texttt{dead.letter} instead of being
+sent.
+
+
+\subsection{Writing to other users}
+If your UNIX system has multiple users, someday, out of the blue, your terminal will print something like
+
+\begin{verbatim}
+Message from mary tty7...
+\end{verbatim}
+
+accompanied by a startling beep.
+Mary wants to write to you, but unless you take explicit action you won't be able to write back.
+To respond, type
+
+\begin{verbatim}
+$ write mary
+\end{verbatim}
+
+This establishes a two-way communication path.
+Now the lines that Mary types on her terminal will appear on yours and vice versa, although the path is slow, rather like talking to the moon.
+
+If you are in the middle of something, you have to get to a state where you can type a command.
+Normally, whatever program you are running has to stop or be stopped, but some programs, such as the editor and `write` itself, have a `!` command to escape temporarily to the shell - see Table 2 in Appendix 1.
+
+The `write` command imposes no rules, so a protocol is needed to keep what you type from getting garbled up with what Mary types.
+One convention is to take turns, ending each turn with `(o)`, which stands for "over," and to signal your intent to quit with `(oo)`, for "over and out."
+
+\subsection{News}
+\subsection{The manual}
+\subsection{Computer-aided instruction}
+\subsection{Games}
+
+\section{Day-to-day use: files and common commands}
+\section{More about files: directories}
+\section{The shell}
+\section{The rest of the UNIX system}

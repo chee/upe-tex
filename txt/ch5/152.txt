@@ -1,0 +1,58 @@
+
+by the named program, thereby saving one process --- the shell that would
+normally wait for the program to complete. We could have used exec in several
+other places, such as at the end of the enhanced cal program when it invokes
+/usr/bin/cal.
+
+By the way, the signal 9 is one that can't be caught or ignored: it always
+kills. From the shell, it is sent as
+
+        $ kill -9 process id ...
+
+kill -9 is not the default because a process killed that way is given no chance
+to put its affairs in order before dying.
+
+Exercise 5-14. The version of nohup above combines the standard error of the
+command with the standard output. Is this a good design? If not, how would you
+separate them cleanly?
+
+Exercise 5-15. Look up the times shell built-in, and add a line to your .profile
+so that when you log off the shell prints out how much CPU time you have used.
+
+Exercise 5-16. Write a program that will find the next available used-id in
+/etc/passwd. If you are enthusiastic (and have permission), make it into a
+command that will add a new user to the system. What permissions does it need?
+How should it handle interrupts?
+
+
+5.5 Replacing a file: overwrite
+
+The sort command has an option -o to overwrite a file:
+
+        $ sort file1 -o file2
+
+is equivalent to
+
+        $ sort file1 >file2
+
+If file1 and file2 are the same file, redirection with > will truncate the input
+file before it is sorted. The -o option, however, works correctly, because the
+input is sorted and saved in a temporary file before the output file is created.
+
+Many other commands could also use a -o option. For example, sed could edit a
+file in place:
+
+        $ sed 's/UNIX/UNIX(TM)/g' ch2 -o ch2            Doesn't work this way!
+
+It would be impractical to modify all such commands to add the
+option. Furthermore, it would be bad design: it is better to centralize
+functions, as the shell does with the > operator. We will provide a program
+overwrite to do the job. The first design is like this:
+
+        $ sed 's/UNIX/UNIX(TM)/g' ch2 | overwrite ch2
+
+The basic implementation is straightforward --- just save away the input until
+end of file, then copy the data to the argument file:
+
+
+

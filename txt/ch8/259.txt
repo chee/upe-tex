@@ -1,0 +1,37 @@
+were in the example above.
+
+The symbol table code for hoc4 is identical to that for hoc3; the initialization
+in init.c and the mathematical functions in math.c are the same as well. The
+grammar is the same as for hoc3, but the actions are quite different. Basically,
+each action generates machine instructions and any arguments that go with
+them. For example, three items are generated for a VAR in an expression: a
+varpush instruction, the symbol table pointer for the variable, and an eval
+instruction that will replace the symbol table pointer by its value when
+executed. The code for '*' is just mul, since the operands for that will already
+be on the stack.
+
+        $ cat hoc.y
+        %{
+        #include "hoc.h"
+        #define code2(c1,c2)    code(c1); code(c2)
+        #define code3(c1,c2,c3) code(c1); code(c2); code(c3)
+        %}
+        %union {
+                Symbol  *sym;   /* symbol table pointer */
+                Inst    *inst;  /* machine instruction */
+        }
+        %token  <sym>   NUMBER VAR BLTIN UNDEF
+        %right  '='
+        %left   '+' '-'
+        %left   '*' '/'
+        %left   UNARYMINUS
+        %right  '^'     /* exponentiation */
+        %%
+        list:     /* nothing */
+                | list '\n'
+                | list asgn '\n'  { code2(pop, STOP); return 1; }
+                | list expr '\n'  { code2(print, STOP); return 1; }
+                | list error '\n' { yyerrok; }
+                ;
+        asgn:     VAR '=' expr  { code3(varpush,(Inst)$1,assign); }
+                ;

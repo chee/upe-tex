@@ -1,0 +1,50 @@
+
+There will clearly be trouble if the file we are modifying contains lines
+beginning with a triple at-sign, and the BUGS section of diff(1) warns about
+lines that contain only a period. We chose @@@ to mark the editing commands
+because it's an unlikely sequence for normal text.
+
+Although it might be instructive to show how the get and put commands evolved,
+they are relatively long and showing their various forms would require too much
+discussion. We will therefore show you only their finished forms. put is
+simpler:
+
+        # put:  install file into history
+
+        PATH=/bin:/usr/bin
+
+        case $# in
+                1)  HIST=$1.H ;;
+                *)  echo 'Usage: put file' 1>&2; exit 1 ;;
+        esac
+        if test ! -r $1
+        then
+                echo "put: can't open $1" 1>&2
+                exit 1
+        fi
+        trap 'rm -f /tmp/put.[ab]$$; exit 1' 1 2 15
+        echo -n 'Summary: '
+        read Summary
+
+        if get -o /tmp/put.a$$ $1               # previous version
+        then                    # merge pieces
+                cp $1 /tmp/put.b$$              # current version
+                echo "@@@ `getname` `date` $Summary" >>/tmp/put.b$$
+                diff -e $1 /tmp/put.a$$ >>/tmp/put.b$$  # latest diffs
+                sed -n '/^@@@/,$p' <$HIST >>/tmp/put.b$$ # old diffs
+                overwrite $HIST cat /tmp/put.b$$        # put it back
+        else                    # make a new one
+                echo "put: creating $HIST"
+                cp $1 $HIST
+                echo "@@@ `getname` `date` $Summary" >>$HIST
+        fi
+        rm -f /tmp/put.[ab]$$
+
+After reading the one-line summary, put calls get to extract the previous
+version of the file from the history file. The -o option to get specifies an
+alternate output file. If get couldn't find the history file, it returns an
+error status and put creates a new history file. If the history file does exist,
+the then clause creates the new history in a temporary file from, in order, the
+newest version, the @@@ line, the editor commands to convert from the newest
+version to the previous, and the old editor commands and @@@ lines. Finally, the
+temporary file is copied onto the history file using overwrite.

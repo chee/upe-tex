@@ -1,0 +1,48 @@
+
++------------------------------------------------------------------------------+
+|		    Table 9.2: Common mm Formatting Commands                   |
+|                                                                              |
+| .AS        start abstract; terminated by .AE                                 |
+| .AU        author's name follows as first argument if supplied               |
+| .B         begin bold text, or embolden argument if supplied		       |
+| .DF        keep text together, float to next page if necessary; end at .DE   |
+| .DS        start display text; terminated by .DE			       |
+| .EQ        begin equation (eqn input); terminated by .EN		       |
+| .FS        start footnote; terminated by .FE				       |
+| .I         begin italic text, or italicize argument if supplied	       |
+| .H         n-th level numbered heading "..."				       |
+| .HU        unnumbered heading "..."					       |
+| .P         paragraph. User .nr Pt 1 once for indented paragraphs	       |
+| .R         return to roman font					       |
+| .TL        title follows, up to next mm command			       |
+| .TS        begin table (tbl input); terminated by .TE			       |
++------------------------------------------------------------------------------+
+
+such character has a name that is either \c where c is a single character, or
+\(cd where cd is a pair of characters.
+
+troff prints an ASCII minus sign as a hyphen - rather than a minus -. A true
+minus must be typed \- and a dash must be typed \(em, which stands for "em
+dash," the character "---".
+
+Table 9.3 lists some of the most common special characters; there are many more
+in the troff manual (and the list may be different on your system).
+
+There are times when troff must be told not to interpret a character, especially
+a backslash or a leading period. The two most common "hands-off" characters are
+\e and \&. The sequence \e is guaranteed to print as a backslash, uninterpreted,
+and is used to get a backslash in the output. \&, on the other hand, is nothing
+at all: it is a zero-width blank. Its main use is to prevent troff from
+interpreting periods at the beginning of lines. We used \e and \& a lot in this
+chapter. For example, the ms outline at the beginning of this chapter was typed
+as
+
+	\&.TL
+	.I "Title of document"
+	\&.AU
+	.I "Author name"
+	\&.AB
+	\&...
+	...
+
+Of course, the section above was typed as

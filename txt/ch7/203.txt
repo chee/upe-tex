@@ -1,0 +1,51 @@
+
+most common values are 1, which means one character at a time ("unbuffered"),
+and the size of a block on a disc, most often 512 or 1024 bytes. (The parameter
+BUFSIZ in <stdio.h> has this value.)
+
+To illustrate, here is a program to copy its input to its output. Since the
+input and output can be redirected to any file or device, it will actually copy
+anything to anything: it's a bare-bones implementation of cat.
+
+        /* cat:  minimal version */
+        #define SIZE    512 /* arbitrary */
+
+        main()
+        {
+            char buf[SIZE];
+            int n;
+
+            while ((n = read(0, buf, sizeof buf)) > 0)
+                write(1, buf, n);
+            exit(0);
+        }
+
+If the file size is not a multiple of SIZE, some read will return a smaller
+number of bytes to be written by write; the next call to read after that will
+return zero.
+
+Reading and writing in chunks that match the disc will be most efficient, but
+even character-at-a-time I/O is feasible for modest amounts of data, because the
+kernel buffers your data; the main cost is the system calls. ed, for example,
+uses one-byte reads to retrieve its standard input. We timed this version of cat
+on a file of 54000 bytes, for six values of SIZE:
+
+                           Time (user+system, sec.)
+                   SIZE    PDP-11/40    VAX-11/750
+                      1        271.0      188.8
+                     10         29.9       19.3
+                    100          3.8        2.6
+                    512          1.3        1.0
+                   1024          1.2        0.6
+                   5120          1.0        0.6
+
+The disc block size is 512 bytes on the PDP-11 system and 1024 on the VAX.
+
+It is quite legal for several processes to be accessing the same file at the
+same time; indeed, one process can be writing while another is reading. If this
+isn't what you wanted, it can be disconcerting, but it's sometimes useful. Even
+though one call to read returns 0 and thus signals end of file, if more data is
+written on that file, a subsequent read will find more bytes available. This
+observation is the basis of a program called readslow, which continues to read
+input, regardless of whether it got an end of file or not. readslow is
+

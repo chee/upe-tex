@@ -1,0 +1,34 @@
+
+        #define S_IFMT   0170000 /* type of file */
+        #define S_IFDIR  0040000 /* directory */
+        #define S_IFCHR  0020000 /* character special */
+        #define S_IFBLK  0060000 /* block special */
+        #define S_IFREG  0100000 /* regular */
+        #define S_ISU1D  0004000 /* set user id on execution */
+        #define S_ISGID  0002000 /* set group id on execution */
+        #define S_ISVTX  0001000 /* save swapped text even after use */
+        #define S_IREAD  0000400 /* read permission, owner */
+        #define S_IWRITE 0000200 /* write permission, owner */
+        #define S_IEXEC  0000100 /* execute/search permission, owner */
+
+The inode for a file is accessed by a pair of system calls named stat and
+fstat. stat takes a filename and returns inode information for that file (or -1
+if there is an error). fstat does the same from a file descriptor for an open
+file (not from a FILE pointer). That is,
+
+        char *name;
+        int fd;
+        struct stat stbuf;
+
+        stat(name, &stbuf);
+        fstat(fd, &stbuf);
+
+fills the structure stbuf with the inode information for the file name or file
+descriptor fd.
+
+With all these facts in hand, we can start to write some useful code. Let us
+begin with a C version of checkmail, a program that watches your mailbox. If the
+file grows larger, checkmail prints "You have mail" and rings the bell. (If the
+file gets shorter, that is presumably because you have just read and deleted
+some mail, and no message is wanted.) This is entirely adequate as a first step;
+you can get fancier once this works.

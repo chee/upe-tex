@@ -1,0 +1,54 @@
+
+sv isn't proof against all possible disasters --- it doesn't deal with
+interrupts at awkward times, for instance --- but it's more careful than most
+programs. To focus on just one point for a moment, consider the final write
+statement. It is rare that a write fails, so many programs ignore the
+possibility. But discs run out of space; users exceed quotas; communications
+lines break. All of these cause write errors, and you are a lot better off if
+you hear about them than if the program silently pretends that all is well.
+
+The moral is that error checking is tedious but important. We have been cavalier
+in most of the programs in this book because of space limitations and to focus
+on more interesting topics. But for real, production programs, you can't afford
+to ignore errors.
+
+Exercise 7-10. Modify checkmail to identify the sender of the mail as part of
+the "You have mail" message. Hint: sscanf, lseek.
+
+Exercise 7-11. Modify checkmail so that it does not change to the mail directory
+before it enters its loop. Does this have a measurable effect on its
+performance? (Harder) Can you write a version of checkmail that only needs one
+process to notify all users?
+
+Exercise 7-12. Write a program watchfile that monitors a file and prints the
+file from the beginning each time it changes. When would you use it?
+
+Exercise 7-13. sv is quite rigid in its error handling. Modify it to continue
+even if it can't process some file.
+
+Exercise 7-14. Make sv recursive: if one of source files is a directory, that
+directory and its files are processed in the same manner. Make cp
+recursive. Discuss whether cp and sv ought to be the same program, so that cp -v
+doesn't do the copy if the target is newer.
+
+Exercise 7-15. Writ the program random:
+
+        $ random filename
+
+produces one line chosen at random from the file. Given a file people of names,
+random can be used in a program called scapegoat, which is valuable for
+allocating blame:
+
+        $ cat scapegoat
+        echo "it's all `random people`'s fault!"
+        $ scapegoat
+        It's all Ken's fault!
+        $
+
+Make sure that random is fair regardless of the distribution of line lengths.
+
+Exercise 7-16. there's other information in the inode as well, in particular,
+disc address where the file blocks are located. Examine the file <sys/ino.h>,
+then write a program icat that will read specified by inode number and disc
+device. (It will work only if the disc in question is readable, of course.)
+Under what curcumstances is icat useful?

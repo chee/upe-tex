@@ -1,0 +1,59 @@
+
+This doesn't work either, because "$*" is a single word formed from all the
+arguments joined together, separated by blanks.
+
+Of course there is a solution, but it is almost blank magic: the string "$@" is
+treated specially by the shell, and converted into exactly the arguments to the
+shell file:
+
+        $ grep for pick                 Try a third version
+        for i in "$@"
+        $ pick '1 2' 3
+        1 2?
+	3?
+        $
+
+If $@ is not quoted, it is identical to $*; the behavior is special only when it
+is enclosed in double quotes. We used it in overwrite to preserve the arguments
+to the user's command.
+
+In summary, here are the rules:
+
+* $* and $@ expand into the arguments, and are rescanned; blanks in arguments
+  will result in multiple arguments.
+
+* "$*" is a single word composed of all the arguments to the shell file joined
+  together with spaces.
+
+* "$@" is identical to the arguments received by the shell file: blanks in
+  arguments are ignored, and the result is a list of words identical to the
+  original arguments.
+
+If pick has no arguments, it should probably read its standard input, so we
+could say
+
+        $ pick <mailinglist
+	
+instead of
+
+        $ pick `cat mailinglist`
+
+But we won't investigate this version of pick: it involves some ugly
+complications and is significantly harder than the same program written in C,
+which we will present in the next chapter.
+
+The first two of the following exercises are difficult, but educational to the
+advanced shell programmer.
+
+Exercise 5-24. Try writing a pick that reads its arguments form the standard
+input if none are supplied on the command line. It should handle blanks
+properly. Does a q response work? If not, try the next exercise.
+
+Exercise 5-25. Although shell built-ins like read and set cannot be redirected,
+the shell itself can be temporarily redirected. Read the section of sh(1) that
+described exec and work out how to read from /dev/tty without calling a
+sub-shell. (It might help to read Chapter 7 first.)
+
+Exercise 5-26. (Much easier) Use read in your .profile to initialize TERM and
+whatever else depends on it, such as tab stops.
+

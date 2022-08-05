@@ -1,0 +1,51 @@
+
+        $ echo a line of text >junk
+        $ put junk
+        Summary: make a new file               Type the description
+        get: no file junk.H                    History doesn't exist...
+        put: creating junk.H                   ... so put creates it
+        $ cat junk.H
+        a line of text
+        @@@ you Sat Oct  1 13:31:03 EDT 1983 make a new file
+        $ echo another line >>junk
+        $ put junk
+        Summary: one line added
+        $ cat junk.H
+        a line of text
+        another line
+        @@@ you Sat Oct  1 13:31:28 EDT 1983 one line added
+        2d
+        @@@ you Sat Oct  1 13:31:03 EDT 1983 make a new file
+        $
+
+The "editing commands" consists of the single line 2d, which deletes line 2 of
+the file, turning the new version into the original.
+
+        $ rm junk
+        $ get junk                                  Most recent version
+        $ cat junk
+        a line of text
+        another line
+        $ get -1 junk
+        $ cat junk                                  Newest-but-one version
+        a line of text
+        $ get junk                                  Most recent again
+        $ replace another 'a different' junk        Change it
+        $ put junk
+        Summary: second line changed
+        $ cat junk.H
+        a line of text
+        a different line
+        @@@ you Sat Oct  1 13:34:07 EDT 1983 second line changed
+        2c
+        another line
+        .
+        @@@ you Sat Oct  1 13:34:07 EDT 1983 one line added       
+        2d
+        @@@ you Sat Oct  1 13:31:03 EDT 1983 make a new file
+        $
+
+The editing commands run top to bottom throughout the history file to extract
+the desired version: the first set converts the newest to the second newest, the
+next converts that to the third newest, etc. Therefore, we are actually
+converting the new file into the old one a version at a time when running ed.

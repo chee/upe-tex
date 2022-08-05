@@ -1,0 +1,52 @@
+
+commands. The first consists of a period at the beginning of a line, followed by
+one or two letters or digits, and perhaps by parameters, as illustrated here:
+
+        .PP
+	.ft B
+	This is a little bold font paragraph.
+
+troff built-in commands all have lower-case names, so by convention commands in
+macro packages are given upper-case names. In this example, .PP is the ms
+command for a paragraph, and .ft B is a troff command that causes a change to
+the bold font. (Fonts have upper case names; the fonts available may be
+different on different typesetters.)
+
+The second form of troff command is a sequence of characters that begins with a
+backslash \, and may appear anywhere in the input; for example, \fB also causes
+a switch to the bold font. This form of command is pure troff; we'll come back
+to it shortly.
+
+You can format with nothing more than a .PP command before each paragraph, and
+for most documents, you can get by with about a dozen different ms commands. For
+example, Appendix 2, which describes hoc, has a title, the author's name, an
+abstract, automatically-numbered sections headings, and paragraphs. It uses only
+14 distinct commands, several of which come in pairs. The paper talks this
+general form in ms:
+
+	.TL
+	Title of document (one or more lines)
+	.AU
+	Author names, one per line
+	.AB
+	Abstract, terminated by .AE
+	.AE
+	.NH
+	Numbered heading (automatic numbering)
+	.PP
+	Paragraph ...
+	.PP
+	Another Paragraph ...
+	.SH
+	Sub-heading (not numbered)
+	.PP
+	...
+
+Formatting commands must occur at the beginning of a line. Input between the
+commands is free form: the location of newlines in the input is unimportant,
+because troff moves words from line to line to make lines long enough (a process
+called filling), and spreads extra space uniformly between words to align the
+margins (justification). It's a good practice, however, to start each sentence
+on a new line; it makes subsequent editing easier.
+
+Here is the beginning of the actual hoc document:

@@ -1,0 +1,52 @@
+
+replace sets PATH to /bin:/usr/bin, excluding $HOME/bin. This means that
+overwrite must be in /usr/bin for replace to work. We made this assumption for
+simplicity; if you can't install overwrite in /usr/bin, you will have to put
+$HOME/bin in PATH inside replace, or give overwrite's pathname explicitly. from
+now on, we will assume that the commands we are writing reside in /usr/bin; they
+are meant to.
+
+Exercise 5-17. Why doesn't overwrite use signal code 0 in the trap so the files
+are removed when it exits? Hint: Try typing DEL while running the following
+program:
+
+        trap "echo exiting; exit 1" 0 2
+        sleep 10
+
+Exercise 5-18. Add an option -v to replace to print all changed lines on
+/dev/tty. Strong hint: s/$left/$right/g$vflag.
+
+Exercise 5-19. Fix replace so it works regardless of the characters in the
+substitution strings.
+
+Exercise 5-20. Can replace be used to change the variable i to index everywhere
+in a program? How could you change things to make this work?
+
+Exercise 5-21. Is replace convenient and powerful enough to belong in /usr/bin?
+Is it preferable to simply typing the correct sed commands when needed? Why or
+why not?
+
+Exercise 5-22. (Hard)
+
+        $ overwrite file 'who | sort'
+
+doesn't work. Explain why not, and fix it. Hint: see eval in sh(1). How does
+your solution affect the interpretation of meatacharacters in the command?
+
+
+5.6 zap: killing processes by name
+
+The kill command only terminates processes specified by process-id. When a
+specific background process needs to be killed, you must usually run ps to find
+the process-id and then laboriously re-type it as an argument to kill. But it's
+silly to have one program print a number that you immediately transcribe
+manually to another. Why not write a program, say zap, to automate the job?
+
+One reason is that killing processes is dangerous, and care must be taken to
+kill the right processes. A safeguard is always to run zap interactively, and
+use pick to select the victims.
+
+A quick reminder about pick: it prints each of its arguments in turn and asks
+the user for a response; if the response is y, the argument is printed. (pick is
+the subject of the next section.) zap uses pick to verify that the processes
+chosen by name are the ones the user wants to kill:

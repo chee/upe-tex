@@ -1,0 +1,50 @@
+
+        .DS
+        .I
+        expr:           number
+                |       variable
+                |       ( expr )
+                |       expr binop expr
+                |       unop expr
+                |       function ( arguments )
+        .R
+        .DE
+        Numbers are floating point.
+
+which prints as
+
+--------------------------------------------------------------------------------
+|    Hoc is an expression language, much like C: although there are several    |
+| control-flow statements, most statements such as assignments are expressions |
+| whose value is disregarded. For example, the assignment operator = assigns   |
+| the value of its right operand to its left operand, and yields the value, so |
+| multiple assignments work. The expression grammar is:                        |
+|                                                                              |
+|         expr:           number                                               |
+|                 |       variable                                             |
+|                 |       ( expr )                                             |
+|                 |       expr binop expr                                      |
+|                 |       unop expr                                            |
+|                 |       function ( arguments )                               |
+|                                                                              |
+| Numbers are floating point.                                                  |
+--------------------------------------------------------------------------------
+
+Text inside a display is not normally filled or justified. Furthermore, if there
+is not enough room on the current page, the displayed material (and everything
+that follows it) is moved onto the next page. .DS permits several options,
+including L for left-justified, C, which centers each line individually, and B,
+which centers the entire display.
+
+The items in the display above are separated by tabs. By default, troff tabs are
+set every half inch, not every eight spaces as is usual. Even if tab stops were
+every 8 spaces, though, characters are of varying widths, so tabs processed by
+troff wouldn't always appear as expected.
+
+
+Font changes
+
+The ms macros provide three commands to change the font. .R changes the font to
+roman, the usual font, .I changes to italic, this font, and .B changes to
+boldface, this font. Unadorned, each command selects the font for subsequent
+text:

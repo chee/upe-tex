@@ -1,0 +1,52 @@
+
+mathematical characters have names, such as sum, int, infinity, grad: sum, int,
+infinity, grad. There are positional operators such as sub, sup, from, to, and
+over:
+
+
+is
+
+        sum from i=0 to infinity x sub i sup 2 ~->~ l over {2 pi}
+
+There are operators like sqrt and expandable parentheses, braces, etc. eqn will
+also create columns and matrices of objects. There are also commands to control
+sizes, fonts and positions when the defaults are not correct.
+
+It is common to place small mathematical expressions such as log_10(x) in the
+body of the text, rather than in displays. The eqn keyword delim specifies a
+pair of characters to bracket in-line expressions. The characters used as left
+and right delimiters are usually the same; often a dollar sign $ is used. But
+since hoc uses $ for arguments, we use @ in our examples. % is also a suitable
+delimiter, but avoid the others: so many characters have special properties in
+the various programs that you can get spectacularly anomalous behaviors. (We
+certainly did as we wrote this chapter.)
+
+So, after saying
+
+.EQ
+delim @@
+.EN
+
+in-line expressions such as [sum from i=0 to infinity x sub i] can be printed:
+
+        in-line expressions 
+        such as @sum from i=0 to infinity x sub i@ can be printed:
+
+In-line expressions are used for mathematics within a table, as this example
+from the hoc document shows:
+
+        .TS
+        center, box
+        c s s
+        lfCW n 1.
+        \fBTable 3:\fP Built-in Constants
+        .sp .5
+        DEG     57.29577951308232087680 @180/pi@, degrees per radian
+        E       2.71828182845904523536  @e@, base of natural logarithms
+        GAMMA   0.57721566490153286060  @gamma@, Euler-Mascheroni constant
+        PHI     1.61803398874989484820  @( sqrt 5 +1)/2@, the golden ratio
+        PI      3.14159265358979323846  @pi@, circular transcendental number
+        .TE
+
+This table also shows how tbl lines up the decimal points in numeric (n)
+columns. The output appears below.

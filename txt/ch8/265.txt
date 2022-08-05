@@ -1,0 +1,33 @@
+working properly; we left them in in case some program error causes the stack to
+be curdled. The overhead in time and space is small compared to the benefit of
+detecting the error if we make a careless change in the program. (We did,
+several times.)
+
+C's ability to manipulate pointers to functions leads to compact and efficient
+code. An alternative, to make the operators constants and combine the semantic
+functions into a big switch statement in execute, is straightforward and is left
+as an exercise.
+
+
+A third digression on make
+
+As the source code hoc grows, it becomes more and more valuable to keep track
+mechanically of what has changed and what depends on that. The beauty of make is
+that it automates jobs that we would otherwise do by hand (and get wrong
+sometimes) or by creating a specialized shell file.
+
+We have made two improvements to the makefile. The first is based on the
+observation that although several files depend on the yacc-defined constants in
+y.tab.h, there's no need to recompile them unless the constants change ---
+changes to the C code in hoc.y don't affect anything else. In the new makefile
+the .o files depend on a new file x.tab.h that is updated only when the contents
+of y.tab.h change. The second improvement is to make the rule for pr (printing
+the source files) depend on the source files, so that only changed files are
+printed.
+
+The first of these changes is a great time-saver for larger programs when the
+grammar is static but the semantics are not (the usual situation). The second
+change is a great paper-saver.
+
+Here is the new makefile for hoc4:
+

@@ -1,0 +1,55 @@
+
+        a \fBfriv\fIolous\fR \fIvar\fBiety\fR of \fIfonts\fP
+
+is output as
+
+        a frivolous variety of fonts
+
+the font change \fP reverts to the previous font --- whatever the font was
+before the last switch.(There's only one previous font, not a statck.)
+
+Some fonts have two-character names. These are specified by the format \f(XX
+where XX is the font name. For example, the font on our typesetter in which
+programs in this book are printed is called CW (Courier Constant Width), so
+keywords is written as
+
+        \f(CWkeyword\fP
+
+It's clearly painful to have to type this, so one of our extensions to ms is a
+.CW macro so we don't have type or read backslashes. We use it to typeset
+in-line words such troff, like this:
+
+        The
+        .CW troff
+        formatter ...
+
+Formatting decisions defined by macros are also easy to change later.
+
+A size change is introduced by the sequence \sn, where n is one or two digits
+that specify the new size: \s8 switches to 8 point type. More commonly, relative
+changes may be made by prefixing a plus or minus to the size. For example, words
+can be printed in SMALL CAPS by typing
+
+        \s-2SMALL CAPS\s0
+
+\s0 causes the size to revert to its previous value. It's the analog of \fP, but
+in the troff tradition, it isn't spelled \sP. Our extension to ms include a
+macro .UC(upper case) for this job.
+
+
+Basic troff commands
+
+Realistically, even with a good macro package, you have to know a handful of
+troff commands for controlling spacing and filling, setting tab stops, and the
+like. The command .br causes a break, that is, the next input that follows the
+.br will appear on a new input line. This could be used, for example, to split a
+long title at the proper place:
+
+        .TL
+        Hoc - An Interactive Language
+        .br
+        For Floating Point Arithmetic
+        ...
+
+The command .nf turns off the normal filling of output lines; each line of input
+goes directly into one line of output. The command .fi turns filling

@@ -1,0 +1,53 @@
+
+main problem with lex (aside from requiring that the user learn yet another
+language) is that it tends to be slow to run and to produce bigger and slower
+recognizers than the equivalent C version. It is also somewhat harder to adapt
+its input mechanism if one is doing anything unusual, such as error recovery or
+even input from files. None of these issues is serious in the context of
+hoc. The main limitation is space: it takes more pages to describe the lex
+version, so (regretfully) we will revert to C for subsequent lexical
+analysis. It is a good exercise to do the lex versions, however.
+
+Exercise 8-9. Compare the sizes of the two versions of hoc3. Hint: see size(1)
+
+
+8.4 Stage 4: Compilation into a machine
+
+We are heading towards hoc5, an interpreter for a language with control
+flow. hoc4 is an intermediate step, providing the same functions as hoc3, but
+implemented within the interpreter framework of hoc5. We actually wrote hoc4
+this way, since it gives us two programs that should behave identically, which
+is valuable for debugging. As the input is parsed, hoc4 generates code for a
+simple computer instead of immediately computing answers. Once the end of a
+statement is reached, the generated code is executed ("interpreted") to compute
+the desired result.
+
+The simple computer is a stack machine: when an operand is encountered, it
+is pushed onto a stack (more precisely, code is generated to push it onto a
+stack); most operators operate on items on the top of the stack. For example,
+to handle the assignment
+
+        x = 2 * y
+
+the following code is generated:
+
+        constpush         Push a constant onto stack
+          2                 .. the content 2
+        varpush           Push symbol table pointer onto stack
+          y                 ... for the variable y
+        eval              Evaluate: replace pointer by value
+        mul               Multiply top two items: product replaces them
+        varpush           Push symbol table pointer onto stack
+          x                 ... for the variable x
+        assign            Store value in variable, pop pointer
+        pop               Clear top value from stack
+        STOP              End of instruction sequence
+
+when this code is executed, the expression is evaluated and the result is stored
+in x, as indicated by the comments. The final pop clears the value off the stack
+because it is not needed any longer.
+
+Stack machines usually result in simple interpreters, and ours is no exception
+--- it's just an array containing operators and operands. The operators are the
+machine instructions; each is a function call with its arguments, if any,
+following the instruction. Other operands may already be on the stack, as they

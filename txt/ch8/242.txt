@@ -1,0 +1,47 @@
+
+        $ make                  Make the first thing in makefile, hoc1
+        yacc  hoc.y
+        cc  -c y.tab.c
+        rm y.tab.c
+        mv y.tab.o hoc.o
+        cc hoc.o -o hoc1
+        $ make                  Do it again
+        'hoc1' is up to date    make realizes it's unnecessary
+        $
+
+        
+8.2 Stage 2: Variables and error recovery
+
+The next step (a small one) is to add "memory" to hoc1, to make hoc2. The memory
+is 26 variables, named a through z. This isn't very elegant, but it's an easy
+and useful intermediate step. We'll also add some error handling. If you try
+hoc1, you'll recognize that its approach to syntax errors is to print a message
+and die, and its treatment of arithmetic errors like division by zero is
+reprehensible:
+
+        $ hoc1
+        1/0
+        Floating exception - core dump
+        $
+
+The changes needed for these new features are modest, about 35 lines of
+code. The lexical analyzer yylex has to recognize letters as variables; the
+grammar has to include productions of the form
+
+        expr:     VAR
+                | VAR '=' expr
+
+An expression can contain an assignment, which permits multiple assignments like
+
+        x = y = z = 0
+
+The easiest way to store the values of the variables is in a 26-element array,
+the single-letter variable name can be used to index the array. But if the
+grammar is to process both variable names and values in the same stack, yacc has
+to be told that its stack contains a union of a double and an int, not just a
+double. This is done with a %union declaration near the top. A #define or a
+typedef is fine for setting the stack to a basic type like double, but the
+%union mechanism is required for union types because yacc checks for consistency
+in expressions like $$=$2.
+
+Here is the grammar part of hoc.y for hoc2:

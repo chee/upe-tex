@@ -1,0 +1,37 @@
+
+seems to be the proper design.
+
+Exercise 6-6. Does p act sanely if pagesize is not positive?
+
+Exercise 6-7. What else could be done to p? Evaluate and implement (if
+appropriate) the ability to re-print parts of earlier input. (This is one extra
+feature that we enjoy.) Add a facility to permit printing less than a screenful
+of input after each pause. Add a facility to scan forward or backward for a line
+specified by number or content.
+
+Exercise 6-8. User the file manipulation capabilities of the exec shell built-in
+(see sh(1)) to fix ttyin's call to system.
+
+Exercise 6-9. If you forget to specify an input for p, it sits quietly waiting
+for input from the terminal. Is it worth detecting this probable error? If so,
+how? Hint: isatty(3).
+
+
+6.5 An example: pick
+
+The version of pick in Chapter 5 was clearly stretching the capabilities of the
+shell. The C version that follows is somewhat different from the one in Chapter
+5. If it has arguments, they are processed as before. But if the single argument
+'-' is specified, pick processes its standard input.
+
+Why not just read the standard input if there are no arguments? Consider the
+second version of the zap command in Section 5.6:
+
+       kill $SIG `pick\`ps -ag | egrep "$*"\` | awk '{print $1}'`
+
+What happens if the egrep pattern doesn't match anything? In that case, pick has
+no arguments and starts to read its standard input; the zap command fails in a
+mystifying way. Requiring an explicit argument is an easy way to disambiguate
+such situations, and the '-' convention from cat and other programs indicates
+how to specify it.
+

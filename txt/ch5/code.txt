@@ -1,0 +1,168 @@
+--------------------------------------------------------------------------------
+$ cat 'which nohup'
+trap "" 1 15
+if test -t 2>&1
+then
+	echo "Sending output to 'nohup.out'"
+	exec nice -5 $* >>nohup.out 2>&1
+else
+	exec nice -5 $* 2>&1
+fi
+$
+
+
+--------------------------------------------------------------------------------
+# overwrite:  copy standard input to output after EOF
+# version 1.  BUG here
+
+PATH=/bin:/usr/bin
+
+case $# in
+1)	;;
+*)	echo 'Usage: overwrite file' 1>&2; exit 2
+esac
+
+new=/tmp/overwr.$$
+trap 'rm -f $new; exit 1' 1 2 15
+
+cat >$new		# collect the input
+cp $new $1		# overwrite the input file
+rm -f $new
+
+
+--------------------------------------------------------------------------------
+# overwrite:  copy standard input to output after EOF
+# version 2.  BUG here too
+
+PATH=/bin:/usr/bin
+
+case $# in
+1)	;;
+*)	echo 'Usage: overwrite file' 1>&2; exit 2
+esac
+
+new=/tmp/overwr1.$$
+old=/tmp/overwr2.$$
+trap 'rm -f $new $old; exit 1' 1 2 15
+
+cat >$new		# collect the input
+cp $1 $old		# save original file
+
+trap '' 1 2 15		# we are committed; ignore signals
+cp $new $1		# overwrite the input file
+
+rm -f $new $old
+
+
+--------------------------------------------------------------------------------
+# overwrite:  copy standard input to output after EOF
+# final version
+
+opath=$PATH
+PATH=/bin:/usr/bin
+
+case $# in
+0|1)	echo 'Usage: overwrite file cmd [args]' 1>&2; exit 2
+esac
+
+file=$1; shift
+new=/tmp/overwr1.$$; old=/tmp/overwr2.$$
+trap 'rm -f $new $old; exit 1' 1 2 15	# clean up files
+
+if PATH=$opath "$@" >$new		# collect input
+then
+	cp $file $old	# save original file
+	trap '' 1 2 15	# we are committed; ignore signals
+	cp $new $file
+else
+	echo "overwrite: $1 failed, $file unchanged" 1>&2
+	exit 1
+fi
+rm -f $new $old
+
+
+--------------------------------------------------------------------------------
+$ cat notice
+Unix is a Trademark of Bell Laboratories
+$ overwrite notice sed 's/UNIXUNIX(TM)/g' notice
+command garbled: s/UNIXUNIX(TM)/g
+overwrite: sed failed, notice unchanged
+$ cat notice
+UNIX is a Trademark of Bell Laboratories                 He ии?им?икии???
+$ overwrite notice sed 's/UNIX/UNIX(TM)/g' notice
+$ cat notice
+UNIX(TM) is a Trademark of Bell Laboratories
+$
+
+
+--------------------------------------------------------------------------------
+$ cat replace
+# replace:  replace str1 in files with str2, in place
+
+PATH=/bin:/usr/bin
+
+case $# in
+0|1|2)	echo 'Usage: replace str1 str2 files' 1>&2; exit 1
+esac
+
+left="$1"; right="$2"; shift; shift
+
+for i
+do
+	overwrite $i sed "s@$left@$right@g" $i
+done
+$ cat footnote
+UNIX is not an acronym
+$ replace UNIX Unix footnote
+$ cat footnote
+Unix is not an acronym
+$
+
+
+--------------------------------------------------------------------------------
+$ cat zap
+# zap pattern:  kill all processes matching pattern
+# BUG in this version
+
+PATH=/bin:/usr/bin
+
+case $# in
+0)	echo 'Usage: zap pattern' 1>&2; exit 1
+esac
+
+kill `pick \`ps -ag | grep "$*"\` | awk '{print $1}'`
+
+
+--------------------------------------------------------------------------------
+$ cat zap
+# zap pat:  kill all processes matching pat
+# final version
+
+PATH=/bin:/usr/bin
+IFS='
+'			# just a newline
+case $1 in
+"")	echo 'Usage: zap [-2] pattern' 1>&2; exit 1 ;;
+-*)	SIG=$1; shift
+esac
+
+echo '   PID TTY   TIME CMD'
+kill $SIG `pick \`ps -ag | egrep "$*"\` | awk '{print $1}'`
+
+
+--------------------------------------------------------------------------------
+# pick:  select arguments
+
+PATH=/bin:/usr/bin
+
+for i				# for each argument
+do
+	echo -n "$i? " >/dev/tty
+	read response
+	case $response in
+	y*)	echo $i ;;
+	q*)	break
+	esac
+done </dev/tty
+
+

@@ -1,0 +1,55 @@
+
+back on. The command .ce centers the next line.
+
+The command .bp begins a new page. The command .sp causes a single blank line to
+appear in the output. A .sp command can be followed by an argument to specify
+how many blank lines or how much space.
+
+        .sp 3                           Leave 3 blank lines
+        .sp .5                          Leave blank half-line
+        .sp 1.5i                        Leave 1.5 inches
+        .sp 3p                          Leave 3 points
+        .sp 3.1c                        Leave 3.1 centimeters
+
+Extra space at the bottom of a page is discarded, so a large .sp is equivalent
+to a .bp.
+
+The .ta command sets tag stops (which are initialized to every half inch).
+
+        .ta n n n ...
+
+sets tab stops at the specified distances from the left margin; as with .sp,
+each number n is in inches if followed by 'i'. A tab stop suffixed with R will
+right-justify the text at the next tab stop; C causes a centered tab.
+
+The command .ps n sets the point size to n; the command .ft X sets the font to
+X. the rules about incremental sizes and returning to the previous value are the
+same as for \s and \f.
+
+
+Defining macros
+
+Defining macros in full generality would take us much further into the
+intricacies of troff than it appropriate, but we can illustrate some of the
+basics. For example, here is the definition of .CW:
+
+        .de CW                   Start a definition
+        \&\f(CW\\$1\fP\\$2       Font changes around first argument
+        ..                       End of definition
+
+\$n produces the value of the n-th argument when the macro is invoked; it is
+empty if no n-th argument was provided. The double \ delays evaluation of \$n
+during macro definition. The \& prevents the argument from being interpreted as
+a troff command, in case it begins with a period, as in
+
+        .CW .sp
+
+
+9.3 The tbl and eqn preprocessors
+
+troff is a big and complicated program, both inside and out, so modifying it to
+take on a new task is not something to be undertaken lightly. Accordingly the
+development of programs for typesetting mathematics and tables took a different
+approach --- the design of separate languages implemented by separate programs
+eqn and tbl that act as "preprocessors" for troff. In effect, troff is an
+assembly language for a typesetting machine; and eqn and tbl compile into it.

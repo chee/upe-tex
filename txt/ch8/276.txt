@@ -1,0 +1,23 @@
+
+The productions for arglist count the arguments. As first sight it might
+seem necessary to collect arguments in some way, but it's not, because each
+expr in an argument list leaves its value on the stack exactly where it's
+wanted. Knowing how many are one the stack is all that's needed.
+
+   The rules for defn introduce a new yacc feature, en embedded action. It
+is possible to put an action in the middle of a rule so that it will be executed
+during the recognition of the rule. We use that feature here to record the fact
+that we are in a function or procedure definition. (The alternative is to create
+a new symbol analogous to begin, to be recognized at the proper time.) The
+function defnonly prints a warning message if a construct occurs outside of
+the definition of a function or procedure when it shouldn't. There is often a
+choice of whether to detect errors syntactically or semantically; we faced one
+earlier in handling undefined variables. The defnonly function is a good
+example of a place where the semantic check is easier than the syntactic one.
+
+
+The variable indef is declared in hoc.y, and set by the actions for defn.
+
+   The lexical analyzer is augmented by tests for arguments --- a $ followed by
+a number --- and for quoted strings. Backslash sequences like \n are inter-
+preted in strings by a function backslash.

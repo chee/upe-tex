@@ -1,0 +1,52 @@
+
+well as the first. A font can be defined for a column; the tbl specification
+lfCW prints a left-justified column in the CW font.
+
+The text of the table follows the formatting information. Tab characters separte
+columns, and some troff commands such as .sp are understood inside tables. (Note
+a couple of appearances of \&: unsupported leading - and = signs in columns tell
+tbl to draw lines across the table at that point.)
+
+tbl produces a wider variety of tables than this simple example would suggest:
+it will fill text in boxes, vertically justify column headings, and so on. The
+easiest way to use it for complicated tables is to look for a similar example in
+the manual in Volume 2A of the UNIX Programmer's Manual and adapt the commands.
+
+
+Mathematical expressions
+
+The second troff preprocessor is eqn, which converts a language description
+mathematical expressions into the troff commands to print them. It automatically
+handles font and size changes, and also provides names for standard mathematical
+characters. eqn input usually appears between .EQ and .EN lines, analogous to
+tbl's .TS and .TE. For example,
+
+        .EQ
+        x sub i
+        .EN
+
+produces x_i. If the ms macro package is used, the equation is printed as a
+"display," and an optional argument to .EQ specifies an equation number. For
+example, the Cauchy integral formula
+
+                                                                         (9.1)
+
+is written as
+
+        .EQ (9.1)
+        f( zeta ) ~=~ 1 over {2 pi i} int from C
+            f(z) over {z - zeta} dz
+        .EN
+
+The eqn language is based on the way that mathematics is spoken aloud. One
+difference between spoken mathematics and eqn input is that braces {} are
+parentheses of eqn --- they override the default precedence rules of the
+language --- but ordinary parentheses have no special significance. Blanks,
+however, are significant. Note that the first zeta is surrounded by blanks in
+the example above: keywords such as zeta and over are only recognized when
+surrounded by blanks and braces, neither of which appear in the output. To force
+blank page into the output, use a tilde character ~ as in ~=~. To get braces,
+use "{" and "}'.
+
+There are several classes of eqn keywords. Greek letters are spelled out, in
+lower or upper case, as in lambda and LAMBDA (lambda and LAMBDA). Other

@@ -1,0 +1,52 @@
+
+        nskip(fin, n)   /* skip n lines of file fin */
+            FILE *fin;
+        {
+            char buf[BUFSIZ];
+
+            while (n-- > 0)
+                fgets(buf, sizeof buf, fin);
+        }
+
+        ncopy(fin, n, fout) /* copy n lines from fin to fout */
+            FILE *fin, *fout;
+        {
+            char buf[BUFSIZ];
+
+            while (n-- > 0) {
+                if (fgets(buf, sizeof buf, fin) == NULL)
+                    return;
+                fputs(buf, fout);
+            }
+        }
+
+As it stands, idiff doesn't quit gracefully if it is interrupted, since it
+leaves several files lying around in /tmp. In the next chapter, we will show how
+to catch interrupts to remove temporary files like those used here.
+
+The crucial observation with both zap and idiff is that most of the hard work
+has been done by someone else. These program merely put a convenient interface
+on another program that computes the right information. It's worth watching for
+opportunities to build on someone else's labor instead of doing it yourself ---
+it's a cheap way to be more productive.
+
+Exercise 6-13. Add the command q to idiff: the response q< will take all the
+rest of the '<' choices automatically; q> will take all the rest of the '>'
+choices.
+
+Exercise 6-14. Modify idiff so that any diff arguments are passed on to diff; -b
+and -h are likely candidates. Modify idiff so that a different editor can be
+specified, as in
+
+        $ idiff -e another-editor file1 file2
+
+How do these two modifications interact?
+
+Exercise 6-15. Change idiff to use popen and pclose instead of a temprorary file
+for the output of diff. What difference does it make in program speed and
+complexity?
+
+Exercise 6-16. diff has the property that if one of its arguments is a
+directory, it searches that directory for a file with the same name as the other
+argument. But if you try the same thing with idiff, in fails in a strange
+way. Explain what happens, then fix it.

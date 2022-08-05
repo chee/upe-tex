@@ -1,0 +1,49 @@
+
+matches any part of a line of ps output, using strncmp (see Table 6.2). strindex
+returns the position in s1 where s2 occurs, or -1 if it does not.
+
+	strindex(s, t)  /* return index of t in s, -1 if none */
+	    char *s, *t;
+	{
+	    int i, n;
+
+	    n = strlen(t);
+	    for (i = 0; s[i] != '\0'; i++)
+		if (strncmp(s+i, t, n) == 0)
+		    return i;
+	    return -1;
+	}
+
+Table 6.4 summarizes the commonly-used functions from the standard I/O library.
+
+Exercise 6-11. Modify zap so that any number of arguments can be supplied. As
+written, zap will normally echo the line corresponding to itself as one of the
+choices. Should it? If not, modify the program accordingly. Hint: getpid(2).
+
+Exercise 6-12. Build an fgrep(1) around strindex. Compare running times for
+complicated searches, say ten words in a document. Why does fgrep run faster?
+
+
+6.8 An interactive file comparison program: idiff
+
+A common problem is to have two versions of a file, somewhat different, each
+containing part of a desired file; this often results when changes are made
+independently by two different people. diff will tell you how the files differ,
+but it's of no direct help if you want to select some parts of the first file
+and some of the second.
+
+In this section, we will write a program idiff ("interactive diff") that
+presents each chunk of diff output and offers the user the options of choosing
+the "from" part, choosing the "to" part, or editing the parts. idiff produces
+the selected pieces in the proper order, in a file called idiff.out. That is,
+given these two files:
+
+	file1:				file2:
+	This is               		This is
+	a test                		not a test
+	of                    		of
+	your                  		our
+	skill                 		ability
+	and comprehension.
+
+diff produces

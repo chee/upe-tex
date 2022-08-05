@@ -1,0 +1,53 @@
+
+        # pick:  select arguments
+
+        PATH=/bin:/usr/bin
+
+        for i                           # for each argument
+        do
+                echo -n "$i? " >/dev/tty
+                read response
+                case $response in
+                y*) echo $i ;;
+                q*) break
+                esac
+        done </dev/tty
+
+echo -n suppresses the final newlines, so the response can be typed on the same
+line as the prompt. And, of course, the prompts are printed on /dev/tty because
+the standard output is almost certainly not the terminal.
+
+The break statement is borrowed from C: it terminates the innermost enclosing
+loop. In this case it breaks out of the for loop when a q is typed. We let q
+terminate selection because it's easy to do, potentially convenient, and
+consistent with other programs.
+
+It's interesting to play with blanks in the arguments to pick:
+
+        $ pick '1 2' 3
+        1 2?
+        3?
+        $
+
+If you want to see how pick is reading its arguments, run it and just press
+RETURN after each prompt. It's working fine as it stands: for i handles the
+arguments properly. We could have written the loop other ways:
+
+        $ grep for pick                See what this version does
+        for i in $*
+        $ pick '1 2' 3
+        1?
+        2?
+        3?
+        $
+
+This form doesn't work, because the operands of the loop are rescanned, and the
+blanks in the first argument cause it to become two arguments. Try quoting the
+$*:
+
+        $ grep for pick                 Try a different version
+        for i in "$*"
+        $ pick '1 2' 3
+        1 2 3?
+        $
+

@@ -1,0 +1,53 @@
+
+        yylex()         /* hoc2 */
+        {
+        ...
+		if (c == '.' || isdigit(c)) {   /* number */
+			ungetc(c, stdin);
+			scanf("%lf", &yylval.val);
+			return NUMBER;
+		}
+		if (islower(c)) {
+			yylval.index = c - 'a'; /* ASCII only */
+			return VAR;
+		}
+        ...
+
+Again, notice how the token type (e.g., NUMBER) is distinct from its value
+(e.g., 3.1416).
+
+Let us illustrate variables and error recovery, the new things in hoc2:
+
+	$ hoc2
+	x = 355
+		355
+	y = 113
+		113
+	p = x/z                              z is undefined and thus zero
+	hoc2: division by zero near line 4   Error recovery
+	x/y
+		3.1415929
+	1e30 * 1e30                          Overflow
+	hoc2: floating point exception near line 5
+	...
+
+Actually, the PDP-11 requires special arrangements to detect floating point
+overflow, but on most other machines hoc2 behaves as shown.
+
+Exercise 8-3. Add a facility for remembering the most recent value computed,so
+that is does not have to be retyped in a sequence of related computations. One
+solution is to make it one of the variables, for instance 'p' for 'previous.'
+
+
+8.3 Stage 3: Arbitrary variable names; built-in functions
+
+This version, hoc3, adds several major new capabilities, and a corresponding
+amount of extra code. The main new feature is access to built-in functions:
+
+       sin        cos        atan        exp        log        log10
+       sqrt	  int 	     abs
+
+We have also added an exponentiation operator '^'; it has the highest
+precedence, and is right-associative.
+
+Since the lexical analyzer has to cope with built-in names longer than a

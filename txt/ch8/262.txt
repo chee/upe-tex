@@ -1,0 +1,9 @@
+show it in pieces.
+
+
+The stack is manipulated by calls to push and pop:
+
+
+The machine is generated during parsing by calls to the function code, which
+simply puts an instruction into the next free spot in the array prog. It returns
+the location of the instruction (which is not used in hoc4).

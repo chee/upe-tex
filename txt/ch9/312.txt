@@ -1,0 +1,50 @@
+
+An example should clarify how to write the manual page. The source for hoc(1),
+/usr/man/man1/hoc.1, is shown in Figure 9.1, and Figure 9.2 is the output of
+
+        $ man -t hoc
+
+
+Exercise 9-8. Write a manual page for doctype. Write a version of the man
+command that looks in your own man directory for documentation on your personal
+programs.
+
+
++------------------------------------------------------------------------------+
+|HOC(1)                                                                  HOC(1)|
+|                                                                              |
+|                                                                              |
+|NAME                                                                          |
+|       hoc - interactive floating point language                              |
+|                                                                              |
+|SYNOPSIS                                                                      |
+|       hoc [ file ... ]                                                       |
+|                                                                              |
+|DESCRIPTION                                                                   |
+|       Hoc  interprets  a  simple  language  for floating point arithmetic, at|
+|       about the level of BASIC, with C-like syntax and functions  and  proce-|
+|       dures with arguments and recursion.                                    |
+|                                                                              |
+|       The named files are read and interpreted in order.  If no file is given|
+|       or if file is '-' hoc interprets the standard input.                   |
+|                                                                              |
+|       Hoc input consists of  expressions  and  statements.   Expressions  are|
+|       evaluated and their results printed.  Statements, typically assignments|
+|       and function or procedure definitions, produce no  output  unless  they|
+|       explicitly call print.                                                 |
+|                                                                              |
+|SEE ALSO                                                                      |
+|       Hoc  -  An  Interactive Language for Floating Point Arithmetic by Brian|
+|       Kernighan and Rob Pike.                                                |
+|       bac(1), dc(1) and dc(1).                                               |
+|                                                                              |
+|BUGS                                                                          |
+|       Error recovery is imperfect within function and procedure  definitions.|
+|       The treatment of newlines is not exactly user-friendly.                |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|8th Edition                                                                  1|
++------------------------------------------------------------------------------+
+                               Figure 9.2: hoc(1)

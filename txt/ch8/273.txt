@@ -1,0 +1,42 @@
+
+possibilities
+
+Exercise 8-12. Modify hoc5 to print the machine it generates in a readable form
+for debugging.
+
+Exercise 8-13. Add the assignment operators of C, such as +=, *=, etc., and the
+increment and decrement operators ++ and --. Modify && and || so they guarantee
+left-to-right evaluation and early termination, as in C.
+
+Exercise 8-14. Add a for statement like that of C to hoc5. Add break and
+continue.
+
+Exercise 8-15. How would you modify the grammar or the lexical analyzer (or
+both) of hoc5 to make it more forgiving about the placement of newlines? How
+would you add semicolon as a synonym for newline? How would you add a comment
+convention? What syntax would you use?
+
+Exercise 8-16. Add interrupt handling to hoc5, so that a runaway computation can
+be stopped without losing the state of variables already computed.
+
+Exercise 8-17. It is a nuisance to have to create a program in a file, run it,
+then edit the file to make trivial change. How would you modify hoc5 to provide
+an edit command that would cause you to be placed in an editor with a copy of
+your hoc program already read in? Hint: consider a text opcode.
+
+
+8.6 Stage 6: Functions and procedures; input/output
+
+The final stage in the evolution of hoc, at least for this book, is a major
+increase in functionality: the addition of functions and procedures. We have
+also added the ability to print character strings as well as numbers, and to
+read values from the standard input. hoc6 also accepts filename arguments,
+including the name "-" for the standard input. Together, these changes add 235
+lines of code, bringing the total to about 810, but in effect convert hoc from a
+calculator into a programming language. We won't show every line here; Appendix
+3 is a listing of the entire program so you can see how the pieces fit together.
+
+In the grammar, function calls are expressions; procedure calls are
+statements. Both are explained in detail in Appendix 2, which also has some more
+examples. For instance, the definition and use of a procedure for printing all
+all Fibonacci numbers less than its argument looks like this:

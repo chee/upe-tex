@@ -1,0 +1,44 @@
+development of the hoc family. Each version of the program is in a separate
+directory, with identical files linked together; ls and du are used repeatedly to
+keep track of what is where. Many other questions are answered by programs.
+For example, where is that variable declared? Use grep. What did we
+change in this version? Use diff. How do we integrate the changes into that
+version? Use idiff. How big is the file? Use wc. Time to make a backup
+copy? Use cp. How can we back up only the files changed since the last
+back? Use make. This general style is absolutely typical of day-to-day pro-
+gram development on a UNIX system: a host of small tools, used separately or
+combined as necessary, help to mechanize work that would otherwise have to
+be done by hand.
+
+
+History and bibliographic notes
+
+   yacc was developed by Steve Johnson. Technically, the class of languages
+for which yacc can generate parsers is called LALR(1): left to right parsing,
+looking ahead at most one token in the input. The notion of a separate
+description to resolve precedence and ambiguity in the grammar is new with
+yacc. See "Deterministic parsing of ambiguous grammars," by A.V. Aho, S.
+C. Johnson, and J. D. Ullman, CACM, August, 1975. There are also some
+innovative algorithms and data structures for creating and storing the parsing
+tables.
+
+   A good description of the basic theory underlying yacc and other parser
+generators may be found in Principles of the Compiler Design, By A. V. Aho and
+J. D. Ullman (Addison-Wesley, 1977). yacc itself is described in Volume 2B
+of The UNIX Programmer's Manual. That section also presents a calculator com-
+parable to hoc2; you might find it instructive to make the comparison.
+
+   lex was originally written by Mike Lest. Again, the theory is described
+by Aho and Ullman, and the lex language itself is documented in The UNIX
+Programmer's Manual.
+
+   yacc, and to a lesser degree lex, have been used to implement many
+language processors, including the portable C compiler, Pascal, FORTRAN 77,
+Ratfor, awk, bc, eqn, and pic.
+
+   make was written by Stu Feldman. See "MAKE --- a program for maintain-
+ing computer programs," Software --- Practice & Experience, April, 1979.
+
+   Writing Efficient Programs by Jon Bentley (Prentice-Hall, 1982) describes
+techniques for making programs faster. The emphasis is on first finding the
+right algorithm, then refining the code if necessary.

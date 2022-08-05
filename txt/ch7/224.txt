@@ -1,0 +1,51 @@
+
+        /*
+         * Safer version of system for interactive programs
+         */
+        #include <signal.h>
+        #include <stdio.h>
+
+        system(s)   /* run command line s */
+            char *s;
+        {
+            int status, pid, w, tty;
+            int (*istat)(), (*qstat)();
+            extern char *progname;
+
+            fflush(stdout);
+            tty = open("/dev/tty", 2);
+            if (tty == -1) {
+                fprintf(stderr, "%s: can't open /dev/tty\n", progname);
+                return -1;
+            }
+            if ((pid = fork()) == 0) {
+                close(0); dup(tty);
+                close(1); dup(tty);
+                close(2); dup(tty);
+                close(tty);
+                execlp("sh", "sh", "-c", s, (char *) 0);
+                exit(127);
+            }
+            close(tty);
+            istat = signal(SIGINT, SIG_IGN);
+            qstat = signal(SIGQUIT, SIG_IGN);
+            while ((w = wait(&status)) != pid && w != -1)
+                ;
+            if (w == -1)
+                status = -1;
+            signal(SIGINT, istat);
+            signal(SIGQUIT, qstat);
+            return status;
+        }
+
+Note that /dev/tty is opened with mode 2 --- read and write --- and then dup'ed
+to form the standard input and output. This is actually how the system assembles
+the standard input, output and error when you log in. Therefore, your standard
+input is writable:
+
+        $ echo hello 1>&0
+        hello
+        $
+
+This means we could have dup'ed file descriptor 2 to reconnect the standard
+input and output, but opening /dev/tty is cleaner and safer. Even this

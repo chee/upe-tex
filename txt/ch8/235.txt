@@ -1,0 +1,54 @@
+
+	list:   expr \n
+		list expr \n
+	expr:   NUMBER
+		expr + expr
+		eppr - expr
+		expr * expr
+		expr / expr
+		( expr )
+
+In other words, a list is a sequence of expressions, each followed by a
+newline. An expression is a number, or a pair of expressions joined by an
+operator, or a parenthesized expression.
+
+This is not complete. Among other things, it does not specify the normal
+precedence and associativity of the operators, nor does it attach a meaning to
+any construct. And although list is defined in terms of expr, and expr is
+defined in terms of NUMBER, NUMBER itself is nowhere defined. These details have
+to be filled in to go from a sketch of the language to a working program.
+
+
+Overview of yacc
+
+yacc is a parser generator, that is, a program for converting a grammatical
+specification of a language like the one above into a parser that will parse
+statements in the language, yacc provides a way to associate meanings with the
+components of the grammar in such a way that as the parsing takes place, the
+meaning can be "evaluated" as well. The stages in using yacc are the following.
+
+First, a grammar is written, like the one above, but more precise. This
+specifies the syntax of the language. yacc can be used at this stage to warn of
+errors and ambiguities in the grammar.
+
+Second, each rule or production of the grammar can be augmented with an action
+--- a statement of what to do when an instance of that grammatical form is found
+in a program being parsed. The "what to do" part is written in C, with
+conventions for connecting the grammar to the C code. This defines the semantics
+of the language.
+
+Third, a lexical analyzer is needed, which will read the input being parsed and
+break it up into meaningful chunks for the parser. A NUMBER is an example of a
+lexical chunk that is several characters long; single-character operators like +
+and * are also chunks. A lexical chunk is traditionally called a token.
+
+Finally, a controlling routine is needed, to call the parser that yacc built.
+
+yacc processes the grammar and the semantic actions into a parsing function,
+named yyparse, and writes it out as a file of C code. If yacc finds no errors,
+the parser, the lexical analyzer, and the control routine can be
+
+----------------
++ yacc stands for "yet another compiler-compiler," a comment by its creator,
+Steve Johnson, on the number of such programs extant at the time it was being
+developed (around 1972). yacc is one of a handful that have flourished.

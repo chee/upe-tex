@@ -1,0 +1,52 @@
+
+        $ man 7 man
+
+prints only the description of the macros. The default action is to print all
+pages with the specified name, using nroff, but man -t generates typeset pages
+using troff.
+
+The author of a manual page creates a file in the proper subdirectory of
+/usr/man. The man command calls nroff or troff with a macro package to print the
+page, as we can see by searching the man command for formatter invocations. Our
+result would be
+
+        $ grep roff `which man`
+                nroff $opt -man $all ;;
+                neqn $all | nroff $opt -man ;;
+                troff $opt -man $all ;;
+                troff -t $opt -man $all | tc ;;
+                eqn $all troff $opt -man ;;
+                eqn $all troff -t $opt -man | tc ;;
+        $
+
+The variety is to deal with options: nroff vs. troff, whether or not to run eqn,
+etc. The manual macros, invoked by troff -man, define troff commands that format
+in the style of the manual. They are basically the same as the ms macros, but
+there are differences, particularly in setting up the title and in the font
+change commands. The macros are documented --- briefly --- in man(7), but the
+basics are easy to remember. The layout of a manual page is:
+
+        .TH COMMAND section-number
+        .SH NAME
+        command \- brief description of function
+        .SH SYNOPSIS
+        .B command
+        options
+        .SH DESCRIPTION
+        Detailed explanation of programs and options.
+        Paragraphs are introduced by .PP.
+        .PP
+        This is a new paragraph.
+        .SH FILES
+        Files used by the command, e.g., passwd(1) mentions /etc/passwd
+        .SH "SEE ALSO."
+        References to related command, including other manual pages
+        .SH DIAGNOSTICS
+        Description of any unusual output (e.g., see cmp(1))
+        .SH BUGS
+        Surprising features (not always bug; see below)
+
+If any section is empty, its header is omitted. The .TH line and the NAME,
+SYNOPSIS and DESCRIPTION sections are mandatory.
+
+The line

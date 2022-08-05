@@ -1,0 +1,50 @@
+
+can be preceded by one or two line numbers, which indicate what line or lines
+are to be affected by the command; a default line number is used otherwise. Line
+numbers can be specified by absolute position in the file (1, 2, ...), by
+shorthand like $ for the last line and '.' for the current line, by pattern
+searches using regular expressions, and by additive combinations of these.
+
+Let us review how to create files with ed, using De Morgan's poem from Chapter
+1.
+
+        $ ed poem
+        ?poem                       Warning: the file poem doesn't exit
+        a                           Start adding lines
+        Great fleas have little fleas
+          upon their backs to bite 'em,
+        And little fleas have lesser fleas,
+          and so ad infinitum.
+        .                           Type a '.' to stop adding
+        w poem                      Write lines to file poem
+        121                         ed reports 121 characters written
+        q                           Quit.
+        $
+
+The command a adds or appends lines; the appending mode is terminated by a line
+with a '.' by itself. There is no indication of which mode you are in, so two
+common mistakes to watch for are typing text without an a command, and typing
+commands before typing the '.'.
+
+ed will never write your text into a file automatically; you have to tell it to
+do so with the w command. If you try to quit without writing your changes,
+however, ed prints a ? as a warning. At that point, another q command will let
+you exit without writing. Q always quits regardless of changes.
+
+        $ ed poem
+        121                         File exists, and has 121 characters
+        a                           Add some more lines at the end
+        And the great fleas themselves, in turn,
+          have greater fleas to go on;
+        While these again have greater still,
+          and greater still, and so on.
+        .                           Type a '.' to stop adding
+        q                           Try to quit
+        ?                           Warning: you didn't write first
+        w                           No filename given; poem is assumed
+        263
+        q                           Now it's OK to quit
+        $ wc poem                   Check for sure
+              8     46     263 poem
+        $
+

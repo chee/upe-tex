@@ -1,0 +1,55 @@
+
+by the standard library function fopen. fopen takes a filename (like temp or
+/etc/passwd), does some some housekeeping and negotiation with the kernel, and
+returns an internal name to be used in subsequent operation on the file
+
+This internal name is actually a pointer called a file pointer, to a structure
+that contains information about the file, such as the location of a buffer, the
+current character position in the buffer, whether the file is being read or
+written, and the like. One of the definitions obtained by including <stdio.h> is
+for a structure called FILE. The declaration for a file pointer is
+
+        FILE *fp;
+
+This says that fp is a pointer to a FILE. fopen returns a pointer to a FILE;
+there is a type declaration for fopen in <stdio.h>
+
+The actual call to fopen in a program is
+
+        char *name, *mode;
+
+        fp = fopen(name, mode);
+
+The first argument of fopen is the name of the file, as a character string. The
+second argument, also a character string, indicates how you intend to use the
+file; the legal modes are read ("r"), write ("w"), or append ("a").
+
+If a file that you open for writing or appending does not exist, it is created,
+if possible. Opening an existing file for writing causes the old contents to be
+discarded. Trying to read a file that does not exist is an error, as is trying
+to read or write a file when you don't have permission. If there is any error,
+fopen will return the invalid pointer value NULL (which is defined, usually as
+(char *)0, in <stdio.h>).
+
+The next thing needed is a way to read or write the file once it is open. There
+are several possibilities, of which getc and putc are the simplest. getc gets
+the next character from a file.
+
+        c = getc(fp)
+
+places in c the next character from the file referred to by fp; it returns EOF
+when it reaches end of file. putc is analogous to getc:
+
+        putc(c, fp)
+
+puts the character c on the file fp and returns c. getc and putc return EOF if
+an error occurs.
+
+When a program is started, three files are open already, the file pointers are
+provided for them. These files are the standard input, the standard output, and
+the standard error output; the corresponding file pointers are called stdin,
+stdout, and stderr. These file pointers are declared in <stdio.h>; they may be
+used anywhere an object of type FILE * can be. They are constants, however, not
+variables, so you can't assign to them.
+
+getchar() is the same as getc(stdin) and putchar(c) is the same as

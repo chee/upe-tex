@@ -1,0 +1,39 @@
+
+open is rather like fopen in the previous chapter, except that instead of
+returning a file pointer, it returns a file descriptor, which is an int.
+
+        char *name;
+        int fd, rwmode;
+
+        fd = open(name, rwmode);
+
+As with fopen, the name argument is a character string containing the
+filename. The access mode argument is different, however: rwmode is 0 for read,
+1 for write, and 2 to open a file for both reading and writing. open returns -1
+if any error occurs; otherwise it returns a valid file descriptor.
+
+It is an error to try to open a file that does not exist. The system call creat
+is provided to create new files, or to rewrite old ones.
+
+        int perms;
+        fd = creat(name, perms);
+
+creat returns a file descriptor if it was able to create the file called name,
+and -1 if not. If the file does not exist, creat creates it with permissions
+specified by the perms argument. If the file already exists, creat will truncate
+it to zero length; it is not an error to creat a file that already exists. (The
+permissions will not be changed.) Regardless of perms, a created file is open
+for writing.
+
+As described in Chapter 2, there are nine bits of protection information
+associated with a file, controlling read, write and execute permission, so a
+three-digit octal number is convenient for specifying them. For example, 0755
+specifies read, write and execute permission for the owner, and read and execute
+permission for the group and everyone else. Don't forget the leading 0, which is
+how octal numbers are specified in C.
+
+To illustrate, here is a simplified version of cp. The main simplification is
+that our version copies only one file, and does not permit the second argument
+to be a directory. Another blemish is that our version does not preserve the
+permissions of the source file; we will show how to remedy this later.
+

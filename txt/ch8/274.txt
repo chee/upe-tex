@@ -1,0 +1,18 @@
+
+This also illustrates the use of files: the filename "-" is the standard input.
+
+   Here is a factorial function:
+
+
+Arguments are referenced within a function or procedure as $1, etc., as in the
+shell, but it is legal to assign to them as well. Functions and procedures are
+recursive, but only the arguments are local variables; all other variables are
+global, that is, accessible throughout the program.
+
+hoc distinguishes functions from procedures because doing so gives a level of
+checking that is valuable in a stack implementation. It is too easy to forget a
+return or add an extra expression and foul up the stack.
+
+There are a fair number of changes to the grammar to convert hoc5 into hoc6, but
+they are localized. New tokens and non-terminals are needed, and the %union
+declaration has a new member to hold argument counts:

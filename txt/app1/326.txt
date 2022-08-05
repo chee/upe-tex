@@ -1,0 +1,54 @@
+
+        m+                  Move current line to after next one (interchange)
+        m-2                 Move current line to before previous one
+        m--                 Same: -- is the same as -2
+        m-                  Does nothing
+        m$                  Move current line to end (m0 moves to beginning)
+        t.                  Duplicate current line(t$ duplicates at end)
+        -,.t.               Duplicate previous and current lines
+        1,$t$               Duplicate entire set of lines
+        g/^/m0              Reverse order of lines
+
+
+Marks and line numbers
+
+The command = prints the line number of line $ (a poor default), .= prints the
+number of the current line, and so on. Dot is unchanged.
+
+The command kc marks the addressed line with the lower case letter c; the line
+can subsequently be addressed as 'c. The k command does not change dot. Marks
+are convenient for moving large chunks of text, since they remain permanently
+attached to lines, as in this sequence:
+
+        /.../ka             Find line ... and mark with a
+        /.../kb             Find line ... and mark with b
+        'a,'bp              Print entire range to be sure
+        /.../               Find target line
+        'a,'bm              Move selected lines after it
+
+
+Joining, splitting and rearranging lines
+
+Lines can be joined with the j command (no blanks are added):
+
+        m,nj                Join lines m through n into one line
+
+The default range is .,.+1, so
+
+        jp                  Join current line to next and print
+        -,.jp               Join previous line to current and print
+
+Lines can be split with the substitute command by quoting a newline:
+
+        s/part1part2/part1\ Split line into two parts
+        part2/                ...
+        s/ /\               Split at each blank;
+        /g                    makes one word per line
+
+Dot is left at the last line created.
+
+To talk about parts of the matched regular expression, not just the whole thing,
+use tagged regular expressions: If the construction \(...\) appears in a regular
+expression, the part of the whole that it matches is available on both the right
+hand side and the left as \1. There can be up to nine tagged regular
+expressions, referred to as \1, \2, etc.

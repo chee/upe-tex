@@ -1,0 +1,55 @@
+
+commands is terminated by a '.' on a line by itself; dot is left at the last
+line added. Dot is set to the next line after the last deleted line, except that
+it doesn't go past line $.
+
+        0a                  Add text at beginning (same as 1i)
+        dp                  Delete current line, print next (or last if at $)
+        .,$dp               Delete from here to end, print new last
+        1,$d                Delete everything
+        ?pat?,.-1d          Delete from previous 'pat' to just before dot
+        $dp                 Delete last line, print new last line
+        $c                  Change last line. ($a adds after last line)
+        1,$c                Change all lines
+
+
+Substitution; undo
+
+It's a pain to have to re-type a whole line to change a few letters in it. The
+substitute command s is the way to replace one string of letters by another:
+
+        s/old/new/          Change first old into new on current line
+        s/old/new/p         Change first old into new and print line
+        s/old/new/g         Change each old into new on current line
+        s/old/new/gp        Change each old into new and print line
+
+Only the leftmost occurrence of the pattern in the line is replaced, unless a
+'g' follows. The s command doesn't print the changed line unless there is a 'p'
+at the end. In fact, most ed commands do their job silently, but almost any
+command can be followed by p to print the result.
+
+If a substitution didn't do what you wanted, the undo command u will undo the
+most recent substitution. Dot must be set to the substituted line.
+
+        u                   Undo most recent substitution
+        up                  Undo most recent substitution and print
+
+Just as the p and d commands can be preceded by one or two line numbers to
+indicate which lines are affected, so can the s command:
+
+        /old/s/old/new/     Find next old; change to new
+        /old/s//new         Find next old; change to new
+                              (pattern is remembered)
+        1,$s/old/new/p      Change first old to new on each line;
+                              print last line changed
+        1,$s/old/new/gp     Change each old to new on each line;
+                              print last line changed
+
+Note that 1,$s applies the s command to each line, but it still means only the
+leftmost match on each line; the trailing 'g' is needed to replace all
+occurrences in each line. Furthermore, the p prints only the last affected line;
+to print all changed lines requires a global command, which we'll get to
+shortly.
+
+The character & is shorthand; if it appears anywhere on the right side of an s
+command, it is replaced by whatever was matched on the left side:

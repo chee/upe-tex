@@ -1,0 +1,45 @@
+
++------------------------------------------------------------------------------+
+|                         Table 3: Built-in Constants                          |
+|                                                                              |
++------------------------------------------------------------------------------+
+
+Finally, since eqn italicizes any string of letters that it doesn't recognize,
+it is a common idiom to italicize ordinary words using eqn. @Word@, for example,
+prints as Word. But beware: eqn recognizes some common words (such as from and
+to) and treats them specially, and it discards blanks, so this trick has to be
+used carefully.
+
+
+Getting output
+
+Once you have your document ready, you have to line up all the preprocessors and
+troff to get output. The order of commands is tbl, then eqn, then troff. If you
+are just using troff, type
+
+        $ troff -ms filenames           (Or -mm) 
+
+Otherwise, you must specify the argument filenames to the first command in the
+pipeline and let the others read their standard input, as in
+
+        $ eqn filenames | troff -ms
+
+or
+
+        $ tbl filenames | eqn | troff -ms
+
+It's a nuisance keeping track of which of the preprocessors are, really needed
+to print any particular document. We fount it useful to write a program called
+doctype that deduces the proper sequence of commands:
+
+        $ doctype ch9.*
+        cat ch9.1 ch9.2 ch9.3 ch9.4 | pic | tbl | eqn | troff -ms
+        $ doctype hoc.ms
+        cat hoc.ms | tbl | eqn | troff -ms
+        $
+
+doctype is implemented with tools discussed at length in Chapter 4; in
+particular, an awk program looks for the command sequences used by the
+preprocessors and prints the command line to invoke those needed to format the
+document. It also looks for the .PP (paragraph) command used by the ms package
+of formatting requests.

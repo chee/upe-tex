@@ -1,0 +1,43 @@
++------------------------------------------------------------------------------+
+|                   Table 6.4: Useful Standard I/O Functions                   |
+|                                                                              |
+| fp=fopen(s, mode)      open file s; mode "r", "w", "a" for read, write,      |
+|                          append (returns NULL for error)                     |
+| c=gets(fp)             get character; getchar() is getc(stdin)               |
+| putc(c, fp)            put character; putchar(c) is putc(c, stdout)          |
+| ungetc(c, fp)          put character back on input file fp; at most 1 char   |
+|                          can be pushed back at one time                      |
+| scanf(fmt, a1, ...)    read characters from stdin into a1,... according      |
+|                          to fmt. Each a_i must be a pointer.                 |
+|                          Returns EOF or number of fields converted.          |
+| fscanf(fp,...)         read from file fp                                     |
+| sscanf(s,...)          read from string s                                    |
+| printf(fmt, a1, ...)   format a1,... according to fmt, print on stdout       |
+| fprintf(fp, ...)       print ... on file fp                                  |
+| sprintf(s, ...)        print ... into string s                               |
+| fqets(s, n, fp)        read at most n characters into s from fp.             |
+|                          Returns NULL at the end of file                     |
+| fputs(s, fp)           print string s on file fp                             |
+| fflush(fp)             flush any buffered output on file fp                  |
+| fclose(fp)             close file fp                                         |
+| fp=popen(s, mode)      open pipe to command s. See fopen                     |
+| pclose(fp)             close pipe fp                                         |
+| system(s)              run command s and wait for completion                 |
++------------------------------------------------------------------------------+
+
+
+        $ diff filel file2
+        2c2
+        < a test
+        ---
+        > not a test
+        4,6c4,5
+        < your
+        < skill
+        < and comprehention.
+        ---
+        > our
+        > ability.
+        $
+
+A dialog with idiff might look like this:

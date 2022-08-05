@@ -1,0 +1,53 @@
+
+this can happen with the current version.
+
+Exercise 7-6. The name tx matches whichever of tc happens to come last in the
+directory, for any single character c. Can you invent a better distance measure?
+Implement it and see how well it works with real users.
+
+Exercise 7-7. mindist reads the directory one entry at a time. Does p run
+perceptibly faster if directory reading is done in bigger chunks?
+
+Exercise 7-8. Modify spname to return a name that is a prefix of the desired
+name if no closer match can be found. How should ties be broken if there are
+several names that all match the prefix?
+
+Exercise 7-9. What other programs could profit form spname? Design a standalone
+program that would apply correction to its arguments before passing them along
+to another program, as in
+
+        $ fix prog filenames...
+
+Can you write a version of cd that uses spname? how would you install it?
+
+
+7.3 File system: inodes
+
+In this section we will discuss system calls that deal with the file system and
+in particular with the information about files, such as size, dates,
+permissions, and so on. These system calls allow you to get at all the
+information we talked about in Chapter 2.
+
+Let's dig into the inode itself. Part of the inode is described by a structure
+called stat, defined in <sys/stat.h>:
+
+        struct stat /* structure returned by stat */
+        {
+            dev_t st_dev;    /* device of indoe */
+            ino_t st_ino;    /* indoe number */
+            short st_mode;   /* mode bits */
+            short st_nlink;  /* number of links to file */
+            short st_uid;    /* owner's userid */
+            short st_gid;    /* owner's group id */
+            dev_t st_rdev;   /* for special file */
+            off_t st_size;   /* file size in characters */
+            time_t st_atime; /* time file last read */
+            time_t st_mtime; /* time file last written or created */
+            time_t st_ctime; /* time file or inode last changed */
+        };
+
+
+Most of the fields are explained by the comments. Types like dev_t and ino_t are
+defined in <sys/types.h>, as discussed above. The st_mode entry contains a set
+of flags describing the file; for convenience, the flag definitions are also
+part of the file <sys/stat.h>:

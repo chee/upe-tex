@@ -1,0 +1,51 @@
+
+        $ echo 'echo $#' >nargs
+        $ cx nargs
+        $ who
+        you      tty0    Oct  1 05:59
+        pjw      tty2    Oct  1 11:26
+        $ nargs 'who'
+        10                           Ten blank and newline-separated fields
+        $ IFS='
+        '                            Just a newline
+        $ nargs `who`
+        2                            Two lines, two fields
+        $
+
+With IFS set to newline, zap works fine:
+
+        $ cat zap
+        # zap pat:  kill all processes matching pat
+        # final version
+
+        PATH=/bin:/usr/bin
+        IFS='
+        '                       # just a newline
+        case $1 in
+        "")     echo 'Usage: zap [-2] pattern' 1>&2; exit 1 ;;
+        -*)     SIG=$1; shift
+        esac
+
+        echo '   PID TTY   TIME CMD'
+        kill $SIG `pick \`ps -ag | egrep "$*"\` | awk '{print $1}'`
+        $ ps -ag
+           PID TTY   TIME CMD
+        ...   
+         22126 0     0:00 sleep 1000
+        ...
+        $ zap sleep
+           PID TTY   TIME CMD
+         22126 0     0:00 sleep 1000? y
+         23104 0     0:02 egrep sleep? n
+        $
+
+We added a couple of wrinkles: an optional argument to specify the signal (note
+that SIG will be undefined, and therefore treated as a null string if the
+argument is not supplied) and the use of egrep instead of grep to permit more
+complicated patterns such as 'sleep|date'. An initial echo prints out the column
+headers for the ps output.
+
+You might wonder why this command is call zap instead of just kill. The main
+reason is that, unlike our cal example, we aren't really providing a new kill
+command: zap is necessarily interactive, for one thing --- and we want to retain
+kill for the real one. zap is also annoyingly slow --- the

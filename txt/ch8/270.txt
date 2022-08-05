@@ -1,0 +1,13 @@
+
+follow looks ahead one character, and puts it back on the input with ungetc if
+it was not what was expected.
+
+
+There are more function declarations in hoc.h --- all of the relationals, for
+instance --- but it's otherwise the same idea as in hoc4. Here are the last few
+lines:
+
+
+Most of the code.c is the same too, although there are a lot of obvious new
+routines to handle the relational operators. The function le ("less than or
+equal to") is a typical example:

@@ -1,0 +1,33 @@
+The '-' before cmp tells make to carry on even if the cmp fails; this permits
+the process to work even if x.tab.h doesn't exist. (The -s option causes cmp to
+produce no output but see the exit status.) The symbol $? expands into the list
+of items from the rule that are not up to date. Regrettably, make's notational
+conventions are at best loosely related to those of the shell.
+
+To illustrate how these operate, suppose that everything is up to date.  Then
+
+
+Notice that nothing was recompiled except hoc.y, because the y.tab.h file was
+the same as the previous one.
+
+Exercise 8-10. Make the sizes of stack and prog dynamic, so that hoc4 never runs
+out of space of if memory can be obtained by calling malloc.
+
+Exercise 8-11. Modify hoc4 to use a switch on the type of operation in execute
+instead of calling functions. How do the versions compare in lines of source
+code and execution speed? How are they likely to compare in ease of maintenance
+and growth?
+
+
+8.5 Stage 5: Control flow and relational operators
+
+This version, hoc5, derives the benefit of the effort we put into making an
+interpreter. It provides if-else and while statements like those in C, statement
+grouping with { and }, and a print statement. A full set of relational operators
+is included (>, >=, etc.), as are the AND and OR operators && and ||. (These
+last two do not guarantee the left-to-right evaluation that is such an asset in
+C; the evaluate both conditions even if it is not necessary.)
+
+The grammar has been augmented with tokens, non-terminals, and productions for
+if, while, braces, and the relational operators. This makes it quite a bit
+longer, but (except possibly for the if and while) not much more complicated:

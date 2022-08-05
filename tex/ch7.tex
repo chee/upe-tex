@@ -1,0 +1,26 @@
+\chapter{UNIX System Calls}
+This chapter concentrates on the lowest level of interaction with the UNIX
+operating system --- the system calls. These are the entries to the kernel. They
+are the facilities that the operating system provides; everything else is built
+on top of them.
+
+We will cover several major areas. First is the I/O system, the foundation
+beneath library routines like fopen and putc. We'll talk more about the file
+system as well, particularly directories and inodes. Next comes a discussion of
+processes --- how to run programs from within a program. After that we will talk
+about signals and interrupts: what happens when you push the DELETE key, and how
+to handle that sensibly in a program.
+
+As in Chapter 6, many of our examples are useful programs that were not part of
+the 7th Edition. Even if they are not directly helpful to you, you should learn
+something from reading them, and they might suggest similar tools that you could
+build for your system.
+
+Full details on the system calls in Section 2 of the UNIX Programmer's Manual;
+this chapter describes that most important parts, but makes no pretense of
+completeness.
+\section{Low-level I/O}
+\section{File system: directories}
+\section{File system: inodes}
+\section{Processes}
+\section{Signals and interrupts}

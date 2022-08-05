@@ -1,0 +1,50 @@
+
++------------------------------------------------------------------------------+
+|                    Table 6.3: some <stdio.h> Definitions                     |
+|                                                                              |
+| stdin                      standard input                                    |
+| stdout                     standard output                                   |
+| stderr                     standard error                                    |
+| EOF                        end of file; normally -1                          |
+| NULL                       invalid pointer; normally 0                       |
+| FILE                       used for declaring file pointers                  |
+| BUFSIZ                     normal I/O buffer size (often 512 or 1024)        |
+|                                                                              |
+| getc(fp)                   return one character from stream fp               |
+| getchar()                  getc(stdin)                                       |
+| putc(c,fp)                 put character c on stream fp                      |
+| putchar(c)                 putc(stdout)                                      |
+| feof(fp)                   non-zero when end of file on stream fp            |
+| ferror(fp)                 non-zero when any error on stream fp              |
+| fileno(fp)                 file descriptor for stream fp; see Chapter 7      |
++------------------------------------------------------------------------------+
+
+each optional argument is processed, argc and argv are adjusted so the rest of
+the program is independent of the presence of that argument. Even though vis
+only recognizes a single option, we wrote the code as a loop to show one way to
+organize argument processing. In Chapter 1 we remarked on the disorderly way
+that UNIX programs handle optional arguments. One reason, aside from a taste for
+anarchy, is that it's obviously easy to write code to handle argument parsing
+for any variation. The function getopt(3) found on some systems is an attempt to
+rationalize the situation; you might investigate it before writing your own.
+
+The routine vis prints a single file:
+
+        vis(fp) /* make chars visible in FILE *fp */
+            FILE *fp;
+        {
+            int c;
+
+            while ((c = getc(fp)) != EOF)
+                if (isascii(c) &&
+                    (isprint(c) || c=='\n' || c=='\t' || c==' '))
+                    putchar(c);
+                else if (!strip)
+                    printf("\\%03o", c);
+        }
+
+The function fprintf is identical to printf, except for a file pointer argument
+that specifies the file to be written.
+
+The function fclose breaks the connection between the file pointer and the
+external name that was established by fopen, freeing the file pointer for

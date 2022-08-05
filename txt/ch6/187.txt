@@ -1,0 +1,52 @@
+
+        /* pick:  offer choice on each argument */
+
+        #include <stdio.h>
+        char    *progname;  /* program name for error message */
+
+        main(argc, argv)
+            int argc;
+            char *argv[];
+        {
+            int i;
+            char buf[BUFSIZ];
+
+            progname = argv[0];
+            if (argc == 2 && strcmp(argv[1],"-") == 0)  /* pick - */
+                while (fgets(buf, sizeof buf, stdin) != NULL) {
+                    buf[strlen(buf)-1] = '\0';  /* drop newline */
+                    pick(buf);
+                }
+            else
+                for (i = 1; i < argc; i++)
+                    pick(argv[i]);
+            exit(0);
+        }
+
+        pick(s) /* offer choice of s */
+            char *s;
+        {
+            fprintf(stderr, "%s? ", s);
+            if (ttyin() == 'y')
+                printf("%s\n", s);
+        }
+
+pick centralizes in one program a facility for interactively selecting
+arguments. This not only provides a useful service, but also reduces the need
+for "interactive" options on other commands.
+
+Exercise 6-10. Given pick, is there a need for rm -i?
+
+
+6.6 On bugs and debugging
+
+If you've ever written a program before, the notion of a bug will be
+familiar. There's no good solution to writing bug-free code except to take care
+to produce a clean, simple design, to implement it carefully, and to keep it
+clean as you modify it.
+
+There are a handful of UNIX tools that will help you to find bugs, though none
+is really first-rate. To illustrate them, however, we need a bug, and all of the
+programs in this book are perfect. Therefore we'll create a typical
+bug. Consider the function pick shown above. Here it is again, this time
+containing an error. (No fair looking back at the original.)

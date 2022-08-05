@@ -1,0 +1,42 @@
+
+will not overwrite something that appears to be more up to date. sv uses more of
+the information in the inode than checmail does.
+
+The design we will use for sv is this:
+
+        $ sv file1 file2 ... dir
+
+copies file1 to dir/file1, file2 to dir/file2, etc., except that when a target
+file is newer than its source file, no copy is made and a warning is printed. To
+avoid making multiple copies of linked files, sv does not allow /'s in any of
+the source filenames.
+
+        /* sv:  save new files */
+        #include <stdio.h>
+        #include <sys/types.h>
+        #include <sys/dir.h>
+        #include <sys/stat.h>
+        char *progname;
+
+        main(argc, argv)
+            int argc;
+            char *argv[];
+        {
+            int i;
+            struct stat stbuf;
+            char *dir = argv[argc-1];
+
+            progname = argv[0];
+            if (argc <= 2)
+                error("Usage: %s files... dir", progname);
+            if (stat(dir, &stbuf) == -1)
+                error("can't access directory %s", dir);
+            if ((stbuf.st_mode & S_IFMT) != S_IFDIR)
+                error("%s is not a directory", dir);
+            for (i = 1; i < argc-1; i++)
+                sv(argv[i], dir);
+            exit(0);
+        }
+
+The times in the inode are in seconds-since-long-ago (0:00 GMT, January 1,
+1970), so older files have smaller values in their st_mtime field.

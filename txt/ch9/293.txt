@@ -1,0 +1,41 @@
+
+--------------------------------------------------------------------------------
+|	 Hoc - An Interactive Language For Floating Point Ar arithmetic        |
+|				Brian Kernighan                                |
+|				    Rob Pike				       |
+|									       |
+|				    ABSTRACT				       |
+|									       |
+|       Hoc is a simple programmable interpreter for flating point expres-     |
+|       sions. It has C-style control flow, function definition and the usual  |
+|       numerical built-in functions such as cosine and logarithm.	       |
+|									       |
+| 1. Expressions 							       |
+|									       |
+|    Hoc is an expression language, much like C: although there are several    |
+| control-flow statements, most statements such as assignments are expressions |
+| whose value is disregarded.						       |
+--------------------------------------------------------------------------------
+
+
+Displays
+
+Although it is usually convenient that troff fills and justifies text, sometimes
+that isn't desirable --- programs, for example, shouldn't have their margins
+adjusted. Such unformatted material is called display text. The ms command .DS
+F(display start) and .DE (display end) demarcate text to be printed as it
+appears, indented but without rearrangement. Here is the next portion of the hoc
+manual, which includes a short display:
+
+	.PP
+	.I Hoc
+	is an expression language,
+	much like C:
+	although there are several control-flow statements,
+	most statements such as assignments
+	are expressions whose value is disregarded.
+	For example, the assignment operator
+	= assigns the value of its right operand
+	to its left operand, and yields the value,
+	so multiple assignments work.
+	The expression grammar is:

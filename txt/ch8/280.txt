@@ -1,0 +1,10 @@
+
+The function ret pops the arguments off the stack, restores the frame pointer
+fp, and sets the program counter.
+
+
+   Several of the interpreter routines need minor fiddling to handle the situa-
+tion when a return occurs in a nested statement. This is done inelegantly but
+adequately by a flag called returning, which is true when a return state-
+ment has been seen. ifcode, whilecode and execute terminate early if
+returning is set; call resets it to zero.

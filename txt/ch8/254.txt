@@ -1,0 +1,49 @@
+
+                         list
+                       /   |  \
+                      /   expr \              list
+                     /     |    \           /   |  \
+                 list     asgn   \     list   asgn  \
+                  |        |      \     |       |    \
+                (empty)  x = 1    \n  (empty) x = 1  \n
+
+
+The parser can decide that the asgn should be reduced to an expr and then to a
+list, as in the parse tree on the left, or it can decide to use the following \n
+immediately ("shift") and convert the whole thing to a list without the
+intermediate rule, as in the tree on the right. Given the ambiguity, yacc
+chooses to shift, since this is almost always the right thing to do with real
+grammars. You should try to understand such messages, to be sure that yacc has
+made the right decision.+ Running yacc with the option -v produces a voluminous
+file called y.output that hints at the origin of conflicts.
+
+
+Exercise 8-5. As hoc3 stands, it's legal to say
+
+        PI =3
+
+Is this a good idea? How would you change hoc3 to prohibit assignment to
+"constants"?
+
+Exercise 8-6. Add the built-in function atan2(y,x), which return, the angle
+whose tangent is y/x. Add the buile-in rand(), which returns a floating point
+random variable uniformly distributed on the interval (0,1). How do you have to
+change the grammar to allow for built-ins with different numbers of arguments?
+
+Exercise 8-7. How would you add a facility to execute commands from within hoc,
+similar to the ! feature of other UNIX programs?
+
+Exercise 8-8. Revise the code in math. c to use a table instead of the set of
+essentially identical functions that we presented.
+
+
+Another digression on make
+
+Since the program for hoc3 oe lives on five files, not one, the makefile is more
+complicated:
+
+
+----------------
++ The yacc message "reduce/reduce conflict" indicates a serious problem, more
+often the symptom of an outright error in the grammar than an intentional
+ambiguity.

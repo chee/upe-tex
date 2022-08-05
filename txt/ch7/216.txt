@@ -1,0 +1,51 @@
+
+        /* checkmail:  watch user's mailbox */
+        #include <stdio.h>
+        #include <sys/types.h>
+        #include <sys/stat.h>
+        char *progname;
+        char *maildir = "/usr/spool/mail";  /* system dependent */
+
+        main(argc, argv)
+            int argc;
+            char *argv[];
+        {
+            struct stat buf;
+            char *name, *getlogin();
+            int lastsize = 0;
+
+            progname = argv[0];
+            if ((name = getlogin()) == NULL)
+                error("can't get login name", (char *) 0);
+            if (chdir(maildir) == -1)
+                error("can't cd to %s", maildir);
+            for (;;) {
+                if (stat(name, &buf) == -1) /* no mailbox */
+                    buf.st_size = 0;
+                if (buf.st_size > lastsize)
+                    fprintf(stderr, "\nYou have mail\007\n");
+                lastsize = buf.st_size;
+                sleep(60);
+            }
+        }
+
+The function getlogin(3) returns your login name, or NULL if it can't. checkmail
+changes to the mail directory with the system call chdir, so that the subsequent
+stat calls will not have to search each directory from the root to the mail
+directory. You might have to change maildir to be correct on your system. We
+wrote checkmail to keep trying even if there is no mailbox, since most versions
+of mail remove the mailbox if it's empty.
+
+We wrote this program in Chapter 5 in part to illustrate shell loops. That
+version created several processes every time it looked at the mailbox, so it
+might be more of a system load than you want. The C version is a single process
+that does a stat on the file every minute. How much does it cost to have
+checkmail running in the background all the time? We measured it at well under
+one second per hour, which is low enough that it hardly matters.
+
+
+sv: An illustration of error handling
+
+We are next going to write a program called sv, similar to cp, that will copy a
+set of files to a directory, but change each target file only if it does not
+exist or is older than the source. "sv" stands for "save"; the idea is that sv

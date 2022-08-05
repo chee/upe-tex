@@ -1,0 +1,1264 @@
+                        CHAPTER 9: DOCUMENT PREPARATION
+
+
+
+One of the first applications of the UNIX system was editing and formatting
+documents; indeed, Bell Labs management was persuaded to buy the first PDP-11
+hardware by promises of a document preparation system, not an operating
+system. (Fortunately, they got more than they bargained for.)
+
+The first formatting program was called roff. It was small, fast, and easy to
+work with, so long as one was producing simple documents on a line printer. The
+next formatter, nroff, by Joe Ossanna, was much more ambiguous. Rather than
+trying to provide every style of document that users might ever want, Ossana
+made nroff programmable, so that many formatting tasks were handled by
+programming in the nroff language.
+
+When a small typesetter was acquired in 1973, nroff was extended to handle the
+multiple sizes and fonts and the richer character set that the typesetter
+provided. The new program was called troff (which by analogy to "en-roff" is
+pronounced "tee-roff.") nroff and troff are basically the same program, and
+accept the same input language; nroff ignores commands like size changes that it
+can't honor. We will talk mainly about troff but most of our comments apply
+nroff as well, subject to the limitations of output devices.
+
+The great strength of troff is the flexibility of the basic language and its
+programmability --- it can be made to do almost any formatting task. But the
+flexibility comes at a high price --- troff is often astonishingly hard to
+use. It is fair to say that almost all of the UNIX document preparation software
+is designed to cover up some part of naked troff.
+
+One example is page layout --- the general style of a document, what the titles,
+headings and paragraphs look like, where the page numbers appear, how big the
+pages are, and so on. These are not built in; they have to be programmed. Rather
+than forcing each user to specify all of these details in every document,
+however, a package of standard formatting commands is provided. A user of the
+package does not say "the next line is to be centered, in bigger letters, and in
+a bold font." Instead, the user says "the next line is a title," and the
+packaged definition of the style of a title is used. Users talk about the
+logical components of a document --- titles, headings, paragraphs, footnotes,
+etc. --- instead of sizes, fonts, and positions.
+
+Unfortunately, what started out as a "standard" package of formatting commands
+it no longer standard: there are several packages in wide use, plus many local
+variants. We'll talk about two general-purpose packages here: ms, the original
+"standard," and mm, a newer version that is standard input System V. We'll also
+describe the man package for printing manual pages.
+
+We will concentrate on ms because it is standard in the 7th Edition, it
+exemplifies all such packages, and it is powerful enough to do the job: we use
+it to typeset this book. But we did have to extend it a bit, for example, by
+adding a command to handle words in this font in the text.
+
+This experience is typical --- the macro packages are adequate for many
+formatting tasks, but it is sometimes necessary to revert to the underlying
+troff commands. We will describe only a small part of troff here.
+
+Although troff provides the ability to control output format completely, it's
+far too hard to use for complicated material like mathematics, tables, and
+figures. Each of these areas is just as difficult as page layout. The solution
+to these problems takes a different form, however. Instead of packages of
+formatting commands, there are special-purpose languages for mathematics, tables
+and figures that make it easy to describe what is wanted. Each is handled by a
+separate program that translates its language into troff commands. The programs
+communicate through pipes.
+
+These preprocessors are good examples of the UNIX approach at work --- rather
+than making troff even bigger and more complicated than it is, separate programs
+cooperate with it. (Of course, the language development tools described in
+Chapter 8 have been used to help with the implementations.) We will describe two
+programs: tbl, which formats tables, and eqn, which formats mathematical
+expressions.
+
+We will also try to give hints about document preparation and the supporting
+tools. Our examples throughout the chapter will be a document describing the hoc
+language of Chapter 8 and a hoc manual page. The document is printed in Appendix
+2.
+
+
+9.1 The ms macro package
+
+The crucial notion in the macro packages is that a document is described in
+terms of its logical parts --- title, section headings, paragraphs --- not by
+details of spacing, fonts and sizes of letters. This saves you from some very
+hard work, and insulates your document from irrelevant details; in fact, by
+using a different set of macro definitions with the same logical names, you can
+make your document appear quite different. For example, a document might go
+through the stages of technical report, conference paper, journal article and
+book chapter with the same formatting commands, but formatted with four
+different macro packages.
+
+Input to troff, whether or not a macro package is involved, is ordinary text
+interspersed with formatting commands. There are two kinds of commands. The
+first consists of a period at the beginning of a line, followed by one or two
+letters or digits, and perhaps by parameters, as illustrated here:
+
+        .PP
+	.ft B
+	This is a little bold font paragraph.
+
+troff built-in commands all have lower-case names, so by convention commands in
+macro packages are given upper-case names. In this example, .PP is the ms
+command for a paragraph, and .ft B is a troff command that causes a change to
+the bold font. (Fonts have upper case names; the fonts available may be
+different on different typesetters.)
+
+The second form of troff command is a sequence of characters that begins with a
+backslash \, and may appear anywhere in the input; for example, \fB also causes
+a switch to the bold font. This form of command is pure troff; we'll come back
+to it shortly.
+
+You can format with nothing more than a .PP command before each paragraph, and
+for most documents, you can get by with about a dozen different ms commands. For
+example, Appendix 2, which describes hoc, has a title, the author's name, an
+abstract, automatically-numbered sections headings, and paragraphs. It uses only
+14 distinct commands, several of which come in pairs. The paper talks this
+general form in ms:
+
+	.TL
+	Title of document (one or more lines)
+	.AU
+	Author names, one per line
+	.AB
+	Abstract, terminated by .AE
+	.AE
+	.NH
+	Numbered heading (automatic numbering)
+	.PP
+	Paragraph ...
+	.PP
+	Another Paragraph ...
+	.SH
+	Sub-heading (not numbered)
+	.PP
+	...
+
+Formatting commands must occur at the beginning of a line. Input between the
+commands is free form: the location of newlines in the input is unimportant,
+because troff moves words from line to line to make lines long enough (a process
+called filling), and spreads extra space uniformly between words to align the
+margins (justification). It's a good practice, however, to start each sentence
+on a new line; it makes subsequent editing easier.
+
+Here is the beginning of the actual hoc document:
+
+        .TL
+        Hoc - An Interactive Language For Floating Point Ar arithmetic
+        .AU
+        Brian Kernighan
+        Rob Pike
+        .AB
+        .I Hoc
+        is a simple programmable interpreter
+        for floating point expressions.
+        It has C-style control flow,
+        function definition and the usual
+        numerical built-in functions
+        such as cosine and logarithm.
+        .AE
+        .NH
+        Expressions
+        .PP
+        .I Hoc
+        is an expression language,
+        much like C:
+        although there are several control-flow statements,
+        most statements such as assignments
+        are expressions whose value is disregarded.
+        ...
+
+This .I command italicizes its argument, or switches to italic if no argument is
+given.
+
+If you use a macro package, it's specified as an argument to troff:
+
+        $ troff -ms hoc.ms
+
+The characters after the -m determine the macro package.+ When formatted with
+ms, the hoc paper looks like this:
+
+
+----------------
++ The ms macros are in the file /usr/lib/tmac/tmac.s, and the man macros are in
+/usr/lib/tmac/tmac.an.
+
+------------------------------------page 293------------------------------------
+--------------------------------------------------------------------------------
+|	 Hoc - An Interactive Language For Floating Point Ar arithmetic        |
+|				Brian Kernighan                                |
+|				    Rob Pike				       |
+|									       |
+|				    ABSTRACT				       |
+|									       |
+|       Hoc is a simple programmable interpreter for flating point expres-     |
+|       sions. It has C-style control flow, function definition and the usual  |
+|       numerical built-in functions such as cosine and logarithm.	       |
+|									       |
+| 1. Expressions 							       |
+|									       |
+|    Hoc is an expression language, much like C: although there are several    |
+| control-flow statements, most statements such as assignments are expressions |
+| whose value is disregarded.						       |
+--------------------------------------------------------------------------------
+
+
+Displays
+
+Although it is usually convenient that troff fills and justifies text, sometimes
+that isn't desirable --- programs, for example, shouldn't have their margins
+adjusted. Such unformatted material is called display text. The ms command .DS
+F(display start) and .DE (display end) demarcate text to be printed as it
+appears, indented but without rearrangement. Here is the next portion of the hoc
+manual, which includes a short display:
+
+	.PP
+	.I Hoc
+	is an expression language,
+	much like C:
+	although there are several control-flow statements,
+	most statements such as assignments
+	are expressions whose value is disregarded.
+	For example, the assignment operator
+	= assigns the value of its right operand
+	to its left operand, and yields the value,
+	so multiple assignments work.
+	The expression grammar is:
+------------------------------------page 294------------------------------------
+        .DS
+        .I
+        expr:           number
+                |       variable
+                |       ( expr )
+                |       expr binop expr
+                |       unop expr
+                |       function ( arguments )
+        .R
+        .DE
+        Numbers are floating point.
+
+which prints as
+
+--------------------------------------------------------------------------------
+|    Hoc is an expression language, much like C: although there are several    |
+| control-flow statements, most statements such as assignments are expressions |
+| whose value is disregarded. For example, the assignment operator = assigns   |
+| the value of its right operand to its left operand, and yields the value, so |
+| multiple assignments work. The expression grammar is:                        |
+|                                                                              |
+|         expr:           number                                               |
+|                 |       variable                                             |
+|                 |       ( expr )                                             |
+|                 |       expr binop expr                                      |
+|                 |       unop expr                                            |
+|                 |       function ( arguments )                               |
+|                                                                              |
+| Numbers are floating point.                                                  |
+--------------------------------------------------------------------------------
+
+Text inside a display is not normally filled or justified. Furthermore, if there
+is not enough room on the current page, the displayed material (and everything
+that follows it) is moved onto the next page. .DS permits several options,
+including L for left-justified, C, which centers each line individually, and B,
+which centers the entire display.
+
+The items in the display above are separated by tabs. By default, troff tabs are
+set every half inch, not every eight spaces as is usual. Even if tab stops were
+every 8 spaces, though, characters are of varying widths, so tabs processed by
+troff wouldn't always appear as expected.
+
+
+Font changes
+
+The ms macros provide three commands to change the font. .R changes the font to
+roman, the usual font, .I changes to italic, this font, and .B changes to
+boldface, this font. Unadorned, each command selects the font for subsequent
+text:
+------------------------------------page 295------------------------------------
+        This text is roman, but
+        .I
+        this text is italic,
+        .R
+        this is roman again, and
+        .B
+        this is boldface.
+
+appears like this:
+
+        This text is roman, but this text is italic, this is roman again, and
+        this is boldface.
+
+.I and .B take optional argument, in which case the font change applies only to
+the argument. In troff, arguments containing blanks must be quoted, although the
+only quoting character is the double quote "
+
+        This is roman, but
+        .I this
+        is italic, and
+        .B "these words"
+        are bold.
+
+is printed as
+
+        This is roman, but this is italic, and these words are bold.
+
+Finally, a second argument to .I or .B is printed in roman, appended without
+spaces to the first argument. This feature is most commonly used to produce
+punctuation in the right font. Compare the last parenthesis of
+
+        (parenthetical
+        .I "italic words)"
+
+which print incorrectly as
+
+        (parenthetical italic words)
+
+with
+
+        (parenthetical
+        .I "italic words" )
+
+which prints correctly as
+
+        (parenthetical italic words)
+
+Font distinctions are recognized by nroff, but the results aren't as
+pretty. Italic characters are underlined, and there are no bold characters,
+although some versions of nroff simulate bold by overstriking.
+
+------------------------------------page 296------------------------------------
+
+Miscellaneous commands
+
+Footnotes are introduced with .FS and terminated with .FE. You are reponsible
+for any identifying mark like an asterisk or a dagger.+ This footnote was
+created with
+
+        identifying mark like an asterisk or a dagger.\(dg
+        .FS
+        \(dg Like this one.
+        .FE
+        This footnote was created with ...
+
+Indented paragraphs, perhaps with a number or other mark in the margin, are
+created with the .IP command. To make this:
+
+(1)First little paragraph.
+(2)Second paragraph, which we make longer to show that it will be indented on
+   the second line as well as the first.
+
+requires the input
+
+        .IP (1)
+        First little paragraph.
+        .IP(2)
+        (2)Second paragraph, ...
+
+A .PP or .LP (left-justified paragraph) terminates an .IP. The .IP argument can
+be any string; use quotes to protect blanks if necessary. A second argument can
+be used to specify the amount of indent.
+
+The command pair .KS and .KE causes text to be kept together; text enclosed
+between these commands will be forced onto a new page if it won't all fit on the
+current page. If .KF is used instead of .KS, the text will float past subsequent
+text to the top of the next page if necessary to keep it on one page. We used
+.KF for all the tables in this book.
+
+You can change most of ms's default values by setting number registers, which
+are troff variables used by ms. Perhaps the most common are the registers that
+control the size of text and the spacing between lines. Normal text size (what
+you are reading now) is "10 points," where a point is about 1/72 of an inch, a
+unit inherited from the printing industry. Lines are normally printed at
+12-point separation. To change these, for example to 9 and 11 (as in our
+displays), set the number registers PS and VS with
+
+        .nr PS 9
+        .nr VS 11
+
+Other number registers include LL for line length, PI for paragraph indent, and
+PD for the separation between paragraphs. These take effect at the next .PP or
+.LP.
+
+----------------
++ Like this one
+------------------------------------page 297------------------------------------
+--------------------------------------------------------------------------------
+|           Table 9.1: Common ms Formatting Commands; see also ms(7)           |
+|                                                                              |
+| .AB     start abstract: terminated by .AE                                    |
+| .AU     author's name follows on next line; multiple .AU's permitted         |
+| .B      begin bold text, or embolden argument if supplied                    |
+| .DS t   start display (unfilled) text; terminated by .DE                     |
+|           t = L (left-adjusted), C (centered), B (block-centered)            |
+| .EQ s   begin equation s (eqn input); terminated by .EN                      |
+| .FS     start footnote; terminated by .FE                                    |
+| .I      begin italic text, or italicize argument if supplied                 |
+| .IP s   indented paragraph, with s in margin                                 |
+| .KF     keep text together, float to next page if necessary; end with .KE    |
+| .KS     keep text together on page; end with .KE                             |
+| .LP     new left-justified paragraph                                         |
+| .NH n   n-th level numbered heading; heading follows, up to .PP or .LP       |
+| .PP     new paragraph                                                        |
+| .R      return to raman font                                                 |
+| .SH     sub-heading; heading follows, up to .PP                              |
+| .TL     title follows, up to next ms command                                 |
+| .TS     begin table (tbl input); terminated by .TE                           |
+--------------------------------------------------------------------------------
+
+
+The mm macro package
+
+We won't go into any detail on the mm macro package here, since it is in spirit
+and often in detial very similar to ms. It provides more control of parameters
+than ms does, more capabilities (e.g., automatically numbered lists), and better
+error messages. Table 9.2 shows the mm commands equivalent to the ms commands in
+Table 9.1.
+
+Exercise 9-1. Omitting a terminating command like .AE or .DE is usually a
+disaster. Write a program mscheck to detect errors in ms input (or your favorite
+package). Suggestion: awk.
+
+
+
+9.2 The troff level
+
+In real life, one sometimes has to go beyond the facilities of ms, mm or other
+packages to get at some capability of bare troff. Doing so is like programming
+in assembly language, however, so it should be done cautiously and reluctantly.
+
+Three situations arise: access to special characters, in-line size and font
+changes, and a few basic formatting functions.
+
+
+Character names
+
+Access to strange characters --- Greek letters like PI, graphics like bullet and
+dagger, and a variety of lines and spaces --- is easy, though not very
+systematic. Each
+------------------------------------page 298------------------------------------
++------------------------------------------------------------------------------+
+|		    Table 9.2: Common mm Formatting Commands                   |
+|                                                                              |
+| .AS        start abstract; terminated by .AE                                 |
+| .AU        author's name follows as first argument if supplied               |
+| .B         begin bold text, or embolden argument if supplied		       |
+| .DF        keep text together, float to next page if necessary; end at .DE   |
+| .DS        start display text; terminated by .DE			       |
+| .EQ        begin equation (eqn input); terminated by .EN		       |
+| .FS        start footnote; terminated by .FE				       |
+| .I         begin italic text, or italicize argument if supplied	       |
+| .H         n-th level numbered heading "..."				       |
+| .HU        unnumbered heading "..."					       |
+| .P         paragraph. User .nr Pt 1 once for indented paragraphs	       |
+| .R         return to roman font					       |
+| .TL        title follows, up to next mm command			       |
+| .TS        begin table (tbl input); terminated by .TE			       |
++------------------------------------------------------------------------------+
+
+such character has a name that is either \c where c is a single character, or
+\(cd where cd is a pair of characters.
+
+troff prints an ASCII minus sign as a hyphen - rather than a minus -. A true
+minus must be typed \- and a dash must be typed \(em, which stands for "em
+dash," the character "---".
+
+Table 9.3 lists some of the most common special characters; there are many more
+in the troff manual (and the list may be different on your system).
+
+There are times when troff must be told not to interpret a character, especially
+a backslash or a leading period. The two most common "hands-off" characters are
+\e and \&. The sequence \e is guaranteed to print as a backslash, uninterpreted,
+and is used to get a backslash in the output. \&, on the other hand, is nothing
+at all: it is a zero-width blank. Its main use is to prevent troff from
+interpreting periods at the beginning of lines. We used \e and \& a lot in this
+chapter. For example, the ms outline at the beginning of this chapter was typed
+as
+
+	\&.TL
+	.I "Title of document"
+	\&.AU
+	.I "Author name"
+	\&.AB
+	\&...
+	...
+
+Of course, the section above was typed as
+------------------------------------page 299------------------------------------+------------------------------------------------------------------------------+
+|              Table 9.3: Some troff special character sequences               |
+|                                                                              |
+| -       -       hyphen                                                       |
+| \(hy    -       hyphen, same as above                                        |
+| \-      -       minus sign in current font                                   |
+| \(mi    -       minus sign in the mathematics font                           |
+| \(em    ---     em dash                                                      |
+| \&              nothing at all; protects leading period                      |
+| \blank          unpaddable blank                                             |
+| \|              unpaddable half blank                                        |
+| \e              literal escape character, usually \                          |
+| \(bu            bullet *                                                     |
+| \(dg            dagger +                                                     |
+| \(*a            alpha. \(*b=beta, \(*c=ksi, \(*p=pi, etc.                    |
+| \fX             change to font X; X=p is previous                            |
+| \f(XX           change to font XX                                            |
+| \sn             change to font XX                                            |
+| \s+-n           relative point size change                                   |
++------------------------------------------------------------------------------+
+
+        \e&.TL
+        \&.I "Title of document"
+        \e&.AU
+        ...
+
+and you can imagine how that in turn was typed.
+
+Another special character that turns up occasionally is the unpaddable blank, a
+\ followed by a blank. Normally, troff will stretch an ordinary blank to align
+the margins, but an unpaddable blank is never adjusted: it is like any other
+character and has a fixed width. It can also be used to pass multiple words as a
+single argument:
+
+        .I Title\ of\ document
+
+
+Font and size changes
+
+Most font and format changes can be done with the beginning-of-line macros like
+.I, but sometimes changes must be made in-line. In particular, the newline
+character is a word separator, so if a font change must be made in the middle of
+the word, the macros are unusable. This subsection discusses how troff overcomes
+this problem --- note that it is troff that provides the facility, not the ms
+macro package.
+
+troff uses the backslash character to introduce in-line commands. The two most
+common commands are \f to change font and \s to change point size.
+
+The font is specified with \f by a character immediately after the f:
+------------------------------------page 300------------------------------------
+        a \fBfriv\fIolous\fR \fIvar\fBiety\fR of \fIfonts\fP
+
+is output as
+
+        a frivolous variety of fonts
+
+the font change \fP reverts to the previous font --- whatever the font was
+before the last switch.(There's only one previous font, not a statck.)
+
+Some fonts have two-character names. These are specified by the format \f(XX
+where XX is the font name. For example, the font on our typesetter in which
+programs in this book are printed is called CW (Courier Constant Width), so
+keywords is written as
+
+        \f(CWkeyword\fP
+
+It's clearly painful to have to type this, so one of our extensions to ms is a
+.CW macro so we don't have type or read backslashes. We use it to typeset
+in-line words such troff, like this:
+
+        The
+        .CW troff
+        formatter ...
+
+Formatting decisions defined by macros are also easy to change later.
+
+A size change is introduced by the sequence \sn, where n is one or two digits
+that specify the new size: \s8 switches to 8 point type. More commonly, relative
+changes may be made by prefixing a plus or minus to the size. For example, words
+can be printed in SMALL CAPS by typing
+
+        \s-2SMALL CAPS\s0
+
+\s0 causes the size to revert to its previous value. It's the analog of \fP, but
+in the troff tradition, it isn't spelled \sP. Our extension to ms include a
+macro .UC(upper case) for this job.
+
+
+Basic troff commands
+
+Realistically, even with a good macro package, you have to know a handful of
+troff commands for controlling spacing and filling, setting tab stops, and the
+like. The command .br causes a break, that is, the next input that follows the
+.br will appear on a new input line. This could be used, for example, to split a
+long title at the proper place:
+
+        .TL
+        Hoc - An Interactive Language
+        .br
+        For Floating Point Arithmetic
+        ...
+
+The command .nf turns off the normal filling of output lines; each line of input
+goes directly into one line of output. The command .fi turns filling
+------------------------------------page 301------------------------------------
+back on. The command .ce centers the next line.
+
+The command .bp begins a new page. The command .sp causes a single blank line to
+appear in the output. A .sp command can be followed by an argument to specify
+how many blank lines or how much space.
+
+        .sp 3                           Leave 3 blank lines
+        .sp .5                          Leave blank half-line
+        .sp 1.5i                        Leave 1.5 inches
+        .sp 3p                          Leave 3 points
+        .sp 3.1c                        Leave 3.1 centimeters
+
+Extra space at the bottom of a page is discarded, so a large .sp is equivalent
+to a .bp.
+
+The .ta command sets tag stops (which are initialized to every half inch).
+
+        .ta n n n ...
+
+sets tab stops at the specified distances from the left margin; as with .sp,
+each number n is in inches if followed by 'i'. A tab stop suffixed with R will
+right-justify the text at the next tab stop; C causes a centered tab.
+
+The command .ps n sets the point size to n; the command .ft X sets the font to
+X. the rules about incremental sizes and returning to the previous value are the
+same as for \s and \f.
+
+
+Defining macros
+
+Defining macros in full generality would take us much further into the
+intricacies of troff than it appropriate, but we can illustrate some of the
+basics. For example, here is the definition of .CW:
+
+        .de CW                   Start a definition
+        \&\f(CW\\$1\fP\\$2       Font changes around first argument
+        ..                       End of definition
+
+\$n produces the value of the n-th argument when the macro is invoked; it is
+empty if no n-th argument was provided. The double \ delays evaluation of \$n
+during macro definition. The \& prevents the argument from being interpreted as
+a troff command, in case it begins with a period, as in
+
+        .CW .sp
+
+
+9.3 The tbl and eqn preprocessors
+
+troff is a big and complicated program, both inside and out, so modifying it to
+take on a new task is not something to be undertaken lightly. Accordingly the
+development of programs for typesetting mathematics and tables took a different
+approach --- the design of separate languages implemented by separate programs
+eqn and tbl that act as "preprocessors" for troff. In effect, troff is an
+assembly language for a typesetting machine; and eqn and tbl compile into it.
+------------------------------------page 302------------------------------------
+eqn came first. It was the first use of yacc for a non-programming language.+
+tbl came next, in the same spirit as eqn, though with an unrelated syntax. tbl
+doesn't use yacc, since its grammar is simple enough that it's not worthwhile.
+
+The UNIX pipe facility strongly suggests the division into separate
+programs. Besides factoring the job into pieces (which was necessary anyway ---
+troff by itself was already nearly as large as a program could be on a PDP-11),
+pipes also reduce the communication between the pieces and between the
+programmers involved. This latter point is significant --- one doesn't need
+acesss to source code to make a preprocessor. Furthermore, with pipes there are
+no giant intermediate files to worry about, unless the components are
+intentionally run separately for debugging.
+
+There are probelms when separate programs communicate by pipes. Speed suffers
+somewhat, since there is a lot of input and output: both eqn and tbl typically
+cause an eight-to-one expansion from input to output. More importantly,
+information flows only one direction. There is no way, for example, that eqn can
+determine the current font size, which leads to some awkwardness in the
+language. Finally, error reporting is hard; it is sometimes difficult to relate
+a diagnostic from troff back to the eqn or tbl problem that caused it.
+
+Nevertheless, the benefits of separation far outweigh the drawbacks, so several
+other preprocessors have been written, based on the same model.
+
+
+Tables
+
+Let us begin a brief discussion of tbl, since the first thing we want to show is
+a table of operators from the hoc document. tbl reads its input files or the
+standard input and converts text between the commands. .TS (table start) and
+.TE(table end) into the troff commands to print the table, aligning columns and
+taking care of all the typographical details. The .TS and .TE lines are also
+copied through, so a macro package can provide suitable definitions for them,
+for example to keep the table on one page and set off from surrounding text.
+
+Although you will need to look at the tbl manual to produce complicated tables,
+one example is enough to show most of the common features. Here is one from the
+hoc document:
+
+
+----------------
++ It is improbable that eqn would exist if yacc had not been available at the
+right time.
+------------------------------------page 303------------------------------------
+which produces the following table:
+
+
+The words before the semicolon (center, box) describe global properties of the
+table: center it horizontally on the page and draw a box around it. Other
+possibilities include doublebox, allbox (each item in a box), and expand (expand
+table to page width).
+
+The next lines, up to the period, describe the format of various sections of the
+table, which in this case are the title line and the body of the table. The
+first specification is for the first line of the table, the second specification
+applies to the second line, and the last applies to all remaining lines. In
+Table 1, there are only two specification lines, so the second specification
+applies to every table line after the first. The format characters are c for
+items centered in the column, r and l for right or left justification, and n for
+numeric alignment on the decimal point. s specifies a "spanned" column; in our
+case 'c s' means center the title over the entire table by spanning the second
+column as
+------------------------------------page 304------------------------------------
+well as the first. A font can be defined for a column; the tbl specification
+lfCW prints a left-justified column in the CW font.
+
+The text of the table follows the formatting information. Tab characters separte
+columns, and some troff commands such as .sp are understood inside tables. (Note
+a couple of appearances of \&: unsupported leading - and = signs in columns tell
+tbl to draw lines across the table at that point.)
+
+tbl produces a wider variety of tables than this simple example would suggest:
+it will fill text in boxes, vertically justify column headings, and so on. The
+easiest way to use it for complicated tables is to look for a similar example in
+the manual in Volume 2A of the UNIX Programmer's Manual and adapt the commands.
+
+
+Mathematical expressions
+
+The second troff preprocessor is eqn, which converts a language description
+mathematical expressions into the troff commands to print them. It automatically
+handles font and size changes, and also provides names for standard mathematical
+characters. eqn input usually appears between .EQ and .EN lines, analogous to
+tbl's .TS and .TE. For example,
+
+        .EQ
+        x sub i
+        .EN
+
+produces x_i. If the ms macro package is used, the equation is printed as a
+"display," and an optional argument to .EQ specifies an equation number. For
+example, the Cauchy integral formula
+
+                                                                         (9.1)
+
+is written as
+
+        .EQ (9.1)
+        f( zeta ) ~=~ 1 over {2 pi i} int from C
+            f(z) over {z - zeta} dz
+        .EN
+
+The eqn language is based on the way that mathematics is spoken aloud. One
+difference between spoken mathematics and eqn input is that braces {} are
+parentheses of eqn --- they override the default precedence rules of the
+language --- but ordinary parentheses have no special significance. Blanks,
+however, are significant. Note that the first zeta is surrounded by blanks in
+the example above: keywords such as zeta and over are only recognized when
+surrounded by blanks and braces, neither of which appear in the output. To force
+blank page into the output, use a tilde character ~ as in ~=~. To get braces,
+use "{" and "}'.
+
+There are several classes of eqn keywords. Greek letters are spelled out, in
+lower or upper case, as in lambda and LAMBDA (lambda and LAMBDA). Other
+------------------------------------page 305------------------------------------
+mathematical characters have names, such as sum, int, infinity, grad: sum, int,
+infinity, grad. There are positional operators such as sub, sup, from, to, and
+over:
+
+
+is
+
+        sum from i=0 to infinity x sub i sup 2 ~->~ l over {2 pi}
+
+There are operators like sqrt and expandable parentheses, braces, etc. eqn will
+also create columns and matrices of objects. There are also commands to control
+sizes, fonts and positions when the defaults are not correct.
+
+It is common to place small mathematical expressions such as log_10(x) in the
+body of the text, rather than in displays. The eqn keyword delim specifies a
+pair of characters to bracket in-line expressions. The characters used as left
+and right delimiters are usually the same; often a dollar sign $ is used. But
+since hoc uses $ for arguments, we use @ in our examples. % is also a suitable
+delimiter, but avoid the others: so many characters have special properties in
+the various programs that you can get spectacularly anomalous behaviors. (We
+certainly did as we wrote this chapter.)
+
+So, after saying
+
+.EQ
+delim @@
+.EN
+
+in-line expressions such as [sum from i=0 to infinity x sub i] can be printed:
+
+        in-line expressions 
+        such as @sum from i=0 to infinity x sub i@ can be printed:
+
+In-line expressions are used for mathematics within a table, as this example
+from the hoc document shows:
+
+        .TS
+        center, box
+        c s s
+        lfCW n 1.
+        \fBTable 3:\fP Built-in Constants
+        .sp .5
+        DEG     57.29577951308232087680 @180/pi@, degrees per radian
+        E       2.71828182845904523536  @e@, base of natural logarithms
+        GAMMA   0.57721566490153286060  @gamma@, Euler-Mascheroni constant
+        PHI     1.61803398874989484820  @( sqrt 5 +1)/2@, the golden ratio
+        PI      3.14159265358979323846  @pi@, circular transcendental number
+        .TE
+
+This table also shows how tbl lines up the decimal points in numeric (n)
+columns. The output appears below.
+------------------------------------page 306------------------------------------
++------------------------------------------------------------------------------+
+|                         Table 3: Built-in Constants                          |
+|                                                                              |
++------------------------------------------------------------------------------+
+
+Finally, since eqn italicizes any string of letters that it doesn't recognize,
+it is a common idiom to italicize ordinary words using eqn. @Word@, for example,
+prints as Word. But beware: eqn recognizes some common words (such as from and
+to) and treats them specially, and it discards blanks, so this trick has to be
+used carefully.
+
+
+Getting output
+
+Once you have your document ready, you have to line up all the preprocessors and
+troff to get output. The order of commands is tbl, then eqn, then troff. If you
+are just using troff, type
+
+        $ troff -ms filenames           (Or -mm) 
+
+Otherwise, you must specify the argument filenames to the first command in the
+pipeline and let the others read their standard input, as in
+
+        $ eqn filenames | troff -ms
+
+or
+
+        $ tbl filenames | eqn | troff -ms
+
+It's a nuisance keeping track of which of the preprocessors are, really needed
+to print any particular document. We fount it useful to write a program called
+doctype that deduces the proper sequence of commands:
+
+        $ doctype ch9.*
+        cat ch9.1 ch9.2 ch9.3 ch9.4 | pic | tbl | eqn | troff -ms
+        $ doctype hoc.ms
+        cat hoc.ms | tbl | eqn | troff -ms
+        $
+
+doctype is implemented with tools discussed at length in Chapter 4; in
+particular, an awk program looks for the command sequences used by the
+preprocessors and prints the command line to invoke those needed to format the
+document. It also looks for the .PP (paragraph) command used by the ms package
+of formatting requests.
+------------------------------------page 307------------------------------------
+        $ cat doctype
+        # doctype:  synthesize proper command line for troff
+        echo -n "cat $* | "
+        egrep -h '^\.(EQ|TS|\[|PS|IS|PP)' $* |
+        sort -u |
+        awk '
+        /^\.PP/ { ms++ }
+        /^\.EQ/ { eqn++ }
+        /^\.TS/ { tbl++ }
+        /^\.PS/ { pic++ }
+        /^\.IS/ { ideal++ }
+        /^\.\[/ { refer++ }
+        END {
+                if (refer > 0) printf "refer | "
+                if (pic > 0)   printf "pic | "
+                if (ideal > 0) printf "ideal | "
+                if (tbl > 0)   printf "tbl | "
+                if (eqn > 0)   printf "eqn | "
+                printf "troff "
+                if (ms > 0) printf "-ms"
+                printf "\n"
+        }
+        $
+
+(The -h option to egrep causes it to suppress the filename headers on each line;
+unfortunately this option is not in all versions of the system.) The input is
+scanned, collecting information about what kinds of components are used. After
+all the input has been examined, it's processed in the right order to print the
+output. The details are specific to formatting troff documents with the standard
+preprocessors, but the idea is general: let the machine take care of the
+details.
+
+doctype is an example, like bundle, of a program that creates a program. As it
+is written, however, it requires the user to retype the line to the shell; one
+of the exercises is to fix that.
+
+When it comes to running the actual troff command, you should bear in mind that
+the behavior of troff is system-dependent: at some installations it drives the
+typesetter directly, while on other systems it produces information on its
+standard output that must be sent to the typesetter by a separate program.
+
+By the way, the first version of this program didn't egrep or sort; awk itself
+scanned all the input. It turned out to be too slow for large documents, so we
+added egrep to do a fast search, and then sort -u to toss out duplicates. For
+typical documents, the overhead of creating two extra processes to winnow the
+data is less than that of running awk on a lot of input. To illustrate, here is
+a comparison between doctype and a version that just runs awk, applied to the
+contents of this chapter (about 52000 characters):
+------------------------------------page 308------------------------------------
+        $ time awk '... doctype without egrep ...' ch9.*
+        cat ch9.1 ch9.2 ch9.3 ch9.4 | pic | tbl | eqn | troff -ms
+
+        real       31.0
+        user        8.9
+        sys         2.8
+        $ time doctype ch9*
+        cat ch9.1 ch9.2 ch9.3 ch9.4 | pic | tbl | eqn | troff -ms
+
+        real        7.0
+        user        1.0
+        sys         2.3
+        $
+
+The comparison is evidently in favor of the version using three processes. (This
+was done on a machine with only one user; the ratio of real times would favor
+the egrep version even more on a heavily loaded system.) Notice that we did get
+simple working version first, before we started to optimize.
+
+
+Exercise 9-2. How did we format this chapter?
+
+Exercise 9-3. If your eqn delimiter is a dollar sign, how do you get a dollar
+sign in the output? Hint: investigate quotes and the pre-defined words of eqn.
+
+Exercise 9-4. Why doesn't
+
+        $ `doctype filenames`
+
+work? Modify doctype to run the resulting command, instead of printing it?
+
+Exercise 9-5. Is the overhead of the extra cat in doctype important? Rewrite
+doctype to avoid the extra process? Which version is simpler?
+
+Exercise 9-6. Is it better to use doctype or to write a shell file containing
+the commands to format a specific document?
+
+Exercise 9-7. Experiment with various combinations of grep, egrep, fgrep, sed,
+awk and sort to create the fastest possible version of doctype.
+
+
+
+9.4 The manual page
+
+The main documentation for a command is usually the manual page --- a one-page
+description in the UNIX Programmer's Manual. (See Figure 9.2) The manual page is
+stored in a standard directory, usually /usr/man, in a sub-directory numbered
+according to the section of the manual. Our hoc manual page, for example,
+because it describes a user command, is kept in /usr/man/man1/hoc.1.
+
+Manual pages are printed with the main(1) command, a shell file that runs nroff
+-man, man hoc prints the hoc manual. If the same name appears in more than one
+section, as does man itself (Section 1 describes the command, while Section 7
+describes the macros), the section can be specified to man:
+
+------------------------------------page 309------------------------------------
+        $ man 7 man
+
+prints only the description of the macros. The default action is to print all
+pages with the specified name, using nroff, but man -t generates typeset pages
+using troff.
+
+The author of a manual page creates a file in the proper subdirectory of
+/usr/man. The man command calls nroff or troff with a macro package to print the
+page, as we can see by searching the man command for formatter invocations. Our
+result would be
+
+        $ grep roff `which man`
+                nroff $opt -man $all ;;
+                neqn $all | nroff $opt -man ;;
+                troff $opt -man $all ;;
+                troff -t $opt -man $all | tc ;;
+                eqn $all troff $opt -man ;;
+                eqn $all troff -t $opt -man | tc ;;
+        $
+
+The variety is to deal with options: nroff vs. troff, whether or not to run eqn,
+etc. The manual macros, invoked by troff -man, define troff commands that format
+in the style of the manual. They are basically the same as the ms macros, but
+there are differences, particularly in setting up the title and in the font
+change commands. The macros are documented --- briefly --- in man(7), but the
+basics are easy to remember. The layout of a manual page is:
+
+        .TH COMMAND section-number
+        .SH NAME
+        command \- brief description of function
+        .SH SYNOPSIS
+        .B command
+        options
+        .SH DESCRIPTION
+        Detailed explanation of programs and options.
+        Paragraphs are introduced by .PP.
+        .PP
+        This is a new paragraph.
+        .SH FILES
+        Files used by the command, e.g., passwd(1) mentions /etc/passwd
+        .SH "SEE ALSO."
+        References to related command, including other manual pages
+        .SH DIAGNOSTICS
+        Description of any unusual output (e.g., see cmp(1))
+        .SH BUGS
+        Surprising features (not always bug; see below)
+
+If any section is empty, its header is omitted. The .TH line and the NAME,
+SYNOPSIS and DESCRIPTION sections are mandatory.
+
+The line
+------------------------------------page 310------------------------------------
+        .TH COMMAND section-number
+
+names the command the specifies the section number. The various .SH lines
+identify sections of the manual page. The NAME and synopsis sections are
+special; the others contain ordinary prose. The NAME section names the command
+(this time in lower case) and provides a one-line description of it. The
+SYNOPSIS section names the options, but doesn't describe them. As in any
+section, the input is free form, so font changes can be specified with the .B,
+.I and .R macros. In the SYNOPSIS section, the name and options are bold, and
+the rest of the information is roman. The ed(1) NAME and SYNOPSIS sections, for
+example, are:
+
+        .SH NAME
+        ed \- text editor
+        .SH SYNOPSIS
+        .B ed
+        [
+        .B \-
+        ][
+        .B \-x
+        ][ name ]
+
+These come out as:
+
+        NAME
+            ed - text editor
+        SYNOPSIS
+            ed [ - ][ -x ][ name ]
+
+Note the use of \- rather than a plain -.
+
+The DESCRIPTION section describes the command and its options. In most cases, it
+is a description of the command, not the language the command defines. The cc(1)
+manual page doesn't define the C language; it says how to run the cc command to
+compile C programs, how to invoke the optimizer, where the output is left, and
+so on. The language is specified in the C reference manual, cited in the SEE
+ALSO section of cc(1). On the other hand, the categories are not absolute:
+man(7) is a description of the language of manual macros.
+
+By convention, in the DESCRIPTION section, command names and the tags for
+options (such as "name" in the ed page) are printed in italics. The macros .I
+(print first argument in italics) and .IR (print first argument in italics,
+second in roman) make this easy. The .IR macro is there because the .I macro is
+the man package doesn't share with that in ms the undocumented but convenient
+treatment of the second argument.
+
+The FILES section mentions any files implicitly used by the command. DIAGNOSTICS
+need only be included if there is unusual output produced by the command. This
+may be diagnostic messages, exit status or surprising
+------------------------------------page 311------------------------------------
+        .TH HOC 1
+        .SH NAME
+        hoc \- interactive floating point language
+        .SH SYNOPSIS
+        .B hoc
+        [ file ... ]
+        .SH DESCRIPTION
+        .I Hoc
+        interprets a simple language for floating point arithmetic,
+        at about the level of BASIC, with C-like syntax and
+        functions and procedures with arguments and recursion.
+        .PP
+        The named
+        .IR files
+        are read and interpreted in order.
+        If no
+        .I file
+        is given or if
+        .I file
+        is '\-'
+        .I hoc
+        interprets the standard input.
+        .PP
+        .I Hoc
+        input consists of
+        .I expressions
+        and
+        .IR statements .
+        Expressions are evaluated and their results printed.
+        Statements, typically assignments and function or procedure
+        definitions, produce no output unless they explicitly call
+        .IR print .
+        .SH "SEE ALSO"
+        .I
+        Hoc \- An Interactive Language for Floating Point Arithmetic
+        by Brian Kernighan and Rob Pike.
+        .br
+        .IR bac (1),
+        .IR dc (1)
+        and
+        .IR dc (1).
+        .SH BUGS
+        Error recovery is imperfect within function and procedure definitions.
+        .br
+        The treatment of newlines is not exactly user-friendly.
+
+                        Figure 9.1: /usr/man/man1/hoc.1
+
+variations of the command's normal behavior. The BUGS section is also somewhat
+misnamed. Defects reported here aren't so much bugs as shortcomings --- simple
+bugs should be fixed before the command is installed. To get a feeling for what
+goes in the DIAGNOSTICS and BUGS sections, you might browse through the standard
+manual.
+
+
+------------------------------------page 312------------------------------------
+An example should clarify how to write the manual page. The source for hoc(1),
+/usr/man/man1/hoc.1, is shown in Figure 9.1, and Figure 9.2 is the output of
+
+        $ man -t hoc
+
+
+Exercise 9-8. Write a manual page for doctype. Write a version of the man
+command that looks in your own man directory for documentation on your personal
+programs.
+
+
++------------------------------------------------------------------------------+
+|HOC(1)                                                                  HOC(1)|
+|                                                                              |
+|                                                                              |
+|NAME                                                                          |
+|       hoc - interactive floating point language                              |
+|                                                                              |
+|SYNOPSIS                                                                      |
+|       hoc [ file ... ]                                                       |
+|                                                                              |
+|DESCRIPTION                                                                   |
+|       Hoc  interprets  a  simple  language  for floating point arithmetic, at|
+|       about the level of BASIC, with C-like syntax and functions  and  proce-|
+|       dures with arguments and recursion.                                    |
+|                                                                              |
+|       The named files are read and interpreted in order.  If no file is given|
+|       or if file is '-' hoc interprets the standard input.                   |
+|                                                                              |
+|       Hoc input consists of  expressions  and  statements.   Expressions  are|
+|       evaluated and their results printed.  Statements, typically assignments|
+|       and function or procedure definitions, produce no  output  unless  they|
+|       explicitly call print.                                                 |
+|                                                                              |
+|SEE ALSO                                                                      |
+|       Hoc  -  An  Interactive Language for Floating Point Arithmetic by Brian|
+|       Kernighan and Rob Pike.                                                |
+|       bac(1), dc(1) and dc(1).                                               |
+|                                                                              |
+|BUGS                                                                          |
+|       Error recovery is imperfect within function and procedure  definitions.|
+|       The treatment of newlines is not exactly user-friendly.                |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|                                                                              |
+|8th Edition                                                                  1|
++------------------------------------------------------------------------------+
+                               Figure 9.2: hoc(1)
+------------------------------------page 313------------------------------------
+
+9.5 Other document preparation tools
+
+There are several other programs to help with document preparation. The refer(1)
+command looks up references by keywords and installs in your document the
+in-line citations and a reference section at the end. By defining suitable
+macros, you can arrange that refer print references in the particular style you
+want. There are existing definitions for a variety of computer science
+journals. refer is part of the 7th Edition, but has not been picked up in some
+other versions.
+
+pic(1) and ideal(1) do for pictures what eqn does for equations. Pictures are
+significantly more intricate than equations (at least to typeset), and there is
+not oral tradition of how to talk about pictures, so both languages take some
+work to learn and to use. To give the flavor of pic, here is a simple picture
+and its expression in pic.
+
+        .PS
+        .ps -1
+        box invis "document"; arrow
+        box dashed "pie"; arrow
+        box dashed "tbl"; arrow
+        box dashed "eqn"; arrow
+        box "troff"; arrow
+        box invis "typesetter"
+        [ box invis "macro" "package"
+        spline right then up -> ] with .ne at 2nd last box.s
+        .ps +1
+        .PE
+
+                    +-----+   +-----+   +-----+   +-------+
+                    |     |   |     |   |     |   |       |
+        document -->| pic |-->| tbl |-->| eqn |-->| troff |--> typesetter
+                    |     |   |     |   |     |   |       |
+                    +-----+   +-----+   +-----+   +-------+
+                                                      ^
+                                                      |
+                                macro package --------+
+
+
+The pictures in this book were all done with pic. pic and ideal are not part of
+the 7th Edition but are now available.
+
+refer, pic and ideal are all troff preprocessors. There are also programs to
+examine and comment on the prose in your documents. The best known of these is
+spell(1), which reports on possible spelling errors in files; we used it
+extensively. style(1) and diction(1) analyze punctuation, grammar and language
+usage. These in turn developed into the Writer's Workbench, a set of programs to
+help improve writing style. The Writer's Workbench program are good at
+identifying cliches, unnecessary words and sexist phrases.
+
+spell is standard. The others may be on your system; you can easily find out by
+using man:
+------------------------------------page 314------------------------------------
+        $ man style diction wwb
+
+or by listing /bin and /usr/bin
+
+
+History and bibliographic notes
+
+troff, written by the late Joe Ossanna for the Graphics Systems CAT-4
+typesetter, has a long lineage, going back to RUNOFF, which was written by
+J. E. Saltzer for CTSS at MIT in the early 1960's. These programs share the
+basic command syntax and ideas, although troff is certainly the most complicated
+and powerful, and the presence of eqn and the other proprocessors adds
+significantly to tis utility. There are several new typesetting programs with
+more civilized input format: TEX, by Don Knuth (TEX and Metafont: New Directions
+in Typesetting, Digital Press, 1970), and Scribe, By Brian Reid ("Scribe: a
+high-level approach to computer document formatting," 7th Symposium on the
+Principles of Programming Languages, 1980), are probably the best known. The
+paper "Document Formatting Systems: Survey, Concepts and Issues" by Richard
+Furuta, Jeffrey Scofield, and Alan Show (Computing Surveys, September, 1982) is
+a good survey of the field.
+
+The original paper on eqn is "A system for typesetting mathematics," (CACM,
+March 1975), by Brian Kernighan and Lorinda Cherry. The ms macro package, tbl
+and refer are all by Mike Lest; the are documented only in the UNIX Programmer's
+Manual, Volume 2A.
+
+pic is described in "PIC --- a language for typesetting graphics," by Brian
+Kernighan, Software --- Practice and Experience, January, 1982. ideal is
+described in "A high-level language for describing pictures," by Chris Van Wyk,
+ACM Transactions on Graphics, April, 1982.
+
+spell is a command that turned from a shell file, written by Steve Johnson, into
+a C program, by Doug McIlroy. The 7th Edition spell uses a hashing mechanism for
+quick lookup, and rules for automatically stripping suffixes and prefixes to
+keep the dictionary small. See "Development of a spelling list," M. D. McIlroy,
+IEEE Transactions on Communications, January, 1982.
+
+The style and diction programs are described in "Computer aids for writers," by
+Lorinda Cheery, SIGPLAN Symposium on Text Manipulation, Portland, Oregon (June
+1982).

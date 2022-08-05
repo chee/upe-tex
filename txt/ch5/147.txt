@@ -1,0 +1,41 @@
+
+        $ cat watchwho
+        # watchwho:  watch who logs in and out
+
+        PATH=/bin:/usr/bin
+        new=/tmp/wwho1.$$
+        old=/tmp/wwho2.$$
+        >$old           # create an empty file
+
+        while :         # loop forever
+        do
+                who >$new
+                diff $old $new
+                mv $new $old
+                sleep 60
+        done | awk '/>/ { $1 = "in:     "; print }
+                    /</ { $1 = "out:    "; print }'
+        $
+
+":" is a shell built-in command that does nothing but evaluate its arguments and
+return "true." Instead, we could have used the command true, which merely
+returns a true exit status. (There is also a false command.) But ':' is more
+efficient than true because it does not execute a command from the file system.
+
+diff output uses < and > to distinguish data from the two files; the awk program
+processes this to report the changes in an easier-to-understand format. Notice
+that the entire while loop is piped into awk, rather than running fresh awk once
+a minute. sed is unsuitable for this processing, because its output is always
+behind its input by one line: there is always a line of input that has been
+processed but not printed, and this would introduce an unwanted delay.
+
+Because old is created empty, the first out from watchwho is a list of all users
+currently logged in. Changing the command that initially creates old to who >
+$old will cause watchwho to print only the changes; it's a matter of taste.
+
+Another looping program is one that watches your mailbox periodically; whenever
+the mailbox changes, the program prints "You have mail." This is a useful
+alternative to the shell's built-in mechanism using the variable MAIL. We have
+implemented it with shell variables instead of files, to illustrate a different
+way of doing things.
+

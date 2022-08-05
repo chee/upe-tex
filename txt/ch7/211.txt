@@ -1,0 +1,49 @@
+
+        mindist(dir, guess, best)   /* search dir for guess */
+            char *dir, *guess, *best;
+        {
+            /* set best, return distance 0..3 */
+            int d, nd, fd;
+            struct {
+                ino_t ino;
+                char  name[DIRSIZ+1];   /* 1 more than in dir.h */
+            } nbuf;
+
+            nbuf.name[DIRSIZ] = '\0';   /* +1 for terminal '\0' */
+            if (dir[0] == '\0')     /* current directory */
+                dir = ".";
+            d = 3;  /* minimum distance */
+            if ((fd=open(dir, 0)) == -1)
+                return d;
+            while (read(fd,(char *) &nbuf,sizeof(struct direct)) > 0)
+                if (nbuf.ino) {
+                    nd = spdist(nbuf.name, guess);
+                    if (nd <= d && nd != 3) {
+                        strcpy(best, nbuf.name);
+                        d = nd;
+                        if (d == 0)     /* exact match */
+                            break;
+                    }
+                }
+            close(fd);
+            return d;
+        }
+
+If the directory name given to mindist is empty, '.' searched. mindist reads on
+directory entry at a time. Notice that the buffer for read is a structure, not
+an array of characters. We use sizeof to compute the number of bytes, and coerce
+the address to a character pointer.
+
+If a slot in a directory is not currently in use (Because a file has been
+removed), then the inode entry is zero, and this position is skipped. The
+distance test is
+
+        if (nd <= d...)
+
+instead of
+
+        if (nd < d...)
+
+so that any other single character is a better match than '.', which is always
+the first entry in a directory.
+

@@ -1,0 +1,51 @@
+
+        # overwrite:  copy standard input to output after EOF
+        # version 1.  BUG here
+
+        PATH=/bin:/usr/bin
+
+        case $# in
+        1)      ;;
+        *)      echo 'Usage: overwrite file' 1>&2; exit 2
+        esac
+
+        new=/tmp/overwr.$$
+        trap 'rm -f $new; exit 1' 1 2 15
+
+        cat >$new               # collect the input
+        cp $new $1              # overwrite the input file
+        rm -f $new
+
+cp i used instead of mv so the permissions and owner of the output file aren't
+changed if it already exists.
+
+Appealingly simple as this version is, it has a fatal flaw: if the user types
+DEL during the cp, the original input file will be ruined. We must prevent an
+interrupt from stopping the overwriting of the input file:
+
+        # overwrite:  copy standard input to output after EOF
+        # version 2.  BUG here too
+
+        PATH=/bin:/usr/bin
+
+        case $# in
+        1)      ;;
+        *)      echo 'Usage: overwrite file' 1>&2; exit 2
+        esac
+
+        new=/tmp/overwr1.$$
+        old=/tmp/overwr2.$$
+        trap 'rm -f $new $old; exit 1' 1 2 15
+
+        cat >$new               # collect the input
+        cp $1 $old              # save original file
+
+        trap '' 1 2 15          # we are committed; ignore signals
+        cp $new $1              # overwrite the input file
+
+        rm -f $new $old
+
+If a DEL happens before the original file is touched, then the temporary files
+are removed and the file is left alone. After the backup is made, signals are
+ignored so the last cp won't be interrupted --- once the cp starts, overwrite is
+committed to changing the original file.

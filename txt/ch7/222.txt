@@ -1,0 +1,55 @@
+
+This illustrates both execlp and execvp.
+
+We picked this design because it's useful, but other variations are
+plausible. For example, waitfile could simply return after the file has stopped
+changing.
+
+Exercise 7-17. Modify watchfile (Exercise 7-12) so it has the same property as
+waitfile, if there is no command, it copies the file; otherwise it does the
+command. Could watchfile and waitfile share source code? Hint: argv[0].
+
+
+Control of processes --- fork and wait
+
+The next step is to regain control after running a program with execlp or
+execvp. Since these routines simply overlay the new program on the old one, to
+save the old one requires that it first be split into two copies; one of these
+can be overlaid, while the other waits for the new, overlaying program to
+finish. The splitting is done by a system call named fork:
+
+        proc_id = fork();
+
+splits the program into two copies, both of which continue to run. The only
+difference between the two is the value returned by fork, the process-id. In one
+of these processes (the child), process-id is zero. In the other (the parent),
+proc_id is non-zero; it the process-id of the child. Thus the basic way to call,
+and return from, another program is
+
+        if (fork() == 0)
+            execlp ("/bin/sh", "sh", "-c", commandline, (char *) 0);
+
+And in fact, except for handling errors, this is sufficient. The fork makes two
+copies of the program. In the child, the value returned by fork is zero, so it
+calls execlp, which does the commandline and then dies. In the parent, fork
+returns non-zero so it skips the execlp. (If there is any error, fork returns
+-1.)
+
+More often, the parent waits for the child to terminate before continuing
+itself. This is done with the system call wait:
+
+        int status;
+
+        if(fork() == 0)
+            execlp(...);        /* child */
+        wait(&status);          /* parent */
+
+This still doesn't handle any abnormal condition, such as a failure of the
+execlp or fork, or the possibility that there might be more than one child
+running simultaneously. (wait returns the process-id of the terminated child, if
+you want to check it against the value returned by fork.) Finally, this fragment
+doesn't deal with any funny behavior on the part of the child. Still, these
+three lines are the heart of the standard system function.
+
+The status returned by wait encodes in its low-order eight bits the system's
+idea of the child's exit status; it is 0 for normal termination and non-

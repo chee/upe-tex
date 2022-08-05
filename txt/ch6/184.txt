@@ -1,0 +1,51 @@
+
+        ttyin() /* process response from /dev/tty (version 1) */
+        {
+            char buf[BUFSIZ];
+            FILE *efopen();
+            static FILE *tty = NULL;
+
+            if (tty == NULL)
+                tty = efopen("/dev/tty", "r");
+            if (fgets(buf, BUFSIZ, tty) == NULL || buf[0] == 'q')
+                exit(0);
+            else    /* ordinary line */
+                return buf[0];
+        }
+
+The file pointer devtty is declared static so that it retains its value from one
+call of ttyin to the next; the file /dev/tty is opened on the first call only.
+
+There are obviously extra features that could be added to p without much work,
+but it is worth nothing that our first version of this program did just what is
+described here: print 22 lines and wait. It was a long time before other things
+were added, and to this day only a few people use the extra features.
+
+One easy extra is to make the number of lines per page a variable pagesize that
+can be set from the command line:
+
+        $ p -n ...
+
+prints in n-line chunks. This requires only adding some familiar code at the
+beginning of main:
+
+        /* p:  print input in chunks (version 2) */
+            ...
+            int i, pagesize = PAGESIZE;
+
+            progname = argv[0];
+            if (argc > 1 && argv[1][0] == '-') {
+                pagesize = atoi(&argv[1][1]);
+                argc--;
+                argv++;
+            }
+            ...
+
+The function atoi converts a character string to an integer. (See atoi(3).)
+
+Another addition to p is the ability to escape temporarily at the end of each
+page to do some other command. By analogy to ed and many other programs, if the
+user types a line that begins with an exclamation mark, the rest of that line is
+taken to be a command, and is passed to a shell for execution. This feature is
+also trivial, since there is a function called system(3) to do the work, but
+read the caveat below. The modified version of ttyin follows:

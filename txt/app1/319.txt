@@ -1,0 +1,42 @@
+                           APPENDIX 1: EDITOR SUMMARY
+
+
+
+The "standard" UNIX text editor is a program called ed, originally written by
+Ken Thompson. ed was designed in the early 1970's, for a computing environment
+on tiny machines (the first UNIX system limited user programs to 8K bytes) with
+hard-copy terminals running at very low speed (10-15 characters per second). It
+was derived from an earlier editor called qed that was popular at the time.
+
+As technology has advanced, ed has remained much the same. You are almost
+certain to find on your system other editors with appealing features; of these,
+"visual" or "screen" editing, in which the screen of your terminal reflects your
+editing changes as you make them, is probably the most common.
+
+So why are we spending time on such an old-fashioned program? The answer is that
+ed, in spite of its age, does some things really well. It is available on all
+UNIX systems; you can be sure that it will be around as you move from one system
+to another. It works well over slow-speed telephone lines and with any kind of
+terminal. ed is also easy to run from a script; most screen editors assume that
+they are driving a terminal, and can't conveniently take their input from a
+file.
+
+ed provides regular expressions for pattern matching. Regular expressions based
+on those in ed permeate the system: grep and sed use almost identical ones;
+egrep, awk and lex extend them; the shell uses a different syntax but the same
+ideas for filename matching. some screen editors have a "line mode" that reverts
+to a version of ed so that you can use regular expressions.
+
+Finally, ed runs fast. It's quite possible to invoke ed, make a one-line change
+to a file, write out the new version, and quit, all before a bigger and fancier
+screen editor has even started.
+
+
+Basics
+
+ed edits one file at a time. It works on a copy of the file; to record your
+changes in the original file, you have to give an explicit command. ed provides
+commands to manipulate consecutive lines or lines that match a pattern, and to
+make changes within lines.
+
+Each ed command is a single character, usually a letter. Most commands

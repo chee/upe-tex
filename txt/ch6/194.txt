@@ -1,0 +1,44 @@
+
+        $ idiff file1 file2
+        2c2                         The first difference
+        < a test
+        ---
+        > not a test
+        ? >                         User chooses second (>) version
+        4,6c4,5                     The second difference
+        < your
+        < skill
+        < and comprehension.
+        ---
+        > our
+        > ability.
+        ? <                          User chooses first (<) version
+        idiff output in file idiff.out
+        $ cat idif.out               Output put in this file
+        This is
+        not a test
+        of
+        your
+        skill
+        and comprehension.
+        $
+
+If the response e is given instead of < or >, idiff invokes ed with the two
+groups of lines already read in. If the second response had been e, the editor
+buffer would look like this:
+
+        your
+        skill
+        and comprehension.
+        ---
+        our
+        ability.
+
+Whatever is written back into the file by ed is what goes into the final output.
+
+Finally, any command can be executed from within idiff by escaping with !cmd.
+
+Technically, the hardest part of the job is diff, and that has already been done
+for use. So the real job of idiff is parsing diff's output, and opening,
+closing, reading and writing the proper files at the right time. The main
+routine of idiff sets up the files and runs the diff process:

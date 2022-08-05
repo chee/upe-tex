@@ -1,0 +1,10 @@
+augmented with second stack to keep track of nested function and procedure
+calls. (A second stack is easier than piling more things into the existing one.)
+Here is the beginning of code.c:
+
+   Since the symbol table now holds pointers to procedures and functions, and
+to strings for printing, an addition is made to the union type in hoc.h:
+
+
+During compilation, a function is entered into the symbol table by define,
+which stores its origin in the table and updates the next free location after the

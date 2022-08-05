@@ -1,0 +1,6 @@
+
+Printing of strings and numbers is done by prstr and prexpr.
+
+
+   Variables are read by a function called varread. It returns 0 if end of file
+occurs; otherwise it returns 1 and sets the specified variable.

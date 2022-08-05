@@ -1,0 +1,37 @@
+
+        $ cat watchfor
+        # watchfor:  watch for someone to log in
+
+        PATH=/bin:/usr/bin
+
+        case $# in
+        0)      echo 'Usage: watchfor person' 1>&2; exit 1
+        esac
+
+        until who | egrep "$1"
+        do
+                sleep 60
+        done
+        $ cx watchfor
+        $ watchfor you
+        you      tty0    Oct  1 08:01        It works
+        $ mv watchfor /usr/you/bin           Install it
+        $
+
+We changed grep to egrep so you can type
+
+        $ watchfor 'joe|mary'
+
+to watch for more than one person.
+
+As a more complicated example, we could watch all people logging in and out, and
+repot as people come and go --- a sort of incremental who. The basic structure
+is simple: once a minute, run who, compare its output to that from a minute ago,
+and report any differences. The who output will be kept in a file, so we will
+store it in the directory /tmp. To distinguish our files form those belonging to
+other processes, the shell variable $$ (the process id of the shell command), is
+incorporated into the filenames; this is a common convention. Encoding the
+command name in the temporary files is done mostly for the system
+administrator. Commands (including this version of watchwho) often leave files
+lying around in /tmp, and it's nice to know which commands is doing it.
+

@@ -1,0 +1,58 @@
+
+
+Escape to the shell with !
+
+If you are running ed, you can escape temporarily to run another shell command;
+there's no need to quit. The ed command to do this is '!':
+
+        $ ed poem
+        263
+        !wc poem                    Run wc without leaving ed
+              8     46     263 poem
+        !                           You have returned from the command
+        q                           Quit without w is OK: no change was made
+        $
+
+
+Printing
+
+The lines of the file are numbered 1, 2, ...; you can print the n-th line by
+giving the command np or just the number n, and lines m through n with m,np. The
+"line number" $ is the last line, so you don't have to count lines.
+
+        1                           Print 1st line: same as 1p
+        $                           Print last line; same as $p
+        1,$p                        print lines 1 through last
+
+You can print a file one line at a time just by pressing RETURN; you can back up
+one line at a time with '-'. Line numbers can be combined with + and -.
+
+        $-2,$p                      Print last 3 lines
+        1,2+3p                      Print lines 1 through 5
+
+But you can't print past the end or in reverse order; commands like $,$+1p and
+$,1p are illegal.
+
+The list command l prints in a format that makes all characters visible; it's
+good for finding control characters in files, for distinguishing blanks from
+tabs, and so on. (See vis in Chapter 6.)
+
+
+Patterns
+
+Once a file becomes longer than a few lines, it's a bother to have to print it
+all to find a particular line, so ed provides a way to search for lines that
+match a particular pattern: /pattern/ finds the next occurrence of pattern.
+
+        $ ed poem
+        263
+        /flea/                      Search for next line containing flea
+        Great fleas have little fleas
+        /flea/                      Search for next one
+        And little fleas have lesser fleas,
+        //                          Search for next using same pattern
+        And the great fleas themselves, in turn,
+        ??                          Search backwards for same pattern
+        And little fleas have lesser fleas,
+
+ed remembers the pattern you used last, so you can repeat a search with just

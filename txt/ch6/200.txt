@@ -1,0 +1,23 @@
+
+History and bibliographic notes
+
+The standard I/O library was designed by Dennis Ritchie, after Mike Lesk's
+portable I/O library. The intent of both packages was to provide enough standard
+facilities that programs could be moved form UNIX to non-UNIX systems without
+change.
+
+Our design of p is based on a program by Henry Spencer.
+
+adb was written by Steve Bourne, sdb by Howard Katseff, and lint by Steve
+Johnson.
+
+idiff is loosed based on program originally written by Joe Maranzano. diff
+itself is by Doug McIlroy, and is based on an algorithm invented independently
+by Harold Stone and by Wayne Hunt and Tom Szymanski. (See "A fast algorithm for
+computing longest common subsequences," by J. W. Hunt and T. G. Szymanski, CACM,
+may, 1977.) The idff algorithm is described in M. D. McIlroy and J. W. Hunt, "An
+algorithm for differential file comparison," Bell Labs Computing Science
+Technical Report 41, 1976. To quote McIlroy, "I had tried at least three
+completely different algorithms before the final one. diff is a quintessential
+case of not settling for mere competency in a program but revising it until it
+was right."

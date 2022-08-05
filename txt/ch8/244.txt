@@ -1,0 +1,52 @@
+
+when a floating point number overflows. The signal is set in main.
+
+The final part of error recovery is the addition of a production for error.
+"error" is a reserved word in a yacc grammar; it provides a way to anticipate
+and recover from a syntax error. If an error occurs, yacc will eventually try to
+use this production, recognize the error as grammatically "correct," and thus
+recover. The action yyerrok sets a flag in the parser that permits it to get
+back into a sensible parsing state. Error recovery is difficult in any parser;
+you should be aware that we have taken only the most elementary steps here, and
+have skipped rapidly over yacc's capabilities as well.
+
+The actions in the hoc2 grammar are not much changed. Here is main, to which we
+have added setjmp to save a clean state suitable for resuming after an
+error. execerror does the matching longjmp. (See Section 7.5 for a description
+of setjmp and longjmp.)
+
+        ...
+        #include <signal.h>
+        #include <setjmp.h>
+        jmp_buf begin;
+
+        main(argc, argv)       /* hoc2 */
+                char *argv[];
+        {
+                int fpecatch();
+
+                progname = argv[0];
+                setjmp(begin);
+                signal(SIGFPE, fpecatch);
+                yyparse();
+        }
+
+        execerror(s, t) /* recover from run-time error */
+                char *s, *t;
+        {
+                warning(s, t);
+                longjmp(begin, 0);
+        }
+
+        fpecatch()      /* catch floating point exceptions */
+        {
+                execerror("floating point exception", (char *) 0);
+        }
+
+For debugging, we found it convenient to have execerror call abort (see
+abort(3)), which causes a core dump that can be perused with adb or adb. Once
+the program is fairly robust, abort is replaced by longjmp.
+
+The lexical analyzer is a little different in hoc2. There is an extra test for a
+lower-case letter, and since yylval is now a union, the proper member has to be
+set before yylex returns. Here are the parts that have changed:

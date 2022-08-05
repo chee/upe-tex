@@ -1,0 +1,19 @@
+
+which produces the following table:
+
+
+The words before the semicolon (center, box) describe global properties of the
+table: center it horizontally on the page and draw a box around it. Other
+possibilities include doublebox, allbox (each item in a box), and expand (expand
+table to page width).
+
+The next lines, up to the period, describe the format of various sections of the
+table, which in this case are the title line and the body of the table. The
+first specification is for the first line of the table, the second specification
+applies to the second line, and the last applies to all remaining lines. In
+Table 1, there are only two specification lines, so the second specification
+applies to every table line after the first. The format characters are c for
+items centered in the column, r and l for right or left justification, and n for
+numeric alignment on the decimal point. s specifies a "spanned" column; in our
+case 'c s' means center the title over the entire table by spanning the second
+column as

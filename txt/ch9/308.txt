@@ -1,0 +1,56 @@
+
+        $ time awk '... doctype without egrep ...' ch9.*
+        cat ch9.1 ch9.2 ch9.3 ch9.4 | pic | tbl | eqn | troff -ms
+
+        real       31.0
+        user        8.9
+        sys         2.8
+        $ time doctype ch9*
+        cat ch9.1 ch9.2 ch9.3 ch9.4 | pic | tbl | eqn | troff -ms
+
+        real        7.0
+        user        1.0
+        sys         2.3
+        $
+
+The comparison is evidently in favor of the version using three processes. (This
+was done on a machine with only one user; the ratio of real times would favor
+the egrep version even more on a heavily loaded system.) Notice that we did get
+simple working version first, before we started to optimize.
+
+
+Exercise 9-2. How did we format this chapter?
+
+Exercise 9-3. If your eqn delimiter is a dollar sign, how do you get a dollar
+sign in the output? Hint: investigate quotes and the pre-defined words of eqn.
+
+Exercise 9-4. Why doesn't
+
+        $ `doctype filenames`
+
+work? Modify doctype to run the resulting command, instead of printing it?
+
+Exercise 9-5. Is the overhead of the extra cat in doctype important? Rewrite
+doctype to avoid the extra process? Which version is simpler?
+
+Exercise 9-6. Is it better to use doctype or to write a shell file containing
+the commands to format a specific document?
+
+Exercise 9-7. Experiment with various combinations of grep, egrep, fgrep, sed,
+awk and sort to create the fastest possible version of doctype.
+
+
+
+9.4 The manual page
+
+The main documentation for a command is usually the manual page --- a one-page
+description in the UNIX Programmer's Manual. (See Figure 9.2) The manual page is
+stored in a standard directory, usually /usr/man, in a sub-directory numbered
+according to the section of the manual. Our hoc manual page, for example,
+because it describes a user command, is kept in /usr/man/man1/hoc.1.
+
+Manual pages are printed with the main(1) command, a shell file that runs nroff
+-man, man hoc prints the hoc manual. If the same name appears in more than one
+section, as does man itself (Section 1 describes the command, while Section 7
+describes the macros), the section can be specified to man:
+

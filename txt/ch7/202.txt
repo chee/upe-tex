@@ -1,0 +1,52 @@
+
+you are going to write on a file, it may also be necessary to create it. The
+system checks your right to do so (Does the file exist? Do you have permission
+to access it?), and if all is well, returns a non-negative integer called a file
+descriptor. Whenever I/O is to be done on the file, the file descriptor is used
+instead of the name to identify the file. All information about an open file is
+maintained by the system; your program refers to the file only by the file
+descriptor. a FILE pointer as discussed in Chapter 6 points to a structure that
+contains, among other things, the file descriptor; the macro fileno(fp) defined
+in <stdio.h> returns the file descriptor.
+
+There are special arrangements to make terminal input and output
+convenient. When it is started by the shell, a program inherits three open
+files, with file descriptor 0, 1, and 2, called the standard input, the standard
+output, and the standard error. All of these are by default connected to the
+terminal, so if a program only reads file descriptor 0 and writes file
+descriptor 1 and 2, it can do I/O without having to open files. If the program
+opens any other files, they will have file descriptors 3, 4, etc.
+
+If I/O is redirected to or from files or pipes, the shell changes the default
+assignments for file descriptor 0 and 1 from the terminal to the named
+files. Normally file descriptor 2 remains attached to the terminal, so error
+messages can go there. Shell incantations such as 2>filename and 2>&1 will cause
+rearrangements of the defaults, but the file assignments are changed by the
+shell, not by the program. (The program itself can rearrange these further if it
+wishes, but this is rare.)
+
+
+File I/O --- read and write
+
+All input and output is done by two system calls, read and write, which are
+accessed from C by functions of the same name. For both, the first argument is a
+file descriptor. The second argument is an array of bytes that serves as the
+data source of destination. The third argument is the number of bytes to be
+transferred.
+
+	int fd, n, nread, nwritten;
+	char buf [SIZE];
+
+	nread = read(fd, buf, n);
+	nwritten = write (fd, buf, n);
+
+Each call returns a count of the number of bytes transferred. On reading, the
+number of bytes returned may be less than the number requested, because fewer
+than n bytes remained to be read. (When the file is a terminal, read normally
+reads only up to the next newline, which is usually less than what was
+requested.) A return value of zero implies end of file, and -1 indicates an
+error of some sort. For writing, the value returned is the number of bytes
+actually written; an error has occurred if this isn't equal to the number
+supposed to be written.
+
+While the number of bytes to read or written is not restricted, the two

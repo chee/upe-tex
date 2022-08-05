@@ -1,0 +1,41 @@
+
+        $ man style diction wwb
+
+or by listing /bin and /usr/bin
+
+
+History and bibliographic notes
+
+troff, written by the late Joe Ossanna for the Graphics Systems CAT-4
+typesetter, has a long lineage, going back to RUNOFF, which was written by
+J. E. Saltzer for CTSS at MIT in the early 1960's. These programs share the
+basic command syntax and ideas, although troff is certainly the most complicated
+and powerful, and the presence of eqn and the other proprocessors adds
+significantly to tis utility. There are several new typesetting programs with
+more civilized input format: TEX, by Don Knuth (TEX and Metafont: New Directions
+in Typesetting, Digital Press, 1970), and Scribe, By Brian Reid ("Scribe: a
+high-level approach to computer document formatting," 7th Symposium on the
+Principles of Programming Languages, 1980), are probably the best known. The
+paper "Document Formatting Systems: Survey, Concepts and Issues" by Richard
+Furuta, Jeffrey Scofield, and Alan Show (Computing Surveys, September, 1982) is
+a good survey of the field.
+
+The original paper on eqn is "A system for typesetting mathematics," (CACM,
+March 1975), by Brian Kernighan and Lorinda Cherry. The ms macro package, tbl
+and refer are all by Mike Lest; the are documented only in the UNIX Programmer's
+Manual, Volume 2A.
+
+pic is described in "PIC --- a language for typesetting graphics," by Brian
+Kernighan, Software --- Practice and Experience, January, 1982. ideal is
+described in "A high-level language for describing pictures," by Chris Van Wyk,
+ACM Transactions on Graphics, April, 1982.
+
+spell is a command that turned from a shell file, written by Steve Johnson, into
+a C program, by Doug McIlroy. The 7th Edition spell uses a hashing mechanism for
+quick lookup, and rules for automatically stripping suffixes and prefixes to
+keep the dictionary small. See "Development of a spelling list," M. D. McIlroy,
+IEEE Transactions on Communications, January, 1982.
+
+The style and diction programs are described in "Computer aids for writers," by
+Lorinda Cheery, SIGPLAN Symposium on Text Manipulation, Portland, Oregon (June
+1982).

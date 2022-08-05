@@ -1,0 +1,50 @@
+
++------------------------------------------------------------------------------+
+|                  Table 6.1: <ctype.h> Character Test Macros                  |
+|                                                                              |
+| isalpha(c)      alphabetic: a-z A-Z                                          |
+| isupper(c)      upper case: A-Z                                              |
+| islower(c)      lower case: a-z                                              |
+| isdigit(c)      digit: 0-9                                                   |
+| isxdigit(c)     hexadecimal digit: 0-9 a-f A-F                               |
+| isalnum(c)      alphabetic or digit                                          |
+| isspace(c)      blank, tab, newline, vertical tab, formfeed, return          |
+| ispunct(c)      not alphanumeric or control or space                         |
+| isprint(c)      printable: any graphic                                       |
+| iscntrl(c)      control character: 0 <= c < 040 || c == 0177                 |
+| isascii(c)      ASCII character: 0 <= c <= 0177                              |
++------------------------------------------------------------------------------+
+
+of newline to terminate lines.
+
+        /* vis:  make funny characters visible (version 2) */
+
+        #include <stdio.h>
+        #include <ctype.h>
+
+        main(argc, argv)
+            int argc;
+            char *argv[];
+        {
+            int c, strip = 0;
+
+            if (argc > 1 && strcmp(argv[1], "-s") == 0)
+                strip = 1;
+            while ((c = getchar()) != EOF)
+                if (isascii(c) &&
+                    (isprint(c) || c=='\n' || c=='\t' || c==' '))
+                    putchar(c);
+                else if (!strip)
+                    printf("\\%03o", c);
+            exit(0);
+        }
+
+argv is a pointer to an array whose individual elements are pointers to arrays
+of characters; each array is terminated by the ASCII character NUL ('\0'), so it
+can be treated as a string. This version of vis starts by checking to see if
+there is an argument and if it is -s. (Invalid arguments are ignored.) The
+function strcmp(3) compares two strings, returning zero if they are the same.
+
+Table 6.2 lists a set of string handling and general utility functions, of which
+strcmp is one. It's usually best to use these functions instead of writing your
+own, since they standard, they are debugged, and they are often

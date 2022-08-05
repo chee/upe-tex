@@ -1,0 +1,17 @@
+beginning of the code for the condition. After the whole while statement has
+been recognized, the two extra positions reserved after the whilecode
+instruction are filled with the locations of the loop body and the statement
+that follows the loop. (Code for that statement will be generated next.)
+
+$1 is the location in the machine at which whilecode is stored; therefore,
+($1)[1] and ($1)[2] are the next two positions.
+
+A picture might make this clearer:
+
+
+The situation for an if is similar, except that three spots are reserved, for
+the then and else parts and the statement that follows the if. We will return
+shortly to how this operates.
+
+Lexical analysis is somewhat longer this time, mainly to pick up the additional
+operators:

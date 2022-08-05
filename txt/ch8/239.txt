@@ -1,0 +1,49 @@
+
+                                Continuing hoc.y
+        #include <stdio.h>
+        #include <ctype.h>
+        char    *progname;      /* for error messages */
+        int     lineno = 1;
+
+        main(argc, argv)        /* hoc1 */
+                char *argv[];
+        {
+                progname = argv[0];
+                yyparse();
+        }
+
+main calls yyparse to parse the input. Looping from one expression to the next
+is done entirely within the grammar, by the sequence of productions for list. It
+would have been equally acceptable to put a loop around the call to yyparse in
+main and have the action for list print the value and return immediately.
+
+yyparse in turn calls yylex repeatedly for input tokens. Our yylex is easy: it
+skips blanks and tabs, converts strings of digits into a numeric value, counts
+input lines for error reporting, and returns any other character as
+itself. Since the grammar expects to see only +, -, *, /, (, ), and \n, any
+other character will cause yyparse to report an error. Returning a 0 signals
+"end of file" to yyparse.
+
+                                Continuing hoc.y
+        yylex()         /* hoc1 */
+        {
+                int c;
+
+                while ((c=getchar()) == ' ' || c == '\t')
+                        ;
+                if (c == EOF)
+                        return 0;
+                if (c == '.' || isdigit(c)) {   /* number */
+                        ungetc(c, stdin);
+                        scanf("%lf", &yylval);
+                        return NUMBER;
+                }
+                if (c == '\n')
+                        lineno++;
+                return c;
+        }
+
+The variable yylval is used for communication between the parser and the lexical
+analyzer; it is defined by yyparse, and has the same type as the yacc
+stack. yylex returns the type of a token as its function value, and sets yylval
+to the value of the token (if there is one). For instance, a floating

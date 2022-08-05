@@ -1,0 +1,18 @@
+The initialization code in init.c is augmented a little as well, with a table of
+keywords that are stored in the symbol table along with everything else:
+
+
+We also need one more loop in init, to install keywords.
+
+
+No changes are needed in any of the symbol table management: code.c contains the
+routine prexpr, which is called when an statement of the form print expr is
+executed.
+
+
+This is not the print function that is called automatically to print the final
+result of the an evaluation; that one pops the stack and adds a tab to the
+output.
+
+hoc5 is by now quite a serviceable calculator, although for serious programming,
+more facilities are needed. The following exercises suggest some

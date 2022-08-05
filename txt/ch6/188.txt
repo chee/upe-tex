@@ -1,0 +1,37 @@
+
+        pick(s) /* offer choice of s */
+            char *s;
+        {
+            fprintf("%s? ", s);
+            if (ttyin() == 'y')
+                printf("%s\n", s);
+        }
+
+If we compile and run it, what happens?
+
+        $ cc pick.c -î pick
+        $ pick *.c                              Try it
+        Memory fault - core dumped              Disaster!
+        $
+
+"Memory fault" means that your program tried to reference an area of memory that
+it was not allowed to. It usually means that a pointer points somewhere
+wild. "Bus error" is another diagnostic with a similar meaning, often caused by
+scanning a non-terminating string.
+
+"Core dumped" means that the kernel saved the state of your executing program in
+a file called core in the current directory. You can also force a program to
+dump core by typing ctl-\ if it is running in the foreground, or by the command
+kill -3 if it is in the background.
+
+There are two programs for poking around in the corpse, adb and sdb. Like most
+debuggers, they are arcane, complicated, and indispensable. adb is in the 7th
+Edition; sdb is available on more recent versions of the system, one or the
+other is sure to be there.
+
+We have space here only for the absolute minimum use of each: printing a stack
+trace, that is, the function that was executing when the program died, the
+function that called it, and so on. The first function named in the stack trace
+is where the program was when it aborted.
+
+To get a stack trace with adb, the command is $C:

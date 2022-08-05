@@ -1,0 +1,51 @@
+
+The shell built-in command shift moves the entire argument list one position to
+the left: $2 becomes $1, $3 becomes $2, etc. "$@" provides all the arguments
+(after the shift), like $*, but uninterpreted; we'll come back to it in Section
+5.7.
+
+Notice that PATH is restored to run the user's command; if it weren't, commands
+that were not in /bin or /usr/bin would be inaccessible to overwrite.
+
+overwrite now works (if somewhat clumsily):
+
+        $ cat notice
+        Unix is a Trademark of Bell Laboratories
+        $ overwrite notice sed 's/UNIXUNIX(TM)/g' notice
+        command garbled: s/UNIXUNIX(TM)/g
+        overwrite: sed failed, notice unchanged
+        $ cat notice
+        UNIX is a Trademark of Bell Laboratories                 Unchanged
+        $ overwrite notice sed 's/UNIX/UNIX(TM)/g' notice
+        $ cat notice
+        UNIX(TM) is a Trademark of Bell Laboratories
+        $
+
+Using sed to replace all occurrences of one word with another is a common thing
+to do. With overwrite in hand, a shell file to automate the task is easy:
+
+        $ cat replace
+        # replace:  replace str1 in files with str2, in place
+
+        PATH=/bin:/usr/bin
+
+        case $# in
+        0|1|2)  echo 'Usage: replace str1 str2 files' 1>&2; exit 1
+        esac
+
+        left="$1"; right="$2"; shift; shift
+
+        for i
+        do
+                overwrite $i sed "s@$left@$right@g" $i
+        done
+        $ cat footnote
+        UNIX is not an acronym
+        $ replace UNIX Unix footnote
+        $ cat footnote
+        Unix is not an acronym
+        $
+
+(Recall that if the list on a for statement is empty, it defaults to $*.) We
+used @ instead of / to delimit the substitute command, since @ is somewhat less
+likely to conflict with an input string.

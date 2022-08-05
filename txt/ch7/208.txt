@@ -1,0 +1,54 @@
+
+To get back to the beginning ("rewind"),
+
+        lseek(fd, 0L, 0);
+
+To determine the current position,
+
+        pos = lseek(fd, 0L, 1);
+
+Notice the 0L argument: the offset is a long integer. (The "l" in lseek stands
+for 'long,' to distinguish it from the 6th Edition seek system call that used
+short integers.)
+
+With lseek, it is possible to treat files more or less like large arrays, at the
+price of slower access. For example, the following function reads any number of
+bytes from any place in a file.
+
+        get(fd, pos, buf, n) /* read n bytes from position pos */
+            int fd, n;
+            long pos;
+            char *buf;
+        {
+            if (lseek(fd, pos, 0) == -1)    /* get to pos */
+                return -1;
+            else
+                return read(fd, buf, n);
+        }
+
+Exercise 7-3. Modify readslow to handle a filename argument if one is
+present. Add the option -e:
+
+        $ readslow -e
+
+causes readslow to seek to the end of the input before beginning to read. What
+does lseek do on a pipe?
+
+Exercise 7-4. Rewrite efopen from Chapter 6 to call error.
+
+
+7.2 File system: directories
+
+The next topic is how to walk through the directory hierarchy. This doesn't
+actually use any new system calls, just some old ones in a new context. We will
+illustrate by writing a function called spname that tries to cope with
+misspelled filenames. The function
+
+        n = spname(name, newname);
+
+searches for a file with a name "close enough" to name. If one is found, it is
+copied into newname. The value n returned by spname is -1 if nothing close
+enough was found, 0 if there was exact match, and 1 if a correction was made.
+
+spname is a convenient addition to the p command: if you try to print a file but
+misspell the name, p can ask if you really meant something else:

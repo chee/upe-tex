@@ -1,0 +1,54 @@
+
+compare designs. And if they are new to you, you may find them as useful as we
+have. In any case, they should help to make the point that no system is perfect,
+and that often it is quite easy to improve things and to cover up defects with
+modest effort.
+
+6.1 Standard input and output: vis
+
+Many program read only one input and write one output; for such programs, I/O
+that uses only standard input and standard output may be entirely adequate, and
+it is almost always enough to get started.
+
+Let illustrate with a program called vis that copies its standard input to its
+standard output, except that it makes all non-printing characters visible by
+print them as \nnn, where nnn is the octal value of the character. vis is
+invaluable for detecting strange or unwanted characters that may have crept into
+files. For instance, vis will print each backspace as \010, which is the octal
+value of the backspace character:
+
+        $ cat x
+        abc
+        $ vis <x
+        abc\010\010\010___
+        $
+
+To scan multiple files with this rudimentary version of vis, you can use cat to
+collect the files:
+
+        $ cat file1 file2 ... | vis
+        ...
+        $ cat file1 file2 ... | vis | grep '\\'
+        ...
+
+and thus avoid learning how to access files from a program.
+
+By the way, it might seem that you could do this job with sed, since the 'l'
+command displays non-printable characters in an understandable form:
+
+        $ sed -n l x
+        abc<<<___
+        $
+
+the sed output is probably clearer than that from vis. But sed was never meant
+for non-text files:
+
+        $ sed -n l /usr/you/bin
+        $                     Nothing at all!
+
+(This was on a PDP-11; on one VAX system, sed aborted, probably because the
+input looks like a very long line of text.) So sed is inadequate, and we are
+forced to writ a new program.
+
+The simplest input and output routines are called getchar and putchar. Each call
+to getchar gets the next character from the standard input, which

@@ -1,0 +1,22 @@
+
+History and bibliographic notes
+
+There is no detailed description of the UNIX system implementation, in part
+because the code is proprietary. Ken Thompson's paper "UNIX implementation"
+(BSTJ, july, 1978) describes the basic ideas. Other papers that discuss related
+topics are "The UNIX system --- a retrospective" in the same issue of BSTJ, and
+"The evolution of the UNIX time-sharing system" (Symposium on Language Design
+and Programming Methodology, Springer-Verlag Lecture Notes in Computer Science
+#79, 1979.) Both are by Dennis Ritchie.
+
+The program readslow was invented by Peter Weinberger, as a low-overhead way for
+spectators to watch the progress of Belle, Ken Thompson and Joe Condon's chess
+machine, during chess tournaments. Belle recorded the status of its game in a
+file; onlookers polled the file with readslow so as not to steal too many
+precious cycles from Belle. (The newest version of the Belle hardware does
+little computing on its host machine, so the problem has gone away.)
+
+Our inspiration for spname comes from Tom Duff. A paper by Ivor Durham, David
+Lamb and James Saxe entitled "Spelling correction in user interfaces," CACM,
+October, 1983, presents a somewhat different design for spelling correction, in
+the context of a mail program.

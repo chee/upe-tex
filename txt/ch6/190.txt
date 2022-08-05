@@ -1,0 +1,36 @@
+
+bad design. It's also possible to find errors like this, in which a function is
+called with the wrong arguments, by using the C verifier lint(1). lint examines
+C programs for potential errors, portability problems, and dubious
+constructions. If we run lint on the whole pick.c file, the error is identified:
+
+        $ lint pick.c
+        ...
+        fprintf, arg. 1 inconsistently "llib-lc"(69) :: "pick.c"(28)
+        ...
+        $
+
+In translation, this says that fprintf's first argument is different in the
+standard library from its use in line 28 of our program. That is a strong hint
+about what's wrong.
+
+lint is a mixed success. It says exactly what's wrong with this program, but
+also produces a lot of irrelevant messages that we've elided above, and it takes
+some experience to know what to heed and what to ignore. It's worth the effort,
+though, because lint finds some errors that are almost impossible for people to
+see. It's always worth running lint after a long stretch of editing, making sure
+that you understand each warning that it gives.
+
+
+6.7 An example: zap
+
+zap, which selectively kills process, is another program that we presented as a
+shell file in Chapter 5. The main problem with that version is speed: it creates
+so many processes that it runs slowly, which is especially undesirable for a
+program that kills errant processes. Rewriting zap in C will make it faster. We
+are not going to do the whole job, however: we will still use ps to find the
+process information. This is much easier than digging the information out of the
+kernel, and it is also portable. zap opens a pipe with ps on the input end, and
+reads form that instead of from a file. The function popen(3) is analogous to
+fopen, except that the first argument is a command instead of a filename. There
+is also a pclose that we don't need here.

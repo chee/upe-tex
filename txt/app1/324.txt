@@ -1,0 +1,50 @@
+
+        s/big/very &/       Replace big by very big
+        s/big/& &/          Replace big by big big.
+        s/.*/(&)/           Parenthesize entire line (see .* below)
+        s/and/\&/           Replace and by & (\ turns off special meaning)
+
+
+Metacharacters and regular expressions
+
+In the same way that characters like * and > and | have special meaning to the
+shell, certain characters have special meaning to ed when they appear in a
+search pattern or in the left-hand part of an s command. Such characters are
+called metacharacters, and the patterns that use them are called regular
+expressions. Table 1 lists the characters and their meanings; the examples below
+should be read in conjunction with the table. The special meaning of any
+character can be turned off by preceding it with a backslash.
+
++------------------------------------------------------------------------------+
+|                     Table 1: Editor Regular Expressions                      |
+|                                                                              |
+| c        any non-special character c matches itself                          |
+| \c       turn off any special meaning of character c                         |
+| ^        matches beginning of line when ^ begins pattern                     |
+| $        matches end of line when $ ends pattern                             |
+| .        matches any single character                                        |
+| [...]    matches any one of characters in ...; ranges like a-z are legal     |
+| [^...]   matches any single character not in ...; ranges are legal           |
+| r*       matches zero or more occurrences of r,                              |
+|            where r is a character, . or [...]                                |
+| &        on right side of s only, produces what was matched                  |
+| \(...\)  tagged regular expression; the matched string                       |
+|            is available as \1, etc., on both left and right side             |
+|                                                                              |
+|          No regular expression matches a newline.                            |
++------------------------------------------------------------------------------+
+
+
+        Pattern:                Matches:
+        /^$/                    empty line, i.e., newline only
+        /./                     non-empty, i.e., at least one character
+        /^/                     all lines
+        /thing/                 thing anywhere on line
+        /^thing/                thing at beginning of line
+        /thing$/                thing at end of line
+        /^thing$/               line that contains only thing
+        /thing.$/               thing plus any character at end of line
+        /thing\.$/              thing. at end of line
+        /\/thing\//             /thing/ anywhere on line
+        /[tT]hing/              thing or Thing anywhere on line
+        /thing[0-9]/            thing followed by one digit

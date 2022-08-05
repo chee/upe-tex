@@ -1,0 +1,44 @@
+
+        while command
+        do
+                loop body executed as long as command returns true
+        done
+
+        until command
+        do
+                loop body executed as long as command returns false
+        done
+
+The second form of the for, in which an empty list implies $*, is a convenient
+shorthand for the most command usage.
+
+The conditional command that controls a while or until can be any command. As a
+trivial example, here is a while loop to watch for someone (say Mary) to log in:
+
+        while sleep 60
+        do
+                who | grep mary
+        done
+
+The sleep, which pauses for 60 seconds, will always execute normally (unless
+interrupted) and therefore return "success," so the loop will check once a
+minute to see if Mary has logged in.
+
+This version has the disadvantage that Mary is already logged in, you must wait
+60 seconds to find out. Also, if Mary stays logged in, you will be told about
+here once a minute. The loop can be turned inside out and written with an until,
+to provide the information once, without delay, if Mary is on now:
+
+        until who | grep mary
+        do
+                sleep 60
+        done
+
+This is a more interesting condition. If Mary is logged in, 'who | grep mary'
+prints out her entry in the who listing and returns "true," because grep returns
+a status to indicate whether it found something, and the exit status of a
+pipeline is the exit status of the last element.
+
+Finally, we can wrap up this command, give it a name and install it:
+
+

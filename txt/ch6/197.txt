@@ -1,0 +1,50 @@
+
+                        fclose(ft);
+                        break;
+                    case '!':
+                        system(buf+1);
+                        printf("!\n");
+                        break;
+                    default:
+                        printf("< or > or e or !\n");
+                        break;
+                    }
+                } while (buf[0]!='<' && buf[0]!='>' && buf[0]!='e');
+                nf1 = to1;
+                nf2 = to2;
+            }
+            ncopy(f1, HUGE, fout);  /* can fail on very long files */
+            unlink(tempfile);
+        }
+
+The function parse does the mundane but tricky job of parsing the lines produced
+by diff, extracting all four line numbers and the command (one of a, c or
+d). parse is complicated a bit because diff can produce either one line number
+or two on either side of the command letter.
+
+        parse(s, pfrom1, pto1, pcmd, pfrom2, pto2)
+            char *s;
+            int *pcmd, *pfrom1, *pto1, *pfrom2, *pto2;
+        {
+        #define a2i(p) while (isdigit(*s)) p = 10*(p) + *s++ - '0'
+
+            *pfrom1 = *pto1 = *pfrom2 = *pto2 = 0;
+            a2i(*pfrom1);
+            if (*s == ',') {
+                s++;
+                a2i(*pto1);
+            } else
+                *pto1 = *pfrom1;
+            *pcmd = *s++;
+            a2i(*pfrom2);
+            if (*s == ',') {
+                s++;
+                a2i(*pto2);
+            } else
+                *pto2 = *pfrom2;
+        }
+
+The macro a2i handles our specialized conversion from ASCII to integer in the
+four places it occurs.
+
+nskip and ncopy skip over or copy the specified number of lines from a file:

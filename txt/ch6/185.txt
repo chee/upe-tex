@@ -1,0 +1,52 @@
+
+        ttyin() /* process response from /dev/tty (version 2) */
+        {
+            char buf[BUFSIZ];
+            FILE *efopen();
+            static FILE *tty = NULL;
+
+            if (tty == NULL)
+                tty = efopen("/dev/tty", "r");
+            for (;;) {
+                if (fgets(buf,BUFSIZ,tty) == NULL || buf[0] == 'q')
+                    exit(0);
+                else if (buf[0] == '!') {
+                    system(buf+1);  /* BUG here */
+                    printf("!\n");
+                }
+                else    /* ordinary line */
+                    return buf[0];
+            }
+        }
+
+Unfortunately, this version of ttyin has a subtle, pernicious bug. The command
+run by system inherits the standard input from p, so if p is reading from a pipe
+or a file, the command may interfere with its input:
+
+        $ cat /etc/passwd | p -1
+        root:3d.fHR5KoB.3s:0:1:S.User:/:!ed   Invoke ed from within p
+                                              ed reads /etc/passwd ...
+                                              ... is confused, and quits
+
+The solution requires knowledge about how UNIX processes are controlled, and we
+will present it in Section 7.4. For now, be aware that the standard system in
+the library can cause trouble, but that ttyin works correctly if compiled with
+the version of system in Chapter 7.
+
+We have now written two programs, vis and p, that might be considered variants
+of cat, with some embellishments. So should they all be part of cat, accessible
+by optional arguments like -v and -p? The question of whether to write a new
+program or to add features to an old one arises repeatedly as people have new
+ideas. We don't have a definitive answer, but there are some principles that
+help to decide.
+
+The main principle is that a program should only do one basic job --- if it does
+too many things, it gets bigger, slower, harder to maintain, and harder to
+use. Indeed, the features often lie unused because people can't remember the
+options anyway.
+
+This suggests that cat and vis should not be combined. cat just copies its
+input, unchanged, while vis transforms it. Merging them makes a program that
+does two different things. It's almost as clear with cat and p. cat is meant for
+fast, efficient copying; p is meant for browsing. And p does transform its
+output: every 22nd newline is dropped. Three separate programs

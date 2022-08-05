@@ -1,0 +1,67 @@
+\chapter{Program Development}
+The UNIX system was originally meant as a program development environment. In
+this chapter we'll talk about some of the tools that are particularly suited for
+developing programs. Our vehicle is a substantial program, an interpreter for a
+programming language comparable in power to BASIC. We chose to implement a
+language because it's representative of problems encountered in large
+programs. Furthermore, many programs can profitably be viewed as languages that
+convert a systematic input into a sequence of actions and outputs, so we want to
+illustrate the language development tools.
+
+In this chapter, we will cover specific lessons about
+\begin{itemize}
+\item yacc, a parser generator, a program that generates a parser from a
+  grammatical description of a language;
+\item make, a program for specifying and controlling the processes by which a
+  complicated program is compiled;
+\item lex, a program analogous to yacc, for making lexical analyzers.
+\end{itemize}
+We also want to convey some notions of how to go about such a project --- the
+importance of starting with something small and letting it grow; language
+evolution; and the use of tools.
+
+We will describe the implementation of the language in six stages, each of which
+would be useful even if the development went no further. These stages closely
+parallel the way that we actually wrote the program.
+\begin{enumerate}
+\item A four-function calculator, providing \verb=+=, \verb=-=, \verb=*=,
+  \verb=/= and parentheses, that operates on floating point numbers. One
+  expression is typed on each line; its value is printed immediately.
+\item Variables with names a through z. This version also has unary minus and
+  some defenses against errors.
+\item Arbitrarily-long variable names, built-in functions for \textit{sin},
+  \textit{exp}, etc., useful constants like \textsc{PI} (spelled PI because of
+  typographic limitations), and an exponentiation operator.
+\item A change in internals: code is generated for each statement and
+  subsequently interpreted, rather than being evaluated on the fly. No new
+  features are added, but it leads to(5).
+\item Control flow: \textit{if}-\textit{else} and \textit{while}, statement
+  grouping with \verb={= and \verb=}=, and relational operators like \verb=>=,
+  \verb=<==, etc.
+\item Recursive functions and procedures, with arguments. We also added
+  statements for input and for output of strings as well as numbers.
+\end{enumerate}
+The resulting language is described in Chapter 9, where it serves as the main
+example in our presentation of the UNIX document preparation software. Appendix
+2 is the reference manual.
+
+This is a very long chapter, because there's a lot of detail involved in getting
+a non-trivial program written correctly, let alone presented. We are assuming
+that you understand C, and that you have a copy of the UNIX Programmer's Manual,
+Volume 2, close at hand, since we simply don't have space to explain every
+nuance. Hang in, and be prepared to read the chapter a couple of times. We have
+also included all of the code for the final version in Appendix 3, so you can
+see more easily how the pieces fit together.
+
+By the way, we wasted a lot of time debating names for this language but never
+came up with anything satisfactory. We settled on hoc, wich stands for
+"high-order calculator." The versions are thus hoc1, hoc2, etc.
+
+\section{Stage 1: A four-function calculator}
+\section{Stage 2: Variables and error recovery}
+\section{Stage 3: Arbitrary variable names; built-in functions}
+\section{Stage 4: Compilation into a machine}
+\section{Stage 5: Control flow and relational operators}
+\section{Stage 6: Functions and procedures; input/output}
+\section{Performance evaluation}
+\section{A look back}

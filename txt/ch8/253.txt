@@ -1,0 +1,41 @@
+
+        double Pow(x, y)
+                double x, y;
+        {
+                return errcheck(pow(x,y), "exponentiation");
+        }
+
+        double integer(x)
+                double x;
+        {
+                return (double)(long)x;
+        }
+
+        double errcheck(d, s)   /* check result of library call */
+                double d;
+                char *s;
+        {
+                if (errno == EDOM) {
+                        errno = 0;
+                        execerror(s, "argument out of domain");
+                } else if (errno == ERANGE) {
+                        errno = 0;
+                        execerror(s, "result out of range");
+                }
+                return d;
+        }
+
+An interesting (and ungrammatical) diagnostic appears when we run yacc on the
+new grammar:
+
+        $ yacc hoc.y
+
+        conflicts: 1 shift/reduce
+        $
+
+The "shift/reduce" message means that the hoc3 grammar is ambiguous: the single
+line of input
+
+        x = 1
+
+can be parsed in two ways:

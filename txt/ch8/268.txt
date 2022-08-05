@@ -1,0 +1,20 @@
+
+The grammar has five shift/reduce conflicts, all like the one mentioned in hoc3.
+
+Notice that STOP instructions are now generated in several places to terminate a
+sequence; as before, progp is the location of the next instruction that will be
+generated. When executed these STOP instructions will terminate the loop in
+execute. The production for end is in effect a subroutine, called from several
+places, that generates a STOP and returns the location of the instruction that
+follows it.
+
+The code generated for while and if needs particular study. When the keyword
+while is encountered, the operation whilecode is generated, and its position in
+the machine is returned as the value of the production.
+
+        while:  WHILE
+
+At the same time, however, the two following positions in the machine are also
+reserved, to be filled later. The next code generated is the expression that
+makes up the condition part of the while. The value returned by cond is the
+

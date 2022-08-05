@@ -1,0 +1,43 @@
+
+	$ cat zap
+	# zap pattern:  kill all processes matching pattern
+	# BUG in this version
+
+	PATH=/bin:/usr/bin
+
+	case $# in
+	0)  echo 'Usage: zap pattern' 1>&2; exit 1
+	esac
+
+	kill `pick \`ps -ag | grep "$*"\` | awk '{print $1}'`
+        $
+
+Note the nested backquotes, protected by backslashes. The awk program selects
+the process-id from the ps output selected by the pick:
+
+	$ sleep 1000 &
+	2216
+	$ ps -ag
+	   PID TTY TIME CMD
+	...
+	 22126 0   0:00 sleep 1000
+	...
+	$ zap sleep
+	22126?
+	0? q                     What's going on?          
+	$
+
+The problem is that the output of ps is being broken into words, which are seen
+by pick as individual arguments rather than being processed a line at a
+time. The shell's normal behavior is to break strings into arguments at
+blank/non-blank boundaries, as in
+
+        for i in 1 2 3 4 5
+
+In this program we must control the shell's division of strings into arguments,
+so that only newlines separate adjacent "words."
+
+The shell variable IFS (internal field separator) is a string of characters that
+separate words in argument lists such as backquotes and for
+statements. normally, IFS contains a blank, a tab and a newline, but we can
+change it to anything useful, such as just a newline.

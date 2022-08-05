@@ -1,0 +1,53 @@
+
+    s/\(...\)\(.*\)/\2\1/   Move first 3 characters to end
+    /\(..*\)\1/             Find lines that contain a repeated adjacent string
+
+
+File handling commands
+
+The read and write commands r and w can be preceded by line numbers:
+
+    nr file     Read file; add it after line n; set dot to last line read
+    m,nw file   Write lines m-n to file; dot is unchanged
+    m,nW file   Append lines m-n to file; dot is unchanged
+
+The default range for w and W is the whole file. The default n for r is $, an
+unfortunate choice. Beware.
+
+ed remembers the first file name used, either from the command line or from an r
+or w command. The file command f prints or changes the name of the remembered
+file:
+
+    f           Print name of remembered file
+    f file      Set remembered name to 'file'
+
+The edit command e reinitializes ed with the remembered file or with a new one:
+
+    e           Begin editing remembered file
+    e file      Begin editing 'file'
+
+The e command is protected the same way as q is: if you haven't written your
+changes, the first e will draw an error message. E reinitializes regardless of
+changes. One some systems, ed is linked to e so that same command (e filename)
+can be used inside and outside the editor.
+
+
+Encryption
+
+Files may be encrypted upon writing and decrypted upon reading by giving the x
+command; a password will be asked for. The encryption is the same as in
+crypt(1). The x command has been changed to X (upper case) on some systems, to
+make it harder to encrypt unintentionally.
+
+
+Summary of commands
+
+Table 2 is a summary of ed commands, and Table 3 lists the valid line
+numbers. Each command is preceded by zero, one or two line numbers that indicate
+how many line numbers can be provided, and the default values if they are
+not. Most commands can be followed by a p to print the last line affected, or l
+for list format. Dot is normally set to the last line affected; it is unchanged
+by f, k, w, x, =, and !.
+
+
+Exercise. when you think you know ed, try the editor quiz; see quiz(6).

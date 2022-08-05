@@ -1,0 +1,49 @@
+
+another file. Since there is a limit (about 20) on the number of files that a
+program may have open simultaneously, it's best to free files when they are no
+longer needed. Normally, output produced with any of the standard library
+functions like printf, putc, etc., is buffered so it can be written in large
+chunks for efficiency. (The exception is output to a terminal, which is usually
+written as it is produced, or at least when a newline is printed.) Calling
+fclose on an output file also forces out any buffered output. fclose is also
+called automatically for each open file when a program calls exit or returns
+from main.
+
+stderr is assigned to a program in the same way that stdin and stdout
+are. Output written on stderr appears on the user's terminal even if the
+standard output is redirected. vis writes its diagnostics on stderr instead of
+stdout so that if one of the files can't be accessed for some reason, the
+message finds its way to the user' terminal instead of disappearing down a
+pipeline or into an output file. (The standard error was invented somewhat after
+pipes, after error messages did start disappearing into pipelines.)
+
+Somewhat arbitrarily, we decided that vis will quit if it can't open an input
+file; this is reasonable for a program most often used interactively, and with a
+single input file. You can argue for the other design as well, however.
+
+Exercise 6-5. Write a program printable that prints the name of each argument
+file that contains only printable characters; if the file contains any
+non-printable character, the name is not printed. printable is useful in
+situations like this:
+
+        $ pr `printable *` | lpr
+
+Add the option -v to invert the sense of the test, as in grep. What should
+printable do if there are no filename arguments? What status should printable
+return?
+
+
+6.4 A screen-at-a-time printer: p
+
+So far we have used cat to examine files. But if a file is long, and if you are
+connected to your system by a high-speed connection, cat produces the output too
+fast to be read, even if you are quick with ctl-s and ctl-q.
+
+There clearly should be a program to print a file in small, controllable chunks,
+but there isn't a standard one, probably because the original UNIX system was
+written in the days of hard-copy (paper) terminals and slow communications
+lines. So our next example is a program called p that will print a file a
+screenful at a time, waiting for a response from the user after each screen
+before continuing to the next. ("p" is a nice short name for a program that we
+use a lot.) As with other programs, p reads either from files named as arguments
+or from its standard input:

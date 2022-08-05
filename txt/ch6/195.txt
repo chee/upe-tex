@@ -1,0 +1,44 @@
+
+        /* idiff:  interactive diff */
+
+        #include <stdio.h>
+        #include <ctype.h>
+        char    *progname;
+        #define HUGE    10000   /* large number of lines */
+
+        main(argc, argv)
+            int argc;
+            char *argv[];
+        {
+            FILE *fin, *fout, *f1, *f2, *efopen();
+            char buf[BUFSIZ], *mktemp();
+            char *diffout = "idiff.XXXXXX";
+
+            progname = argv[0];
+            if (argc != 3) {
+                fprintf(stderr, "Usage: idiff file1 file2\n");
+                exit(1);
+            }
+            f1 = efopen(argv[1], "r");
+            f2 = efopen(argv[2], "r");
+            fout = efopen("idiff.out", "w");
+            mktemp(diffout);
+            sprintf(buf,"diff %s %s >%s",argv[1],argv[2],diffout);
+            system(buf);
+            fin = efopen(diffout, "r");
+            idiff(f1, f2, fin, fout);
+            unlink(diffout);
+            printf("%s output in file idiff.out\n", progname);
+            exit(0);
+        }
+
+The function mktemp(2) creates a file whose name is guaranteed to be different
+from any existing file. mktemp overwrites its argument: the six X's are replaced
+by the process-id of the idiff process and a letter. The system call unlink(2)
+removes the named file from the file system.
+
+The job of looping through the changes reported by diff is handled by a function
+called idiff. The basic idea is simple enough: print a chunk of diff output,
+skip over the unwanted data in one file, then copy the desired version from the
+other. There is a lot of tedious detail, so the code is bigger than we'd like,
+but it's easy enough to understand in pieces.
